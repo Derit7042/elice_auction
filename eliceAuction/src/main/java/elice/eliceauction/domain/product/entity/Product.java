@@ -27,7 +27,7 @@ public class Product{
     private String pictureLink;
 
     @Column(name = "watch_Cnt", nullable = false) // 상품 조회수
-    private Long watchCnt;
+    private Long watchCount;
 
     @OneToOne
     @JoinColumn(name = "seller_id", nullable = false) // User 테이블의 id값 참조 (판매자)
@@ -45,11 +45,11 @@ public class Product{
     private UserAddress userAddress;
 
     // @AllArgsConstructor 를 사용하면 밑에 코드 생략 가능?
-//    public Product(String title, String brief, String pictureLink, Long watchCnt, User user, Long price, UserAddress userAddress) {
+//    public Product(String title, String brief, String pictureLink, Long watchCount, User user, Long price, UserAddress userAddress) {
 //        this.title = title;
 //        this.brief = brief;
 //        this.pictureLink = pictureLink;
-//        this.watchCnt = watchCnt;
+//        this.watchCount = watchCount;
 //        this.user = user;
 //        this.price = price;
 //        this.userAddress = userAddress;
