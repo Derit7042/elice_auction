@@ -33,19 +33,37 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(userId).orElseThrow(() -> new RuntimeException("회원정보를 찾을 수 없습니다."));
     }
 
+//    @Override
+//    public void updateUserInfo(User user) {
+//        // 사용자 정보 업데이트를 위해 먼저 해당 사용자가 존재하는지 확인
+//        Optional<User> existingUser = userRepository.findById(user.getId());
+//        if (existingUser.isPresent()) {
+//            User updatedUser = existingUser.get();
+//            updatedUser.setEmail(user.getEmail());
+//            updatedUser.setPassword(passwordEncoder.encode(user.getPassword()));
+//            updatedUser.setGrade(user.getGrade());
+//            userRepository.save(updatedUser);
+//        } else {
+//            throw new RuntimeException("회원정보를 찾을 수 없습니다.");
+//        }
+//    }
+
+
+
+//    if else -> early return 방식으로 수정
     @Override
     public void updateUserInfo(User user) {
         // 사용자 정보 업데이트를 위해 먼저 해당 사용자가 존재하는지 확인
         Optional<User> existingUser = userRepository.findById(user.getId());
-        if (existingUser.isPresent()) {
-            User updatedUser = existingUser.get();
-            updatedUser.setEmail(user.getEmail());
-            updatedUser.setPassword(passwordEncoder.encode(user.getPassword()));
-            updatedUser.setGrade(user.getGrade());
-            userRepository.save(updatedUser);
-        } else {
+        if (!existingUser.isPresent()) {
             throw new RuntimeException("회원정보를 찾을 수 없습니다.");
         }
+
+        User updatedUser = existingUser.get();
+        updatedUser.setEmail(user.getEmail());
+        updatedUser.setPassword(passwordEncoder.encode(user.getPassword()));
+        updatedUser.setGrade(user.getGrade());
+        userRepository.save(updatedUser);
     }
 
     @Override
