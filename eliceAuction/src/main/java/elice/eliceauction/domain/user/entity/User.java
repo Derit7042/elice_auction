@@ -1,28 +1,30 @@
 package elice.eliceauction.domain.user.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
+@NoArgsConstructor  // 기본 생성자
+@AllArgsConstructor //모든 컬럼 생성자 생성
+@Table(name = "user")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false, unique = true)
-    private String email;
+    private Long id; //회원아이디
 
     @Column(nullable = false)
-    private String password;
+    private String username; //회원 이름
+
+    @Column(nullable = false, unique = true)
+    private String email; //회원 이메일
+
+    @Column(nullable = false)
+    private String password; //회원 비밀번호
 
     @Enumerated(EnumType.STRING)
-    private UserGrade grade;
+    private UserGrade grade;  //회원 등급
+
+
 
 }
