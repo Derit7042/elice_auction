@@ -26,6 +26,12 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
+### MAC DS_Store exclude
+.DS_Store
+._.DS_Store
+**/.DS_Store
+**/._.DS_Store
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
