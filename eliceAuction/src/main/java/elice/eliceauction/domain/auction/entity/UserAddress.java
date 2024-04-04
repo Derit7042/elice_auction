@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.Id;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +24,7 @@ public class UserAddress {
     @Column(name = "name")
     private String name;
 
-    @OneToOne(mappedBy = "delivery")
+    @OneToOne(mappedBy = "userAddress")
     private Order order;
 
     @ManyToOne
@@ -35,11 +34,7 @@ public class UserAddress {
     @Column(name = "address", nullable = false)
     private String address;
 
-    public void UserAddress(String name, User user, String address){
-        this.name = name;
-        this.user = user;
-        this.address = address;
-    }
-    @OneToOne(mappedBy = "user_address_id")
+    @OneToOne(mappedBy = "userAddress")
     private Product product;
+
 }
