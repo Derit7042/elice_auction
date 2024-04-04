@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="dataSourceStorageLocal" created-in="IU-233.14015.106">
+    <data-source name="auction@isaiah0214.synology.me" uuid="250e85cf-1c53-4d53-9e40-8ffc4cfffd65">
+      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="MYSQL" />
+      <user-name>isaiah</user-name>
+      <schema-mapping />
+    </data-source>
+  </component>
+</project>
