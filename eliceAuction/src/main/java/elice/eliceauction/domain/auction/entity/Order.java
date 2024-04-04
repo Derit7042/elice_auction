@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
@@ -14,13 +15,15 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
+@Table(name = "`Order`")
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "item_id")
+    @JoinColumn(name = "product_id")
     private Product product;
 
     @ManyToOne
@@ -44,5 +47,11 @@ public class Order {
         this.price = price;
         this.userAddress = userAddress;
         this.date = LocalDateTime.now(); // 주문 생성 시 현재 시간 설정
+    }
+    @Getter
+    @Setter
+    public static class UpdateOrderRequest {
+        private Long userAddressId;
+        private int price;
     }
 }

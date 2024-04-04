@@ -31,17 +31,21 @@ public class OrderService {
         this.userAddressRepository = userAddressRepository;
     }
 
+
     // 주문 생성
     public Order createOrder(Long productId, Long userId, Long userAddressId, int price) {
-        // 상품, 사용자, 사용자 주소 정보를 기반으로 주문 생성 및 저장
+        // 상품, 사용자 주문 정보를 기반으로 주문 생성 및 저장
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new EntityNotFoundException("상품을 찾을 수 없습니다. ID: " + productId));
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다. ID: " + userId));
 
-        UserAddress userAddress = userAddressRepository.findById(userAddressId)
-                .orElseThrow(() -> new EntityNotFoundException("사용자 주소 정보를 찾을 수 없습니다. ID: " + userAddressId));
+        // 사용자 주소 정보 가져오기
+        UserAddress userAddress = userAddressRepository.findByUserId(userId);
+        if (userAddress == null) {
+            throw new EntityNotFoundException("사용자 주소 정보를 찾을 수 없습니다. 사용자 ID: " + userId);
+        }
 
         Order order = new Order(product, user, price, userAddress);
         return orderRepository.save(order);
@@ -51,9 +55,21 @@ public class OrderService {
     public Order saveOrder(Order order) {
         return orderRepository.save(order);
     }
-    // 주문 취소 메서드
+    // 주문 취소
     public void cancelOrder(Long orderId) {
         orderRepository.deleteById(orderId);
+    }
+    //주문 수정
+    public Order updateOrder(Long orderId, Order.UpdateOrderRequest request) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new EntityNotFoundException("주문을 찾을 수 없습니다. ID: " + orderId));
+
+        // 주문 정보 수정
+        order.getUserAddress().setId(request.getUserAddressId());
+        order.setPrice(request.getPrice());
+
+        // 수정된 주문 저장 및 반환
+        return orderRepository.save(order);
     }
 
 
@@ -83,4 +99,5 @@ public class OrderService {
                 .orElseThrow(() -> new EntityNotFoundException("상품을 찾을 수 없습니다. ID: " + productId));
         return orderRepository.findByProduct(product);
     }
+
 }
