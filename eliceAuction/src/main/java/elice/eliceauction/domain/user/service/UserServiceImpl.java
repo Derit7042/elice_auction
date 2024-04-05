@@ -1,9 +1,9 @@
 package elice.eliceauction.domain.user.service;
 
+import elice.eliceauction.domain.user.dto.UserRegistrationDto;
 import elice.eliceauction.domain.user.entity.User;
 import elice.eliceauction.domain.user.entity.UserGrade;
 import elice.eliceauction.domain.user.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,11 +25,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void signUp(User user) {
-        // 사용자 비밀번호 암호화
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        // 사용자 정보 저장
-        userRepository.save(user);
+    public void signUp(UserRegistrationDto userDto) {
+        boolean isUser = userRepository.existsByEmail(userDto.getEmail()); //이메일 중복 확인
+        if(isUser) {
+            return;
+        }
+
+        User user = new User();
+
+        user.setUsername(userDto.getUsername());
+        user.setEmail(userDto.getEmail());
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));// 사용자 비밀번호 암호화
+        user.setGrade(UserGrade.REGULAR);
+        userRepository.save(user); // 사용자 정보 저장
     }
 
     @Override
