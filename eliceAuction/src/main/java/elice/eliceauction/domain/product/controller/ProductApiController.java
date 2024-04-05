@@ -13,24 +13,25 @@ import java.util.List;
 
 @Slf4j
 @RestController
+@RequestMapping("/api/products")
 public class ProductApiController {
 
     @Autowired
     private ProductService productService;
 
     // GET
-    @GetMapping("/api/products")
+    @GetMapping
     public List<Product> index() {
         return productService.index();
     }
 
-    @GetMapping("/api/products/{id}")
+    @GetMapping("/{id}")
     public Product show(@PathVariable("id") Long id) {
         return productService.show(id);
     }
 
     // POST
-    @PostMapping("/api/products")
+    @PostMapping
     public ResponseEntity<Product> create(@RequestBody ProductDto dto) {
         Product created = productService.create(dto);
         return (created != null) ?
@@ -39,7 +40,7 @@ public class ProductApiController {
     }
 
     // PATCH
-    @PatchMapping("/api/products/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<Product> update(@PathVariable("id") Long id, @RequestBody ProductDto dto) {
         Product updated = productService.update(id, dto);
         return (updated != null) ?
@@ -48,7 +49,7 @@ public class ProductApiController {
     }
 
     // DELETE
-    @DeleteMapping("/api/products/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Product> delete(@PathVariable("id") Long id) {
         Product deleted = productService.delete(id);
         return (deleted != null) ?

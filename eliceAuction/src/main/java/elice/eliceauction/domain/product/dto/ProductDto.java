@@ -6,12 +6,12 @@ public class ProductDto {
     private Long id;
     private String title;
     private String brief;
-    //    private String picture_link;
-    //    private Long watchCount;
     private Long price;
+    private Long watchCount;
+    //    private String picture_link;
 
 
     public Product toEntity() {
-        return new Product(id, title, brief, price);
+        return new Product(id, title, brief, price, watchCount);
     }
 }
