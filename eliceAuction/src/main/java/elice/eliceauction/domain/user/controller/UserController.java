@@ -1,20 +1,35 @@
 package elice.eliceauction.domain.user.controller;
 
 import elice.eliceauction.domain.user.entity.User;
+import elice.eliceauction.domain.user.repository.UserRepository;
 import elice.eliceauction.domain.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
+    private final UserRepository userRepository;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UserRepository userRepository) {
         this.userService = userService;
+        this.userRepository = userRepository;
+    }
+
+    @PostMapping("/login")
+    public long login(@RequestBody Map<String, String> params) {
+        User user = userRepository.findByEmailAndPassword(params.get("email"), params.get("password"));
+        if(user != null) {
+            return user.getId();
+        }
+
+        return 0;
     }
 
     @PostMapping("/signUp")
