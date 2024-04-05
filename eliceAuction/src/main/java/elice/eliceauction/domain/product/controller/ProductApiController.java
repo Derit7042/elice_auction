@@ -9,6 +9,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Slf4j
@@ -33,6 +36,9 @@ public class ProductApiController {
     // POST
     @PostMapping
     public ResponseEntity<Product> create(@RequestBody ProductDto dto) {
+        LocalDateTime currentDateTime = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+        dto.setDate(currentDateTime);
+
         Product created = productService.create(dto);
         return (created != null) ?
                 ResponseEntity.status(HttpStatus.OK).body(created) :
