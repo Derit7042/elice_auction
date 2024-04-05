@@ -23,14 +23,10 @@ public class Cart {
     private LocalDateTime updatedAt;
 
     @ColumnDefault("0")
-    private int cnt;
+    private int count;
 
     @OneToOne
     @JoinColumn(name = "user_id")// 1:1 단방향
-     User user;
-
-
-    @OneToMany(mappedBy = "cart")
-    List<CartItem> cartItems = new ArrayList<>();
+    User user;
 
 }
