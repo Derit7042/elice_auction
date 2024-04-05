@@ -24,7 +24,8 @@ public class UserAddress {
     @Column(name = "name")
     private String name;
 
-    @OneToOne(mappedBy = "userAddress")
+    @OneToOne
+    @JoinColumn(name = "order_id")
     private Order order;
 
     @ManyToOne
@@ -34,7 +35,8 @@ public class UserAddress {
     @Column(name = "address", nullable = false)
     private String address;
 
-    @OneToOne(mappedBy = "userAddress")
+    @OneToOne
+    @JoinColumn(name = "product_id")
     private Product product;
 
 }
