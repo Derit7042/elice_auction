@@ -7,7 +7,7 @@ import lombok.*;
 @Data
 @NoArgsConstructor  // 기본 생성자
 @AllArgsConstructor //모든 컬럼 생성자 생성
-@Table(name = "user")
+@Table(name = "User")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +27,4 @@ public class User {
 
     @Column
     private String address;  //회원 주소
-
-
-
 }

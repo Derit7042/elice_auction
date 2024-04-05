@@ -1,5 +1,6 @@
 package elice.eliceauction.domain.user.controller;
 
+import elice.eliceauction.domain.user.dto.UserRegistrationDto;
 import elice.eliceauction.domain.user.entity.User;
 import elice.eliceauction.domain.user.repository.UserRepository;
 import elice.eliceauction.domain.user.service.UserService;
@@ -22,6 +23,7 @@ public class UserController {
         this.userRepository = userRepository;
     }
 
+
     @PostMapping("/login")
     public long login(@RequestBody Map<String, String> params) {
         User user = userRepository.findByEmailAndPassword(params.get("email"), params.get("password"));
@@ -32,11 +34,22 @@ public class UserController {
         return 0;
     }
 
-    @PostMapping("/signUp")
-    public ResponseEntity<String> signUp(@RequestBody User user) {
-        userService.signUp(user);
+    private User convertToEntity(UserRegistrationDto userDto) {
+        User user = new User();
+        user.setUsername(userDto.getUsername());
+        user.setEmail(userDto.getEmail());
+        user.setPassword(userDto.getPassword()); // 실제 사용 시 비밀번호 암호화 고려
+        return user;
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<String> signUp(@RequestBody UserRegistrationDto userDto) {
+        userService.signUp(userDto);
         return new ResponseEntity<>("회원등록 성공입니다.", HttpStatus.CREATED);//201 Created
     }
+
+
+
 
     @GetMapping("/{userId}")
     public ResponseEntity<?> getUser(@PathVariable Long userId) {

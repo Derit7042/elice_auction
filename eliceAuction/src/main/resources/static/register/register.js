@@ -2,7 +2,7 @@ import * as Api from "../api.js";
 import { validateEmail, createNavbar } from "../useful-functions.js";
 
 // 요소(element), input 혹은 상수
-const fullNameInput = document.querySelector("#fullNameInput");
+const usernameInput = document.querySelector("#usernameInput");
 const emailInput = document.querySelector("#emailInput");
 const passwordInput = document.querySelector("#passwordInput");
 const passwordConfirmInput = document.querySelector("#passwordConfirmInput");
@@ -25,18 +25,18 @@ function addAllEvents() {
 async function handleSubmit(e) {
   e.preventDefault();
 
-  const fullName = fullNameInput.value;
+  const username = usernameInput.value;
   const email = emailInput.value;
   const password = passwordInput.value;
   const passwordConfirm = passwordConfirmInput.value;
 
   // 잘 입력했는지 확인
-  const isFullNameValid = fullName.length >= 2;
+  const isUsernameValid = username.length >= 2;
   const isEmailValid = validateEmail(email);
   const isPasswordValid = password.length >= 4;
   const isPasswordSame = password === passwordConfirm;
 
-  if (!isFullNameValid || !isPasswordValid) {
+  if (!isUsernameValid || !isPasswordValid) {
     return alert("이름은 2글자 이상, 비밀번호는 4글자 이상이어야 합니다.");
   }
 
@@ -50,7 +50,7 @@ async function handleSubmit(e) {
 
   // 회원가입 api 요청
   try {
-    const data = { fullName, email, password };
+    const data = { username, email, password };
 
     await Api.post("/users/register", data);
 
