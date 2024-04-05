@@ -25,6 +25,9 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserGrade grade;  //회원 등급
 
+    @Column
+    private String address;  //회원 주소
+
 
 
 }
