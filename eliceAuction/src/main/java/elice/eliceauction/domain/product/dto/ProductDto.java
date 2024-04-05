@@ -1,7 +1,9 @@
 package elice.eliceauction.domain.product.dto;
 
 import elice.eliceauction.domain.product.entity.Product;
+import lombok.Setter;
 
+@Setter
 public class ProductDto {
     private Long id;
     private String title;
