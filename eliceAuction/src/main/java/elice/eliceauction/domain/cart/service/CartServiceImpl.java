@@ -62,6 +62,8 @@ public class CartServiceImpl implements CartService{
         cartItem.setCart(getCartInfo(user));
 
         cartItem.setProduct(productService.show(productId));
+
+        cartItemRepository.save(cartItem);
     }
 
     @Override
