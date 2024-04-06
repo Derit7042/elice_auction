@@ -26,7 +26,13 @@ public class ProductService {
     }
 
     public Product show(Long id) {
-        return productRepository.findById(id).orElse(null);
+        Product product = productRepository.findById(id).orElse(null);
+
+        if (product != null) {
+            product.setWatchCount(product.getWatchCount() + 1); // 조회수 증가
+            productRepository.save(product);
+        }
+        return product;
     }
 
     public Product create(ProductDto dto) {
