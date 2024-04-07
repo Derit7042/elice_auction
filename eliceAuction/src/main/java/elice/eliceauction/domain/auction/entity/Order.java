@@ -30,8 +30,8 @@ public class Order {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "delivery")
+    @ManyToOne
+    @JoinColumn(name = "user_address_id") // 사용자 주소와의 관계를 표시하는 외래 키
     private UserAddress userAddress;
 
     @Column(name = "price")
@@ -48,10 +48,5 @@ public class Order {
         this.userAddress = userAddress;
         this.date = LocalDateTime.now(); // 주문 생성 시 현재 시간 설정
     }
-    @Getter
-    @Setter
-    public static class UpdateOrderRequest {
-        private Long userAddressId;
-        private int price;
-    }
+
 }
