@@ -53,12 +53,16 @@ public class CartServiceImpl implements CartService{
 
     @Override
     public void clear(User user) {
-        cartItemRepository.deleteAllByCart(getCartInfo(user));
+        Cart cart = getCartInfo(user);
+        cartItemRepository.deleteAllByCart(cart);
+        cart.setCount(0);
     }
 
     @Override
     public void add(User user, Long productId) {
         CartItem cartItem = new CartItem();
+        Cart cart =  getCartInfo(user);
+        cart.setCount(cart.getCount() + 1);
         cartItem.setCart(getCartInfo(user));
 
         cartItem.setProduct(productService.show(productId));
@@ -69,9 +73,14 @@ public class CartServiceImpl implements CartService{
     @Override
     public CartItem delete(User user, Long productId) {
 
+        Cart cart = getCartInfo(user);
+
         // TODO: 예외 만들기
-        return cartItemRepository.deleteByCartAndProductId(getCartInfo(user), productId)
+        CartItem deleted = cartItemRepository.deleteByCartAndProductId(cart, productId)
                 .orElseThrow(() -> new RuntimeException("상품을 삭제할 수 없습니다."));
+
+        cart.setCount(cart.getCount() - 1);
+        return deleted;
     }
 
     @Override
