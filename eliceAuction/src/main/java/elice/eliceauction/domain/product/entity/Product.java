@@ -29,8 +29,17 @@ public class Product{
     @Column(name = "watch_Cnt", columnDefinition = "integer default 0", nullable = false) // 상품 조회수
     private Long watchCount;
 
-//    @Column(name = "date", nullable = false) // 상품이 등록된 날짜 및 시간
-//    private LocalDateTime date;
+    @Column(name = "date") // 상품이 등록된 날짜 및 시간
+    private LocalDateTime date;
+
+    public Product(String title, String brief, Long price, Long watchCount, LocalDateTime date) {
+        this.title = title;
+        this.brief = brief;
+        this.price = price;
+        this.watchCount = watchCount;
+        this.date = date;
+    }
+
 
 //    @Column(name = "picture_link", nullable = false) // 그림 링크
 //    private String pictureLink;
@@ -42,16 +51,6 @@ public class Product{
 //    @OneToOne
 //    @JoinColumn(name = "buyer_id", nullable = false) // User 테이블의 id값 참조 (구매자)
 //    private User buyer;
-
-//    @OneToOne
-//    @Column(name = "user_address_id", nullable = false) // User_address 테이블의 id 값 참조
-//    private UserAddress userAddress;
-
-//    @Column(name = "date", nullable = false, updatable = false)
-//    public LocalDateTime Date() {
-//        this.date = LocalDateTime.now();
-//        return date;
-//    }
 
 //    public void updateWatchCount(Long watchCount) {
 //        this.watchCount = watchCount;
