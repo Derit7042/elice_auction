@@ -58,15 +58,17 @@ public class OrderController {
 
     // 주문 수정 API
     @PutMapping("/{orderId}")
-    public ResponseEntity<Order> updateOrder(@PathVariable Long orderId, @RequestBody Order.UpdateOrderRequest request) {
-        Order updatedOrder = orderService.updateOrder(orderId, request);
+    public ResponseEntity<Order> updateOrder(@PathVariable Long orderId, @RequestParam Long userAddressId) {
+        Order updatedOrder = orderService.updateOrder(orderId, userAddressId);
         return ResponseEntity.ok(updatedOrder);
     }
 
+
     // 배송 정보 생성 API
     @PostMapping("/delivery")
-    public ResponseEntity<UserAddress> createDeliveryInfo(@RequestParam String name, @RequestParam Long userId) {
-        UserAddress userAddress = orderService.createDeliveryInfo(name, userId);
+    public ResponseEntity<UserAddress> createDeliveryInfo(@RequestParam String name, @RequestParam String address, @RequestParam Long userId) {
+        // 주문 배송 정보 생성
+        UserAddress userAddress = orderService.createDeliveryInfo(name, address, userId);
         return ResponseEntity.ok(userAddress);
     }
 

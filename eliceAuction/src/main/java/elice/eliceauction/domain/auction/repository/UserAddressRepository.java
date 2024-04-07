@@ -10,9 +10,6 @@ public interface UserAddressRepository extends JpaRepository<UserAddress, Long> 
     // ID로 주소 삭제
     void deleteById(Long id);
 
-    // ID로 주소 가져오기
-    UserAddress getById(Long id);
-
     // 사용자 ID로 주소 찾기
     UserAddress findByUserId(Long userId);
 }

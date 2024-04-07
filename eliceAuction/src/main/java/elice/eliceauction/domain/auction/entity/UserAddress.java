@@ -24,9 +24,8 @@ public class UserAddress {
     @Column(name = "name")
     private String name;
 
-    @OneToOne
-    @JoinColumn(name = "order_id")
-    private Order order;
+    @OneToMany(mappedBy = "userAddress")
+    private List<Order> orders = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -35,8 +34,5 @@ public class UserAddress {
     @Column(name = "address", nullable = false)
     private String address;
 
-    @OneToOne
-    @JoinColumn(name = "product_id")
-    private Product product;
-
 }
+
