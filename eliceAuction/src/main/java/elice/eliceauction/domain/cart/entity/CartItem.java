@@ -4,10 +4,12 @@ import elice.eliceauction.domain.product.entity.Product;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Getter
 @Setter
+@ToString
 public class CartItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
