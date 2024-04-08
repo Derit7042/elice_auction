@@ -4,9 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor  // 기본 생성자
-@AllArgsConstructor //모든 컬럼 생성자 생성
 @Table(name = "User")
 public class User {
     @Id
