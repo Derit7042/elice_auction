@@ -16,5 +16,5 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 
     void deleteAllByCart(Cart cart);
 
-    Optional<CartItem> deleteByCartAndProductId(Cart cart, Long productId);
+    void deleteByCartIdAndProductId(Long cartId, Long productId);// 왜 얘는 void 타입임?
 }
