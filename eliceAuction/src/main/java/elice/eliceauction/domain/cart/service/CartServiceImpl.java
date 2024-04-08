@@ -6,12 +6,12 @@ import elice.eliceauction.domain.cart.repository.CartItemRepository;
 import elice.eliceauction.domain.cart.repository.CartRepository;
 import elice.eliceauction.domain.product.service.ProductService;
 import elice.eliceauction.domain.user.entity.User;
+import elice.eliceauction.exception.cart.DuplicatedCartItemException;
 import elice.eliceauction.exception.cart.InvalidCartItemException;
 import elice.eliceauction.exception.cart.InvalidCartException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -63,6 +63,14 @@ public class CartServiceImpl implements CartService{
     public void add(User user, Long productId) {
         CartItem cartItem = new CartItem();
         Cart cart =  getCartInfo(user);
+        
+        // 상품 중복여부 확인
+        cartItemRepository.findByCartAndProductId(cart, productId)
+                .ifPresent(e ->{
+                throw new DuplicatedCartItemException();
+            }
+        );
+
         cart.setCount(cart.getCount() + 1);
         cartItem.setCart(getCartInfo(user));
 

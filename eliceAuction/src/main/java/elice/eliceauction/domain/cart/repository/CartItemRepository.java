@@ -2,6 +2,7 @@ package elice.eliceauction.domain.cart.repository;
 
 import elice.eliceauction.domain.cart.entity.Cart;
 import elice.eliceauction.domain.cart.entity.CartItem;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -16,5 +17,6 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 
     void deleteAllByCart(Cart cart);
 
+    @Transactional
     void deleteByCartIdAndProductId(Long cartId, Long productId);// 왜 얘는 void 타입임?
 }
