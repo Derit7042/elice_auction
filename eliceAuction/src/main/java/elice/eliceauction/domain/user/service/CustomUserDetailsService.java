@@ -1,5 +1,6 @@
 package elice.eliceauction.domain.user.service;
 
+import elice.eliceauction.domain.user.dto.CustomUserDetails;
 import elice.eliceauction.domain.user.entity.User;
 import elice.eliceauction.domain.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +9,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
@@ -24,10 +24,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("이메일로 사용자를 찾을 수 없습니다: " + email));
-        return new org.springframework.security.core.userdetails.User(
-                user.getEmail(),
-                user.getPassword(),
-                Collections.emptyList()
-        );
+        //UserDetails에 담아서 return하면 AutneticationManager가 검증 함
+        return new CustomUserDetails(user);
     }
 }
