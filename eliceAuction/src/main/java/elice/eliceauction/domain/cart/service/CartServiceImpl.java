@@ -6,10 +6,12 @@ import elice.eliceauction.domain.cart.repository.CartItemRepository;
 import elice.eliceauction.domain.cart.repository.CartRepository;
 import elice.eliceauction.domain.product.service.ProductService;
 import elice.eliceauction.domain.user.entity.User;
+import elice.eliceauction.exception.cart.DuplicatedCartItemException;
+import elice.eliceauction.exception.cart.InvalidCartItemException;
+import elice.eliceauction.exception.cart.InvalidCartException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -30,7 +32,6 @@ public class CartServiceImpl implements CartService{
         Cart cart = new Cart();
         cart.setUser(user);
         cart.setCount(0);
-        cart.setUpdatedAt(LocalDateTime.now());
         cartRepository.save(cart);
     }
 
@@ -41,9 +42,9 @@ public class CartServiceImpl implements CartService{
 
     @Override
     public CartItem getCart(User user, Long productId) {
-        // TODO: 예외 만들기
+
         return cartItemRepository.findByCartAndProductId(getCartInfo(user), productId)
-                .orElseThrow(() -> new RuntimeException("카트에 상품이 비어 있습니다."));
+                .orElseThrow(() -> new InvalidCartItemException());
     }
 
     @Override
@@ -62,6 +63,14 @@ public class CartServiceImpl implements CartService{
     public void add(User user, Long productId) {
         CartItem cartItem = new CartItem();
         Cart cart =  getCartInfo(user);
+        
+        // 상품 중복여부 확인
+        cartItemRepository.findByCartAndProductId(cart, productId)
+                .ifPresent(e ->{
+                throw new DuplicatedCartItemException();
+            }
+        );
+
         cart.setCount(cart.getCount() + 1);
         cartItem.setCart(getCartInfo(user));
 
@@ -75,11 +84,14 @@ public class CartServiceImpl implements CartService{
 
         Cart cart = getCartInfo(user);
 
-        // TODO: 예외 만들기
-        CartItem deleted = cartItemRepository.deleteByCartAndProductId(cart, productId)
-                .orElseThrow(() -> new RuntimeException("상품을 삭제할 수 없습니다."));
+
+        CartItem deleted =  cartItemRepository.findByCartAndProductId(getCartInfo(user), productId)
+                .orElseThrow(() -> new InvalidCartItemException("삭제할 상품이 카드에 존재하지 않습니다."));
+
+        cartItemRepository.deleteByCartIdAndProductId(cart.getId(), productId);
 
         cart.setCount(cart.getCount() - 1);
+        cartRepository.save(cart);
         return deleted;
     }
 
@@ -91,8 +103,7 @@ public class CartServiceImpl implements CartService{
     }
 
     private Cart getCartInfo(User user){
-        // TODO: 예외 만들기
         return cartRepository.findByUser(user)
-                .orElseThrow(() -> new RuntimeException("유저의 장바구니가 존재하지 않습니다.") );
+                .orElseThrow(() -> new InvalidCartException() );
     }
 }
