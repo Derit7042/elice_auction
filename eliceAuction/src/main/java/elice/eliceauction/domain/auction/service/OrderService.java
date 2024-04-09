@@ -1,6 +1,7 @@
 package elice.eliceauction.domain.auction.service;
 
 import elice.eliceauction.domain.auction.entity.Order;
+import elice.eliceauction.domain.auction.entity.OrderDto;
 import elice.eliceauction.domain.auction.entity.UserAddress;
 import elice.eliceauction.domain.auction.repository.OrderRepository;
 import elice.eliceauction.domain.auction.repository.UserAddressRepository;
@@ -33,27 +34,30 @@ public class OrderService {
         this.userAddressRepository = userAddressRepository;
     }
 
-
+    // 모든 주문 조회
+    public List<Order> getAllOrders() {
+        return orderRepository.findAll();
+    }
     // 주문 생성
-    // 회원 ID와 상품 ID를 이용하여 주문 생성 및 저장
-    public Order createOrder(Long productId, Long userId, Long userAddressId, int price) {
+    public Order createOrder(OrderDto orderDto) {
         // 상품, 사용자 정보 가져오기
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new EntityNotFoundException("상품을 찾을 수 없습니다. ID: " + productId));
+        Product product = productRepository.findById(orderDto.getProductId())
+                .orElseThrow(() -> new EntityNotFoundException("상품을 찾을 수 없습니다. ID: " + orderDto.getProductId()));
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다. ID: " + userId));
+        User user = userRepository.findById(orderDto.getUserId())
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다. ID: " + orderDto.getUserId()));
 
         // 사용자 주소 정보 가져오기
-        UserAddress userAddress = userAddressRepository.findById(userAddressId)
-                .orElseThrow(() -> new EntityNotFoundException("사용자 주소 정보를 찾을 수 없습니다. ID: " + userAddressId));
+        UserAddress userAddress = userAddressRepository.findById(orderDto.getUserAddressId())
+                .orElseThrow(() -> new EntityNotFoundException("사용자 주소 정보를 찾을 수 없습니다. ID: " + orderDto.getUserAddressId()));
 
         // 주문 생성
-        Order order = new Order(product, user, price, userAddress);
+        Order order = new Order(product, user, userAddress);
 
         // 주문 저장
         return orderRepository.save(order);
     }
+
 
 
 
@@ -110,6 +114,13 @@ public class OrderService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new EntityNotFoundException("상품을 찾을 수 없습니다. ID: " + productId));
         return orderRepository.findByProduct(product);
+    }
+    // 주문 상태 수정
+    public Order updateOrderStatus(Long orderId, String status) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new EntityNotFoundException("주문을 찾을 수 없습니다. ID: " + orderId));
+        order.setStatus(status);
+        return orderRepository.save(order);
     }
 
 }

@@ -57,7 +57,6 @@ public class OrderRepositoryTest {
         Order order = new Order();
         order.setUser(user);
         order.setProduct(product);
-        order.setPrice(10000);
         order.setUserAddress(userAddress);
         order.setDate(LocalDateTime.now()); // 현재 날짜와 시간 설정
 
@@ -79,7 +78,6 @@ public class OrderRepositoryTest {
 
         assertEquals(user, retrievedOrder.getUser());
         assertEquals(product.getId(), retrievedOrder.getProduct().getId()); // 제품 아이디 비교
-        assertEquals(10000, retrievedOrder.getPrice());
         assertEquals(userAddress, retrievedOrder.getUserAddress());
     }
 
@@ -113,7 +111,6 @@ public class OrderRepositoryTest {
         Order order = new Order();
         order.setUser(user);
         order.setProduct(product);
-        order.setPrice(10000);
         order.setUserAddress(userAddress);
         order.setDate(LocalDateTime.now()); // 현재 날짜와 시간 설정
 
@@ -133,7 +130,6 @@ public class OrderRepositoryTest {
         Order retrievedOrder = ordersByProduct.get(0);
         assertEquals(user, retrievedOrder.getUser());
         assertEquals(product.getId(), retrievedOrder.getProduct().getId()); // 제품 아이디 비교
-        assertEquals(10000, retrievedOrder.getPrice());
         assertEquals(userAddress, retrievedOrder.getUserAddress());
     }
 
@@ -177,7 +173,6 @@ public class OrderRepositoryTest {
         Order order = new Order();
         order.setUser(user);
         order.setProduct(product);
-        order.setPrice(10000);
         order.setDate(LocalDateTime.now());
         return orderRepository.save(order);
     }
