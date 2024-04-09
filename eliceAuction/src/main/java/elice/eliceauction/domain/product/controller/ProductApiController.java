@@ -10,9 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.security.Principal;
 
 @Slf4j
 @RestController
@@ -35,9 +35,16 @@ public class ProductApiController {
 
     // POST
     @PostMapping
-    public ResponseEntity<Product> create(@RequestBody ProductDto dto) {
+    public ResponseEntity<Product> create(@RequestBody ProductDto dto /*, Principal principal */) {
+        if (dto.getWatchCount() == null) {
+            dto.setWatchCount(0L);
+        }
+
         LocalDateTime currentDateTime = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
         dto.setDate(currentDateTime);
+
+//        String username = principal.getName();
+//        Product created = productService.create(dto, username);
 
         Product created = productService.create(dto);
         return (created != null) ?
