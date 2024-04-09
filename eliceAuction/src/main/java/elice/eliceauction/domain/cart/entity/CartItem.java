@@ -22,4 +22,14 @@ public class CartItem {
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
+
+    public static CartResponseDto toDto(CartItem item){
+        Product product = item.getProduct();
+
+        return CartResponseDto.builder()
+                .title(product.getTitle())
+                .price(product.getPrice())
+                .pictureLink(product.getPictureLink())
+                .build();
+    }
 }
