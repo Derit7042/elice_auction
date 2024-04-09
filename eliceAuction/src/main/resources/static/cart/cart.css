@@ -2,6 +2,13 @@
   width: 20rem;
 }
 
+
+@media (min-width: 1025px) {
+  .h-custom {
+    height: 100vh !important;
+  }
+}
+
 .navbar-menu .is-info:focus {
   outline: none;
   box-shadow: none;
