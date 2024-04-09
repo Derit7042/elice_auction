@@ -26,7 +26,7 @@ public class CartController {
     // 장바구니 목록 불러오기
     @GetMapping("/{userId}")
     public ResponseEntity<List<CartItem>> getCarts(@PathVariable("userId") Long userId) {
-        User user = userService.findUser(userId);
+        User user = userService.findUserById(userId);
         List<CartItem> cartItems = cartService.getCarts(user);
 
         return ResponseEntity.ok(cartItems);
@@ -35,7 +35,7 @@ public class CartController {
     // 장바구니에 상품 추가
     @PostMapping("/{userId}")
     public ResponseEntity<List<CartItem>> addCartItem(@PathVariable("userId") Long userId, @RequestParam("productId") Long productId) {
-        User user = userService.findUser(userId);
+        User user = userService.findUserById(userId);
         cartService.add(user, productId);
         List<CartItem> cartItems = cartService.getCarts(user);
 
@@ -45,7 +45,7 @@ public class CartController {
     // 장바구니에서 특정 상품 삭제
     @DeleteMapping("/{userId}")
     public ResponseEntity<List<CartItem>> deleteCartItem(@PathVariable("userId") Long userId, @RequestParam("productId") List<Long> productId) {
-        User user = userService.findUser(userId);
+        User user = userService.findUserById(userId);
         for (Long id : productId) {
             cartService.delete(user, id);
         }

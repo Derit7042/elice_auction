@@ -1,5 +1,6 @@
 package elice.eliceauction;
 
+import elice.eliceauction.domain.auction.entity.OrderDto;
 import elice.eliceauction.domain.auction.service.OrderService;
 import elice.eliceauction.domain.cart.service.CartService;
 import elice.eliceauction.domain.product.dto.ProductDto;
@@ -40,9 +41,10 @@ public class StubData implements CommandLineRunner {
             dto.setUsername("username"+i);
             dto.setPassword("password"+i);
             dto.setEmail("email@"+i);
-            userService.signUp(dto);
+            userService.registerNewUserAccount(dto);
         }
-        userService.changeUserGrade(1L, UserGrade.ADMIN.name());// 1번 회원은 ADMIN
+
+        userService.approveAdmin(1L);// 1번 회원은 ADMIN
     }
 
     public void ProductStubData(){// 상품 정보 생성
@@ -53,7 +55,7 @@ public class StubData implements CommandLineRunner {
             dto.setPrice(i*100);
             dto.setWatchCount(i);
             dto.setDate(LocalDateTime.now());
-            dto.setPicture_link("https://isaiah0214.synology.me/gallery_colorize/fuck.jpg");
+            dto.setPictureLink("https://isaiah0214.synology.me/gallery_colorize/fuck.jpg");
             productService.create(dto);
         }
     }
@@ -63,15 +65,20 @@ public class StubData implements CommandLineRunner {
         for(long i=1; i<=10; i++){// 주소 정보 생성
             orderService.createDeliveryInfo("name"+i, "address"+i, i);
         }
-        
+
+        OrderDto dto = new OrderDto();
+
         for(long i=1; i<=10; i++){// 주문 정보 생성
-            orderService.createOrder(i, i, i, (int)i*100);
+            dto.setUserId(i);
+            dto.setProductId(i);
+            dto.setUserAddressId(i);
+            orderService.createOrder(dto);
         }
     }
 
     public void CartStubData(){// 장바구니 정보 생성
         for(long i=1; i<=10; i++){
-            User targetUser = userService.findUser(i);
+            User targetUser = userService.findUserById(i);
             cartService.createCart(targetUser);// 장바구니 생성
             cartService.add(targetUser, i);
         }
