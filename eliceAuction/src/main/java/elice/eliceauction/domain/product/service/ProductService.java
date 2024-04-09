@@ -3,14 +3,16 @@ package elice.eliceauction.domain.product.service;
 import elice.eliceauction.domain.product.dto.ProductDto;
 import elice.eliceauction.domain.product.entity.Product;
 import elice.eliceauction.domain.product.repository.ProductRepository;
-import lombok.RequiredArgsConstructor;
+import elice.eliceauction.domain.user.repository.UserRepository;
+import elice.eliceauction.domain.user.entity.User;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -19,6 +21,8 @@ public class ProductService {
 
     @Autowired
     private ProductRepository productRepository; // 상품 리포지토리 객체 주입
+    @Autowired
+    UserRepository userRepository;
 
 
     public List<Product> index() {
@@ -35,8 +39,17 @@ public class ProductService {
         return product;
     }
 
-    public Product create(ProductDto dto) {
+    public Product create(ProductDto dto /*, String username */) {
+//        Optional<User> optionalUser = Optional.ofNullable(userRepository.findByUsername(username));
+//        if (optionalUser.isEmpty()) {
+//            log.error("User with username {} not found", username);
+//            return null;
+//        }
+//        User user = optionalUser.get();
+
         Product product = dto.toEntity();
+//        product.setSellerId(user.getId());
+//        product.setSellerName(user.getUsername());
         if (product.getId() != null) {
             return null;
         }
@@ -77,5 +90,4 @@ public class ProductService {
         productRepository.delete(target);
         return target;
     }
-
 }

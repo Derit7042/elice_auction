@@ -6,8 +6,6 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 
 @Setter
 @Getter
@@ -19,10 +17,11 @@ public class ProductDto {
     private Long price;
     private Long watchCount;
     private LocalDateTime date;
-    //    private String picture_link;
+    private String pictureLink;
+//    private Long sellerId;
+//    private String sellerName;
 
     public Product toEntity() {
-        return new Product(id, title, brief, price, watchCount, date);
+        return new Product(id, title, brief, price, watchCount, date, pictureLink);
     }
-
 }
