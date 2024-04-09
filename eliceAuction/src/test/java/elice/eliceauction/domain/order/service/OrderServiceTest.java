@@ -1,6 +1,7 @@
 package elice.eliceauction.domain.order.service;
 
 import elice.eliceauction.domain.auction.entity.Order;
+import elice.eliceauction.domain.auction.entity.OrderDto;
 import elice.eliceauction.domain.auction.entity.UserAddress;
 import elice.eliceauction.domain.auction.repository.OrderRepository;
 import elice.eliceauction.domain.auction.repository.UserAddressRepository;
@@ -60,8 +61,13 @@ public class OrderServiceTest {
         userAddress.setUser(user);
         userAddressRepository.save(userAddress);
 
+        OrderDto orderDto = new OrderDto();
+        orderDto.setProductId(product.getId());
+        orderDto.setUserId(user.getId());
+        orderDto.setUserAddressId(userAddress.getId());
+
         // When
-        Order createdOrder = orderService.createOrder(product.getId(), user.getId(), userAddress.getId(), 10000);
+        Order createdOrder = orderService.createOrder(orderDto);
 
         // Then
         assertNotNull(createdOrder);
@@ -69,7 +75,6 @@ public class OrderServiceTest {
         assertEquals(product.getId(), createdOrder.getProduct().getId());
         assertEquals(user.getId(), createdOrder.getUser().getId());
         assertEquals(userAddress.getId(), createdOrder.getUserAddress().getId());
-        assertEquals(10000, createdOrder.getPrice());
     }
 
     @Test
@@ -121,9 +126,13 @@ public class OrderServiceTest {
         userAddress.setUser(user);
         userAddressRepository.save(userAddress);
 
-        // 주문 생성
-        Order createdOrder = orderService.createOrder(product.getId(), user.getId(), userAddress.getId(), 10000);
+        OrderDto orderDto = new OrderDto();
+        orderDto.setProductId(product.getId());
+        orderDto.setUserId(user.getId());
+        orderDto.setUserAddressId(userAddress.getId());
 
+        // When
+        Order createdOrder = orderService.createOrder(orderDto);
         // When
         orderService.cancelOrder(createdOrder.getId());
 
@@ -163,7 +172,7 @@ public class OrderServiceTest {
 
         // 주문 생성
         LocalDateTime now = LocalDateTime.now(); // 현재 날짜 및 시간 가져오기
-        Order order = new Order(product, user, 10000, userAddress1);
+        Order order = new Order(product, user, userAddress1);
         order.setDate(now); // 주문 생성 시 현재 날짜 및 시간 설정
         orderRepository.save(order);
 
@@ -175,8 +184,6 @@ public class OrderServiceTest {
         assertNotNull(updatedOrder);
         // 수정된 주소 확인
         assertEquals(userAddress2.getId(), updatedOrder.getUserAddress().getId());
-        // 가격 변동을 안해서 가격은 그대로
-        assertEquals(10000, updatedOrder.getPrice());
         // 주문 시간이 올바르게 설정되었는지 확인
         assertEquals(now, updatedOrder.getDate());
     }
