@@ -35,6 +35,7 @@ public class SecurityConfig {
     private final JWTUtil jwtUtil;
 
     // Constructor for JWTUtil and CustomUserDetailsService
+    @Autowired
     public SecurityConfig(CustomUserDetailsService customUserDetailsService, JWTUtil jwtUtil,  AuthenticationConfiguration authenticationConfiguration) {
         this.authenticationConfiguration = authenticationConfiguration;
         this.jwtUtil = jwtUtil;
