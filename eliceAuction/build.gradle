@@ -35,6 +35,8 @@ dependencies {
 //	타임리프 적용
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
+//	web client 사용
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 }
 
 tasks.named('test') {
