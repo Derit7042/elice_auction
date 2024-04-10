@@ -1,24 +1,24 @@
 package elice.eliceauction.domain.cart.service;
 
 import elice.eliceauction.domain.cart.entity.CartItem;
-import elice.eliceauction.domain.member.entity.User;
+import elice.eliceauction.domain.member.entity.Member;
 
 import java.util.List;
 
 public interface CartService {
 
-    void createCart(User user);
-    List<CartItem> getCarts(User user);
+    void createCart(Member member);
+    List<CartItem> getCarts(Member member);
 
-    CartItem getCart(User user, Long productId);
+    CartItem getCart(Member member, Long productId);
 
-    boolean isEmpty(User user);
+    boolean isEmpty(Member member);
 
-    void clear(User user);
+    void clear(Member member);
 
-    void add(User user, Long productId);
+    void add(Member member, Long productId);
 
-    CartItem delete(User user, Long productId);
+    CartItem delete(Member member, Long productId);
 
-    int getCount(User user);
+    int getCount(Member member);
 }

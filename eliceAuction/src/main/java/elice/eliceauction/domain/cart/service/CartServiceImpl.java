@@ -5,7 +5,7 @@ import elice.eliceauction.domain.cart.entity.CartItem;
 import elice.eliceauction.domain.cart.repository.CartItemRepository;
 import elice.eliceauction.domain.cart.repository.CartRepository;
 import elice.eliceauction.domain.product.service.ProductService;
-import elice.eliceauction.domain.member.entity.User;
+import elice.eliceauction.domain.member.entity.Member;
 import elice.eliceauction.exception.cart.DuplicatedCartItemException;
 import elice.eliceauction.exception.cart.InvalidCartItemException;
 import elice.eliceauction.exception.cart.InvalidCartException;
@@ -28,41 +28,41 @@ public class CartServiceImpl implements CartService{
         this.productService = productService;
     }
     @Override
-    public void createCart(User user) {
+    public void createCart(Member member) {
         Cart cart = new Cart();
-        cart.setUser(user);
+        cart.setMember(member);
         cart.setCount(0);
         cartRepository.save(cart);
     }
 
     @Override
-    public List<CartItem> getCarts(User user) {
-        return cartItemRepository.findAllByCart(getCartInfo(user));
+    public List<CartItem> getCarts(Member member) {
+        return cartItemRepository.findAllByCart(getCartInfo(member));
     }
 
     @Override
-    public CartItem getCart(User user, Long productId) {
+    public CartItem getCart(Member member, Long productId) {
 
-        return cartItemRepository.findByCartAndProductId(getCartInfo(user), productId)
+        return cartItemRepository.findByCartAndProductId(getCartInfo(member), productId)
                 .orElseThrow(() -> new InvalidCartItemException());
     }
 
     @Override
-    public boolean isEmpty(User user) {
-        return getCount(user) == 0 ? true : false;
+    public boolean isEmpty(Member member) {
+        return getCount(member) == 0 ? true : false;
     }
 
     @Override
-    public void clear(User user) {
-        Cart cart = getCartInfo(user);
+    public void clear(Member member) {
+        Cart cart = getCartInfo(member);
         cartItemRepository.deleteAllByCart(cart);
         cart.setCount(0);
     }
 
     @Override
-    public void add(User user, Long productId) {
+    public void add(Member member, Long productId) {
         CartItem cartItem = new CartItem();
-        Cart cart =  getCartInfo(user);
+        Cart cart =  getCartInfo(member);
         
         // 상품 중복여부 확인
         cartItemRepository.findByCartAndProductId(cart, productId)
@@ -72,7 +72,7 @@ public class CartServiceImpl implements CartService{
         );
 
         cart.setCount(cart.getCount() + 1);
-        cartItem.setCart(getCartInfo(user));
+        cartItem.setCart(getCartInfo(member));
 
         cartItem.setProduct(productService.show(productId));
 
@@ -80,12 +80,12 @@ public class CartServiceImpl implements CartService{
     }
 
     @Override
-    public CartItem delete(User user, Long productId) {
+    public CartItem delete(Member member, Long productId) {
 
-        Cart cart = getCartInfo(user);
+        Cart cart = getCartInfo(member);
 
 
-        CartItem deleted =  cartItemRepository.findByCartAndProductId(getCartInfo(user), productId)
+        CartItem deleted =  cartItemRepository.findByCartAndProductId(getCartInfo(member), productId)
                 .orElseThrow(() -> new InvalidCartItemException("삭제할 상품이 카드에 존재하지 않습니다."));
 
         cartItemRepository.deleteByCartIdAndProductId(cart.getId(), productId);
@@ -96,14 +96,14 @@ public class CartServiceImpl implements CartService{
     }
 
     @Override
-    public int getCount(User user) {
-        Cart cart = getCartInfo(user);
+    public int getCount(Member member) {
+        Cart cart = getCartInfo(member);
 
         return cart.getCount();
     }
 
-    private Cart getCartInfo(User user){
-        return cartRepository.findByUser(user)
+    private Cart getCartInfo(Member member){
+        return cartRepository.findByMember(member)
                 .orElseThrow(() -> new InvalidCartException() );
     }
 }
