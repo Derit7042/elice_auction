@@ -8,7 +8,7 @@ import lombok.Setter;
 public class DeliveryDto {
     private String name;
     private String address;
-    private Long userId;
+    private Long memberId;
 
     public DeliveryDto() {
 

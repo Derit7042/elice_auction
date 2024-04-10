@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 public class UpdateOrderDto {
     private Long orderId;
-    private Long userAddressId;
+    private Long memberAddressId;
 
     public UpdateOrderDto() {
 

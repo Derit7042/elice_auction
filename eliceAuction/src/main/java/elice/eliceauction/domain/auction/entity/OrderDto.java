@@ -9,8 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class OrderDto {
     private Long productId;
-    private Long userId;
-    private Long userAddressId;
+    private Long memberId;
+    private Long memberAddressId;
 
     public OrderDto () {
     }

@@ -5,8 +5,8 @@ import elice.eliceauction.domain.auction.service.OrderService;
 import elice.eliceauction.domain.cart.entity.CartItem;
 import elice.eliceauction.domain.cart.entity.CartResponseDto;
 import elice.eliceauction.domain.cart.service.CartService;
-import elice.eliceauction.domain.user.entity.User;
-import elice.eliceauction.domain.user.service.UserService;
+import elice.eliceauction.domain.member.entity.Member;
+import elice.eliceauction.domain.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -27,31 +27,31 @@ import java.util.List;
 public class OrderController {
 
     private final OrderService orderService;
-    private final UserService userService;
+    private final MemberService memberService;
     private final CartService cartService;
 
     @Autowired
-    public OrderController(OrderService orderService,UserService userService, CartService cartService) {
+    public OrderController(OrderService orderService,MemberService memberService, CartService cartService) {
         this.orderService = orderService;
-        this.userService = userService;
+        this.memberService = memberService;
         this.cartService = cartService;
     }
     // 사용자 Id로 주문 목록 가져오기
     /*********스웨거 어노테이션**********/
-    @Operation(summary = "사용자 ID로 주문 목록 조회", description = "유저 id(userId)를 이용하여 해당 유저의 상품 목록을 불러옵니다.")
+    @Operation(summary = "사용자 ID로 주문 목록 조회", description = "유저 id(memberId)를 이용하여 해당 유저의 상품 목록을 불러옵니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     description = "주문 목록 조회 성공",
                     content = @Content(schema = @Schema(implementation = CartResponseDto.class))),
     })
-    @Parameter(name = "userId", description = "사용자의 고유 id 번호")
+    @Parameter(name = "memberId", description = "사용자의 고유 id 번호")
     /*********스웨거 어노테이션**********/
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Order>> getOrdersByUser(@PathVariable("userId") Long userId) {
+    @GetMapping("/member/{memberId}")
+    public ResponseEntity<List<Order>> getOrdersByMember(@PathVariable("memberId") Long memberId) {
         try {
             // 사용자 ID로 주문 목록 가져오기
-            User user = userService.findUserById(userId);
-            List<Order> orders = orderService.getOrdersByUser(user.getId());
+            Member member = memberService.findMemberById(memberId);
+            List<Order> orders = orderService.getOrdersByMember(member.getId());
             return ResponseEntity.ok(orders);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -62,8 +62,8 @@ public class OrderController {
 
     // 현재 로그인한 사용자의 장바구니에 담긴 상품들을 주문
     @PostMapping("/order")
-    public ResponseEntity<String> orderCartItems(@AuthenticationPrincipal User user) {
-        List<CartItem> cartItems = cartService.getCarts(user);
+    public ResponseEntity<String> orderCartItems(@AuthenticationPrincipal Member member) {
+        List<CartItem> cartItems = cartService.getCarts(member);
         // 장바구니가 비어있는 경우
         if (cartItems.isEmpty()) {
 
@@ -95,7 +95,7 @@ public class OrderController {
 
         try {
             // 주소 생성
-            UserAddress createdAddress = orderService.createDeliveryInfo(deliveryDto);
+            MemberAddress createdAddress = orderService.createDeliveryInfo(deliveryDto);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdAddress);
         } catch (EntityNotFoundException e) {
             // 사용자를 찾을 수 없는 경우
