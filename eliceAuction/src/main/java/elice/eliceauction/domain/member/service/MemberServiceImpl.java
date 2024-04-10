@@ -66,6 +66,12 @@ public class MemberServiceImpl implements MemberService{
         memberRepository.delete(member);
     }
 
+    @Override
+    public Member findMemberById(Long id) throws Exception {
+        // 주어진 ID로 회원 정보를 조회. 만약 해당 회원이 존재하지 않는 경우, 예외를 발생시킨다.
+        return memberRepository.findById(id)
+                .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+    }
 
 
 

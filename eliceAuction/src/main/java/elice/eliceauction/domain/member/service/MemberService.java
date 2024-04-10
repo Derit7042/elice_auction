@@ -3,6 +3,7 @@ package elice.eliceauction.domain.member.service;
 import elice.eliceauction.domain.member.dto.MemberInfoDto;
 import elice.eliceauction.domain.member.dto.MemberSignUpDto;
 import elice.eliceauction.domain.member.dto.MemberUpdateDto;
+import elice.eliceauction.domain.member.entity.Member;
 
 public interface MemberService {
 
@@ -21,9 +22,11 @@ public interface MemberService {
 
     void withdraw(String checkPassword) throws Exception;
 
+    Member findMemberById(Long id) throws Exception;
     MemberInfoDto getInfo(Long id) throws Exception;
 
     MemberInfoDto getMyInfo() throws Exception;
+
 
 
 }
