@@ -1,6 +1,6 @@
 package elice.eliceauction.domain.auction.entity;
 
-import elice.eliceauction.domain.member.entity.User;
+import elice.eliceauction.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,7 +15,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserAddress {
+public class MemberAddress {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,12 +23,12 @@ public class UserAddress {
     @Column(name = "name")
     private String name;
 
-    @OneToMany(mappedBy = "userAddress")
+    @OneToMany(mappedBy = "memberAddress")
     private List<Order> orders = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     @Column(name = "address", nullable = false)
     private String address;

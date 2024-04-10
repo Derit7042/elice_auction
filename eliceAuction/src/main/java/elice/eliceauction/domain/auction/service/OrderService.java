@@ -2,11 +2,11 @@ package elice.eliceauction.domain.auction.service;
 
 import elice.eliceauction.domain.auction.entity.*;
 import elice.eliceauction.domain.auction.repository.OrderRepository;
-import elice.eliceauction.domain.auction.repository.UserAddressRepository;
+import elice.eliceauction.domain.auction.repository.MemberAddressRepository;
 import elice.eliceauction.domain.product.entity.Product;
 import elice.eliceauction.domain.product.service.ProductService;
-import elice.eliceauction.domain.user.entity.User;
-import elice.eliceauction.domain.user.service.UserService;
+import elice.eliceauction.domain.member.entity.Member;
+import elice.eliceauction.domain.member.service.MemberService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,8 +21,8 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final ProductService productService;
-    private final UserService userService;
-    private final UserAddressRepository userAddressRepository;
+    private final MemberService memberService;
+    private final MemberAddressRepository memberAddressRepository;
 
     // 모든 주문 조회
     public List<Order> getAllOrders() {
@@ -30,16 +30,16 @@ public class OrderService {
     }
 
     // 주문 생성
-    public Order createOrder(OrderDto orderDto) {
+    public Order createOrder(OrderDto orderDto) throws Exception {
         // 상품, 사용자 정보 가져오기
         Product product = productService.show(orderDto.getProductId());
-        User user = userService.findUserById(orderDto.getUserId());
+        Member member = memberService.findMemberById(orderDto.getMemberId());
 
         // 사용자 주소 정보 가져오기
-        UserAddress userAddress = userAddressRepository.getReferenceById(orderDto.getUserAddressId());
+        MemberAddress memberAddress = memberAddressRepository.getReferenceById(orderDto.getMemberAddressId());
 
         // 주문 생성
-        Order order = new Order(product, user, userAddress);
+        Order order = new Order(product, member, memberAddress);
 
         // 주문 저장
         return orderRepository.save(order);
@@ -56,32 +56,32 @@ public class OrderService {
                 .orElseThrow(() -> new EntityNotFoundException("주문을 찾을 수 없습니다. ID: " + updateOrderDto.getOrderId()));
 
         // 사용자가 주문한 배송지 정보 조회
-        UserAddress userAddress = userAddressRepository.getReferenceById(updateOrderDto.getUserAddressId());
+        MemberAddress memberAddress = memberAddressRepository.getReferenceById(updateOrderDto.getMemberAddressId());
 
         // 주문한 상품의 배송지 정보 변경
-        order.setUserAddress(userAddress);
+        order.setMemberAddress(memberAddress);
 
         // 변경된 주문 정보 저장 후 반환
         return orderRepository.save(order);
     }
 
     // 배송 정보 생성
-    public UserAddress createDeliveryInfo(DeliveryDto deliveryDto) {
-        // 주문 배송 정보를 생성하기 위해 매개변수로 받은 정보를 사용하여 UserAddress 객체를 생성
-        User user = userService.findUserById(deliveryDto.getUserId());
+    public MemberAddress createDeliveryInfo(DeliveryDto deliveryDto) throws Exception {
+        // 주문 배송 정보를 생성하기 위해 매개변수로 받은 정보를 사용하여 MemberAddress 객체를 생성
+        Member member = memberService.findMemberById(deliveryDto.getMemberId());
 
-        UserAddress userAddress = new UserAddress();
-        userAddress.setName(deliveryDto.getName());
-        userAddress.setAddress(deliveryDto.getAddress()); // 주소 설정
-        userAddress.setUser(user);
+        MemberAddress memberAddress = new MemberAddress();
+        memberAddress.setName(deliveryDto.getName());
+        memberAddress.setAddress(deliveryDto.getAddress()); // 주소 설정
+        memberAddress.setMember(member);
 
-        return userAddressRepository.save(userAddress);
+        return memberAddressRepository.save(memberAddress);
     }
 
     // 특정 사용자의 주문 목록 가져오기
-    public List<Order> getOrdersByUser(Long userId) {
-        User user = userService.findUserById(userId);
-        return orderRepository.findByUser(user);
+    public List<Order> getOrdersByMember(Long memberId) throws Exception {
+        Member member = memberService.findMemberById(memberId);
+        return orderRepository.findByMember(member);
     }
 
     // 특정 상품에 대한 주문 목록 가져오기

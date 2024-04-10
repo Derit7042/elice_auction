@@ -1,7 +1,7 @@
 package elice.eliceauction.domain.auction.entity;
 
 import elice.eliceauction.domain.product.entity.Product;
-import elice.eliceauction.domain.member.entity.User;
+import elice.eliceauction.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,12 +27,12 @@ public class Order {
     private Product product;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     @ManyToOne
-    @JoinColumn(name = "user_address_id") // 사용자 주소와의 관계를 표시하는 외래 키
-    private UserAddress userAddress;
+    @JoinColumn(name = "member_address_id") // 사용자 주소와의 관계를 표시하는 외래 키
+    private MemberAddress memberAddress;
 
 
     @Column(name = "date")
@@ -43,10 +43,10 @@ public class Order {
     @Column(name = "status")
     private String status;
 
-    public Order(Product product, User user, UserAddress userAddress) {
+    public Order(Product product, Member member, MemberAddress memberAddress) {
         this.product = product;
-        this.user = user;
-        this.userAddress = userAddress;
+        this.member = member;
+        this.memberAddress = memberAddress;
         this.date = LocalDateTime.now(); // 주문 생성 시 현재 시간 설정
     }
 
