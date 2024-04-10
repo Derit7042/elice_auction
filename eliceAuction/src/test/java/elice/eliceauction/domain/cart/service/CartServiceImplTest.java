@@ -4,23 +4,17 @@ import elice.eliceauction.domain.cart.entity.Cart;
 import elice.eliceauction.domain.cart.entity.CartItem;
 import elice.eliceauction.domain.cart.repository.CartItemRepository;
 import elice.eliceauction.domain.cart.repository.CartRepository;
-import elice.eliceauction.domain.product.entity.Product;
 import elice.eliceauction.domain.product.repository.ProductRepository;
-import elice.eliceauction.domain.product.service.ProductService;
-import elice.eliceauction.domain.user.entity.User;
-import elice.eliceauction.domain.user.entity.UserGrade;
-import elice.eliceauction.domain.user.repository.UserRepository;
+import elice.eliceauction.domain.member.entity.User;
+import elice.eliceauction.domain.member.entity.UserGrade;
+import elice.eliceauction.domain.member.repository.UserRepository;
 import elice.eliceauction.exception.cart.InvalidCartException;
 import elice.eliceauction.exception.cart.InvalidCartItemException;
 import jakarta.transaction.Transactional;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 

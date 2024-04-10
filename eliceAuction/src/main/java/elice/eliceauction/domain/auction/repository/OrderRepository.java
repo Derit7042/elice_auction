@@ -2,7 +2,7 @@ package elice.eliceauction.domain.auction.repository;
 
 import elice.eliceauction.domain.auction.entity.Order;
 import elice.eliceauction.domain.product.entity.Product;
-import elice.eliceauction.domain.user.entity.User;
+import elice.eliceauction.domain.member.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;

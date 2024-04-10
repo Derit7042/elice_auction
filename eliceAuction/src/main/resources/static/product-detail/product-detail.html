@@ -1,106 +1,131 @@
+<!--<!DOCTYPE html>-->
+<!--<html>-->
+<!--  <head>-->
+<!--    <meta charset="utf-8" />-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1" />-->
+<!--    <title>Shopping Mall</title>-->
+<!--    &lt;!&ndash; 아이콘 &ndash;&gt;-->
+<!--    <link-->
+<!--      rel="icon"-->
+<!--      type="image/png"-->
+<!--      sizes="16x16"-->
+<!--      href="/elice-rabbit-favicon.png"-->
+<!--    />-->
+<!--    &lt;!&ndash; bulma css 관련 &ndash;&gt;-->
+<!--    <link-->
+<!--      rel="stylesheet"-->
+<!--      href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css"-->
+<!--    />-->
+<!--    &lt;!&ndash; 폰트 어썸: 아이콘 &ndash;&gt;-->
+<!--    <script-->
+<!--      defer-->
+<!--      src="https://kit.fontawesome.com/9daa42bcef.js"-->
+<!--      crossorigin="anonymous"-->
+<!--    ></script>-->
+<!--    &lt;!&ndash; AWS S3 사용하기 위한 파일 &ndash;&gt;-->
+<!--    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.410.0.min.js"></script>-->
+<!--    &lt;!&ndash; 커스텀 css, js &ndash;&gt;-->
+<!--    <link rel="stylesheet" href="/product-detail/product-detail.css" />-->
+<!--    <script src="/product-detail/product-detail.js" type="module" defer></script>-->
+<!--    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>-->
+<!--  </head>-->
+<!--  <body>-->
+<!--    &lt;!&ndash; 헤더 &ndash;&gt;-->
+<!--    <nav class="navbar" role="navigation" aria-label="main navigation">-->
+<!--      <div class="container mt-3">-->
+<!--        <div class="navbar-brand">-->
+<!--          <a class="navbar-item" href="/">-->
+<!--            <img src="/elice-rabbit.png" width="30" height="30" />-->
+<!--            <span class="has-text-link">Shopping Mall</span>-->
+<!--          </a>-->
+
+<!--          <a-->
+<!--            role="button"-->
+<!--            class="navbar-burger"-->
+<!--            aria-label="menu"-->
+<!--            aria-expanded="false"-->
+<!--            data-target="navbarBasicExample"-->
+<!--          >-->
+<!--            <span aria-hidden="true"></span>-->
+<!--            <span aria-hidden="true"></span>-->
+<!--            <span aria-hidden="true"></span>-->
+<!--          </a>-->
+<!--        </div>-->
+
+<!--        <div class="navbar-end breadcrumb my-auto" aria-label="breadcrumbs">-->
+<!--          <ul id="navbar">-->
+<!--            <li>-->
+<!--              <a href="/cart" aria-current="page">-->
+<!--                <span class="icon">-->
+<!--                  <i class="fas fa-cart-shopping"></i>-->
+<!--                </span>-->
+<!--                <span>카트</span>-->
+<!--              </a>-->
+<!--            </li>-->
+<!--          </ul>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </nav>-->
+
+<!--    &lt;!&ndash; 제품 상세 설명 카드 &ndash;&gt;-->
+<!--&lt;!&ndash;    <section class="section">&ndash;&gt;-->
+<!--&lt;!&ndash;      <div class="container">&ndash;&gt;-->
+<!--&lt;!&ndash;        <div class="tile is-ancestor product-detail-card">&ndash;&gt;-->
+<!--&lt;!&ndash;          <div class="tile is-6 is-parent">&ndash;&gt;-->
+<!--&lt;!&ndash;            <div class="tile is-child box product-image">&ndash;&gt;-->
+<!--&lt;!&ndash;              <figure class="image is-sqaure">&ndash;&gt;-->
+<!--&lt;!&ndash;                <img id="productImageTag" src="" />&ndash;&gt;-->
+<!--&lt;!&ndash;              </figure>&ndash;&gt;-->
+<!--&lt;!&ndash;            </div>&ndash;&gt;-->
+<!--&lt;!&ndash;          </div>&ndash;&gt;-->
+<!--&lt;!&ndash;          <div class="tile is-parent is-vertical">&ndash;&gt;-->
+<!--&lt;!&ndash;            <div class="tile is-child box product-detail">&ndash;&gt;-->
+<!--&lt;!&ndash;              <div class="tabs">&ndash;&gt;-->
+<!--&lt;!&ndash;                <ul>&ndash;&gt;-->
+<!--&lt;!&ndash;                  <li id="manufacturerTag"></li>&ndash;&gt;-->
+<!--&lt;!&ndash;                </ul>&ndash;&gt;-->
+<!--&lt;!&ndash;              </div>&ndash;&gt;-->
+<!--&lt;!&ndash;              <div class="content">&ndash;&gt;-->
+<!--&lt;!&ndash;                <p class="subtitle is-3 is-family-monospace" id="titleTag"></p>&ndash;&gt;-->
+<!--&lt;!&ndash;                <h1 id="priceTag"></h1>&ndash;&gt;-->
+<!--&lt;!&ndash;                <p class="detail-description" id="detailDescriptionTag"></p>&ndash;&gt;-->
+<!--&lt;!&ndash;              </div>&ndash;&gt;-->
+<!--&lt;!&ndash;            </div>&ndash;&gt;-->
+<!--&lt;!&ndash;            <div class="tile is-child box buttons-container">&ndash;&gt;-->
+<!--&lt;!&ndash;              <button class="button is-warning" id="addToCartButton">&ndash;&gt;-->
+<!--&lt;!&ndash;                장바구니 추가하기&ndash;&gt;-->
+<!--&lt;!&ndash;              </button>&ndash;&gt;-->
+<!--&lt;!&ndash;              <button class="button is-info ml-2" id="purchaseButton">&ndash;&gt;-->
+<!--&lt;!&ndash;                바로 구매하기&ndash;&gt;-->
+<!--&lt;!&ndash;              </button>&ndash;&gt;-->
+<!--&lt;!&ndash;            </div>&ndash;&gt;-->
+<!--&lt;!&ndash;          </div>&ndash;&gt;-->
+<!--&lt;!&ndash;        </div>&ndash;&gt;-->
+<!--&lt;!&ndash;      </div>&ndash;&gt;-->
+<!--&lt;!&ndash;    </section>&ndash;&gt;-->
+<!--        <table id="productTable">-->
+<!--          <tr>-->
+<!--            <td>title</td>-->
+<!--            <td>brief</td>-->
+<!--            <td>price</td>-->
+<!--            <td>pictureLink</td>-->
+<!--          </tr>-->
+<!--        </table>-->
+<!--  </body>-->
+<!--</html>-->
+
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Shopping Mall</title>
-    <!-- 아이콘 -->
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="16x16"
-      href="/elice-rabbit-favicon.png"
-    />
-    <!-- bulma css 관련 -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css"
-    />
-    <!-- 폰트 어썸: 아이콘 -->
-    <script
-      defer
-      src="https://kit.fontawesome.com/9daa42bcef.js"
-      crossorigin="anonymous"
-    ></script>
-    <!-- AWS S3 사용하기 위한 파일 -->
-    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.410.0.min.js"></script>
-    <!-- 커스텀 css, js -->
-    <link rel="stylesheet" href="/product-detail/product-detail.css" />
-    <script src="/product-detail/product-detail.js" type="module" defer></script>
-  </head>
-  <body>
-    <!-- 헤더 -->
-    <nav class="navbar" role="navigation" aria-label="main navigation">
-      <div class="container mt-3">
-        <div class="navbar-brand">
-          <a class="navbar-item" href="/">
-            <img src="/elice-rabbit.png" width="30" height="30" />
-            <span class="has-text-link">Shopping Mall</span>
-          </a>
-
-          <a
-            role="button"
-            class="navbar-burger"
-            aria-label="menu"
-            aria-expanded="false"
-            data-target="navbarBasicExample"
-          >
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-          </a>
-        </div>
-
-        <div class="navbar-end breadcrumb my-auto" aria-label="breadcrumbs">
-          <ul id="navbar">
-            <li>
-              <a href="/cart" aria-current="page">
-                <span class="icon">
-                  <i class="fas fa-cart-shopping"></i>
-                </span>
-                <span>카트</span>
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-
-    <!-- 제품 상세 설명 카드 -->
-    <section class="section">
-      <div class="container">
-        <div class="tile is-ancestor product-detail-card">
-          <div class="tile is-6 is-parent">
-            <div class="tile is-child box product-image">
-              <figure class="image is-sqaure">
-                <img id="productImageTag" src="" />
-              </figure>
-            </div>
-          </div>
-          <div class="tile is-parent is-vertical">
-            <div class="tile is-child box product-detail">
-              <div class="tabs">
-                <ul>
-                  <li id="manufacturerTag"></li>
-                </ul>
-              </div>
-              <div class="content">
-                <p class="subtitle is-3 is-family-monospace" id="titleTag"></p>
-                <h1 id="priceTag"></h1>
-                <p class="detail-description" id="detailDescriptionTag"></p>
-              </div>
-            </div>
-            <div class="tile is-child box buttons-container">
-              <button class="button is-warning" id="addToCartButton">
-                장바구니 추가하기
-              </button>
-              <button class="button is-info ml-2" id="purchaseButton">
-                바로 구매하기
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  </body>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Detail</title>
+</head>
+<body>
+<div id="productDetail">
+  <!-- 제품 정보가 여기에 표시될 것입니다. -->
+</div>
+<script src="product-detail.js" type="module" defer></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</body>
 </html>

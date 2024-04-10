@@ -3,8 +3,7 @@ package elice.eliceauction.domain.product.service;
 import elice.eliceauction.domain.product.dto.ProductDto;
 import elice.eliceauction.domain.product.entity.Product;
 import elice.eliceauction.domain.product.repository.ProductRepository;
-import elice.eliceauction.domain.user.repository.UserRepository;
-import elice.eliceauction.domain.user.entity.User;
+import elice.eliceauction.domain.member.repository.UserRepository;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
