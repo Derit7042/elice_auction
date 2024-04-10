@@ -1,7 +1,7 @@
 package elice.eliceauction.domain.cart.service;
 
 import elice.eliceauction.domain.cart.entity.CartItem;
-import elice.eliceauction.domain.user.entity.User;
+import elice.eliceauction.domain.member.entity.User;
 
 import java.util.List;
 

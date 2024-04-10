@@ -1,7 +1,7 @@
 package elice.eliceauction.domain.cart.repository;
 
 import elice.eliceauction.domain.cart.entity.Cart;
-import elice.eliceauction.domain.user.entity.User;
+import elice.eliceauction.domain.member.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

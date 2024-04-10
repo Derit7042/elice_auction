@@ -5,7 +5,7 @@ import elice.eliceauction.domain.cart.entity.CartItem;
 import elice.eliceauction.domain.cart.repository.CartItemRepository;
 import elice.eliceauction.domain.cart.repository.CartRepository;
 import elice.eliceauction.domain.product.service.ProductService;
-import elice.eliceauction.domain.user.entity.User;
+import elice.eliceauction.domain.member.entity.User;
 import elice.eliceauction.exception.cart.DuplicatedCartItemException;
 import elice.eliceauction.exception.cart.InvalidCartItemException;
 import elice.eliceauction.exception.cart.InvalidCartException;
