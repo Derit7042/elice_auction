@@ -1,6 +1,6 @@
 package elice.eliceauction.domain.cart.entity;
 
-import elice.eliceauction.domain.member.entity.User;
+import elice.eliceauction.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,7 +26,7 @@ public class Cart {
     private int count;
 
     @OneToOne
-    @JoinColumn(name = "user_id")// 1:1 단방향
-    User user;
+    @JoinColumn(name = "member_id")// 1:1 단방향
+    Member member;
 
 }
