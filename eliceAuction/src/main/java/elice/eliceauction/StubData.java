@@ -1,5 +1,6 @@
 package elice.eliceauction;
 
+import elice.eliceauction.domain.auction.entity.DeliveryDto;
 import elice.eliceauction.domain.auction.entity.OrderDto;
 import elice.eliceauction.domain.auction.service.OrderService;
 import elice.eliceauction.domain.cart.service.CartService;
@@ -61,9 +62,13 @@ public class StubData implements CommandLineRunner {
     }
 
     public void OrderStubData(){
-        
+        DeliveryDto deliveryDto = new DeliveryDto();
+
         for(long i=1; i<=10; i++){// 주소 정보 생성
-            orderService.createDeliveryInfo("name"+i, "address"+i, i);
+            deliveryDto.setName("Name" + i);
+            deliveryDto.setAddress("Address" + i);
+            deliveryDto.setUserId(i);
+            orderService.createDeliveryInfo(deliveryDto);
         }
 
         OrderDto dto = new OrderDto();
