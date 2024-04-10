@@ -1,63 +1,91 @@
 package elice.eliceauction.domain.product.service;
 
+import elice.eliceauction.domain.product.dto.ProductDto;
 import elice.eliceauction.domain.product.entity.Product;
 import elice.eliceauction.domain.product.repository.ProductRepository;
-import lombok.RequiredArgsConstructor;
+import elice.eliceauction.domain.member.repository.UserRepository;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
+@Slf4j
 @Service
 @Transactional
-@RequiredArgsConstructor
 public class ProductService {
 
-    private final ProductRepository productRepository;
+    @Autowired
+    private ProductRepository productRepository; // 상품 리포지토리 객체 주입
+    @Autowired
+    UserRepository userRepository;
 
-    // DB 에 있는 상품의 이름 반환
-    public String getProductTitleById(Product product) {
-        return productRepository.findById(product.getId()).get().getTitle();
+
+    public List<Product> index() {
+        return productRepository.findAll();
     }
 
-    // DB 에 있는 상품에 대한 간단한 설명 반환
-    public String getBriefById(Product product) {
-        return productRepository.findById(product.getId()).get().getBrief();
+    public Product show(Long id) {
+        Product product = productRepository.findById(id).orElse(null);
+
+        if (product != null) {
+            product.setWatchCount(product.getWatchCount() + 1); // 조회수 증가
+            productRepository.save(product);
+        }
+        return product;
     }
 
-    // DB 에 있는 상품의 그림 링크 반환
-    public String getPictureLinkById(Product product) {
-        return productRepository.findById(product.getId()).get().getPictureLink();
+    public Product create(ProductDto dto /*, String username */) {
+//        Optional<User> optionalUser = Optional.ofNullable(userRepository.findByUsername(username));
+//        if (optionalUser.isEmpty()) {
+//            log.error("User with username {} not found", username);
+//            return null;
+//        }
+//        User user = optionalUser.get();
+
+        Product product = dto.toEntity();
+//        product.setSellerId(user.getId());
+//        product.setSellerName(user.getUsername());
+        if (product.getId() != null) {
+            return null;
+        }
+        return productRepository.save(product);
     }
 
-    // DB 에 있는 상품의 조회수 반환
-    public Long getWatchCountById(Product product) {
-        return productRepository.findById(product.getId()).get().getWatchCount();
+    public Product update(Long id, ProductDto dto) {
+        // 1. DTO -> 엔티티 변환하기
+        Product product = dto.toEntity();
+        log.info("id: {}, product: {}", id, product.toString());
+
+        // 2. 타깃 조회하기
+        Product target = productRepository.findById(id).orElse(null);
+
+        // 3. 잘못된 요청 처리하기
+        if (target == null || id != product.getId()) {
+            // 400, 잘못된 요청 응답
+            log.info("잘못된 요청 id: {}, product: {}", id, product.toString());
+            return null;
+        }
+
+        // 4. 업데이트 및 정상 응답(200)하기
+        target.patch(product);
+        Product updated = productRepository.save(target);
+        return updated;
     }
 
-    // DB 에 있는 상품의 판매자 이름 반환
-    public String getSellerById(User user) {
-        return productRepository.findById(user.getId()).get().getName();
-    }
+    public Product delete(Long id) {
+        // 1. 대상 찾기
+        Product target = productRepository.findById(id).orElse(null);
 
-    // DB 에 있는 상품의 구매자 이름 반환
-    public String getBuyerById(User user) {
-        return productRepository.findById(user.getId()).get().getName();
-    }
+        // 2. 잘못된 요청 처리하기
+        if (target == null) {
+            return null;
+        }
 
-    // DB 에 있는 상품의 가격 반환
-    public Long getProductPriceById(Product product) {
-        return productRepository.findById(product.getId()).get().getPrice();
+        // 3. 대상 삭제하기
+        productRepository.delete(target);
+        return target;
     }
-
-    // DB 에 있는 상품 구매자 주소 ID 반환
-    public int getUserAddressIDById(UserAddress userAddress) {
-        return productRepository.findById(userAddress.getId()).get().getId();
-    }
-
-    // DB 에 있는 상품 등록일 반환
-    public LocalDateTime getEnrollDateById(Product product) {
-        return productRepository.findById(product.getId()).get().getDate();
-    }
-
 }

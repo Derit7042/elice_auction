@@ -1,13 +1,11 @@
 package elice.eliceauction.domain.auction.entity;
 
-import elice.eliceauction.domain.product.entity.Product;
-import elice.eliceauction.domain.user.entity.User;
+import elice.eliceauction.domain.member.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.Id;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,8 +23,8 @@ public class UserAddress {
     @Column(name = "name")
     private String name;
 
-    @OneToOne(mappedBy = "delivery")
-    private Order order;
+    @OneToMany(mappedBy = "userAddress")
+    private List<Order> orders = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -35,11 +33,5 @@ public class UserAddress {
     @Column(name = "address", nullable = false)
     private String address;
 
-    public void UserAddress(String name, User user, String address){
-        this.name = name;
-        this.user = user;
-        this.address = address;
-    }
-    @OneToOne(mappedBy = "user_address_id")
-    private Product product;
 }
+
