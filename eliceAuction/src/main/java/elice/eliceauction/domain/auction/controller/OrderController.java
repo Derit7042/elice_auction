@@ -2,12 +2,11 @@ package elice.eliceauction.domain.auction.controller;
 
 import elice.eliceauction.domain.auction.entity.Order;
 import elice.eliceauction.domain.auction.entity.OrderDto;
-import elice.eliceauction.domain.auction.entity.UserAddress;
 import elice.eliceauction.domain.auction.service.OrderService;
 import elice.eliceauction.domain.cart.entity.CartItem;
 import elice.eliceauction.domain.cart.service.CartService;
-import elice.eliceauction.domain.user.entity.User;
-import elice.eliceauction.domain.user.service.UserService;
+import elice.eliceauction.domain.member.entity.User;
+import elice.eliceauction.domain.member.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

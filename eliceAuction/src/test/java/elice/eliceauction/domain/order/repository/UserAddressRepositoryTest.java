@@ -2,12 +2,11 @@ package elice.eliceauction.domain.order.repository;
 
 import elice.eliceauction.domain.auction.entity.UserAddress;
 import elice.eliceauction.domain.auction.repository.UserAddressRepository;
-import elice.eliceauction.domain.user.entity.User;
-import elice.eliceauction.domain.user.repository.UserRepository;
+import elice.eliceauction.domain.member.entity.User;
+import elice.eliceauction.domain.member.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
