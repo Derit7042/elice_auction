@@ -5,9 +5,8 @@ import elice.eliceauction.domain.cart.entity.CartItem;
 import elice.eliceauction.domain.cart.repository.CartItemRepository;
 import elice.eliceauction.domain.cart.repository.CartRepository;
 import elice.eliceauction.domain.product.repository.ProductRepository;
-import elice.eliceauction.domain.member.entity.User;
-import elice.eliceauction.domain.member.entity.UserGrade;
-import elice.eliceauction.domain.member.repository.UserRepository;
+import elice.eliceauction.domain.member.entity.Member;
+import elice.eliceauction.domain.member.repository.MemberRepository;
 import elice.eliceauction.exception.cart.InvalidCartException;
 import elice.eliceauction.exception.cart.InvalidCartItemException;
 import jakarta.transaction.Transactional;
@@ -28,7 +27,7 @@ class CartServiceImplTest {
     CartService cartService;
 
     @Autowired
-    UserRepository userRepository;
+    MemberRepository memberRepository;
 
     @Autowired
     private ProductRepository productRepository;
@@ -42,13 +41,13 @@ class CartServiceImplTest {
 //    @BeforeEach
 //    void setUp() throws Exception {
 //        for(long i=1; i<=10; i++){
-//            User user = new User();
-//            user.setUsername("username"+i);
-//            user.setGrade(UserGrade.REGULAR);
-//            user.setPassword("password"+i);
-//            user.setEmail("email@email"+i);
-//            user.setAddress("address"+i);
-//            userRepository.save(user);
+//            Member member = new Member();
+//            member.setMembername("membername"+i);
+//            member.setGrade(MemberGrade.REGULAR);
+//            member.setPassword("password"+i);
+//            member.setEmail("email@email"+i);
+//            member.setAddress("address"+i);
+//            memberRepository.save(member);
 //
 //            Product product = new Product();
 //            product.setTitle("title"+i);
@@ -59,7 +58,7 @@ class CartServiceImplTest {
 //            productRepository.save(product);
 //        }
 //        for(long i=1; i<=10; i++){
-//            cartService.createCart(userRepository.findById(i).get());
+//            cartService.createCart(memberRepository.findById(i).get());
 //        }
 //    }
 
@@ -70,7 +69,7 @@ class CartServiceImplTest {
         List<CartItem> expected = new ArrayList<>();
         for(long i=1; i<=10; i++){
             CartItem cartItem = new CartItem();
-            Cart cart = cartRepository.findByUser(userRepository.findById(1L).orElseThrow(() -> new RuntimeException("사용자 X"))).orElseThrow(()-> new InvalidCartException());
+            Cart cart = cartRepository.findByMember(memberRepository.findById(1L).orElseThrow(() -> new RuntimeException("사용자 X"))).orElseThrow(()-> new InvalidCartException());
             cartItem.setCart(cart);
             cartItem.setProduct(productRepository.findById(i).get());
 
@@ -81,7 +80,7 @@ class CartServiceImplTest {
         // when
 
         // then
-        assertEquals(expected, cartService.getCarts(userRepository.findById(1L).get()));
+        assertEquals(expected, cartService.getCarts(memberRepository.findById(1L).get()));
     }
 
     @Test
@@ -90,7 +89,7 @@ class CartServiceImplTest {
         List<CartItem> expected = new ArrayList<>();
         for(long i=1; i<=10; i++){
 
-            Cart cart = cartRepository.findByUser(userRepository.findById(i).get()).get();
+            Cart cart = cartRepository.findByMember(memberRepository.findById(i).get()).get();
             CartItem cartItem = new CartItem();
 
             cartItem.setCart(cart);
@@ -104,8 +103,8 @@ class CartServiceImplTest {
 
         // then
         for(long i=1; i<=10; i++){
-            if(userRepository.findById(i).isPresent()){
-                assertEquals(expected.get((int)i-1), cartService.getCart(userRepository.findById(i).get(), i) );
+            if(memberRepository.findById(i).isPresent()){
+                assertEquals(expected.get((int)i-1), cartService.getCart(memberRepository.findById(i).get(), i) );
             }else{
                 System.out.println("empty!");
             }
@@ -119,7 +118,7 @@ class CartServiceImplTest {
         // given
         for(long i=1; i<=5; i++){// 1부터 5까지만 장바구니에 상품 넣음
 
-            Cart cart = cartRepository.findByUser(userRepository.findById(i).get()).get();
+            Cart cart = cartRepository.findByMember(memberRepository.findById(i).get()).get();
             cart.setCount(cart.getCount() + 1);
             CartItem cartItem = new CartItem();
 
@@ -133,11 +132,11 @@ class CartServiceImplTest {
 
         // then
         for(long i=1; i<=5; i++){
-            assertEquals(false, cartService.isEmpty(userRepository.findById(i).get()) );
+            assertEquals(false, cartService.isEmpty(memberRepository.findById(i).get()) );
         }
 
         for(long i=6; i<=10; i++){
-            assertEquals(true, cartService.isEmpty(userRepository.findById(i).get()) );
+            assertEquals(true, cartService.isEmpty(memberRepository.findById(i).get()) );
         }
 
     }
@@ -147,7 +146,7 @@ class CartServiceImplTest {
         // given
         for(long i=1; i<=5; i++){// id=1인 회원에게 상품 5개 입력
 
-            Cart cart = cartRepository.findByUser(userRepository.findById(1L).get()).get();
+            Cart cart = cartRepository.findByMember(memberRepository.findById(1L).get()).get();
             cart.setCount(cart.getCount() + 1);
             CartItem cartItem = new CartItem();
 
@@ -158,12 +157,12 @@ class CartServiceImplTest {
         }
 
         // when
-        cartService.clear(userRepository.findById(1L).get());
+        cartService.clear(memberRepository.findById(1L).get());
 
         // then
-        Cart cart = cartRepository.findByUser(userRepository.findById(1L).get()).get();
+        Cart cart = cartRepository.findByMember(memberRepository.findById(1L).get()).get();
         assertTrue(cartItemRepository.findAllByCart(cart).isEmpty());
-        assertTrue(cartService.isEmpty(userRepository.findById(1L).get()));
+        assertTrue(cartService.isEmpty(memberRepository.findById(1L).get()));
 
     }
 
@@ -172,23 +171,23 @@ class CartServiceImplTest {
         // given
         // when
         for(long i=1; i<=5; i++){// id=1인 회원에게 상품 5개 입력
-            cartService.add(userRepository.findById(1L).get(), i);
+            cartService.add(memberRepository.findById(1L).get(), i);
 
         }
 
         // then
-        User user = userRepository.findById(1L).get();
-        Cart cart = cartRepository.findByUser(user).get();
+        Member member = memberRepository.findById(1L).get();
+        Cart cart = cartRepository.findByMember(member).get();
         assertEquals(5, cart.getCount() );
     }
 
     @Test
     void delete() {
         // given
-        User targetUser = userRepository.findById(1L).get();
+        Member targetMember = memberRepository.findById(1L).get();
         for(long i=1; i<=5; i++){// id=1인 회원에게 상품 5개 입력
 
-            Cart cart = cartRepository.findByUser(targetUser).get();
+            Cart cart = cartRepository.findByMember(targetMember).get();
             cart.setCount(cart.getCount() + 1);
             CartItem cartItem = new CartItem();
 
@@ -204,23 +203,23 @@ class CartServiceImplTest {
         * (java.lang.Integer is in module java.base of loader 'bootstrap'; elice.eliceauction.domain.cart.entity.CartItem is in unnamed module of loader 'app')
         * 의 오류가 발생하는데 왜 그런지 모르겠음..
         * */
-        CartItem deleted = cartService.delete(targetUser, 1L);
-        cartService.delete(targetUser, 2L);
+        CartItem deleted = cartService.delete(targetMember, 1L);
+        cartService.delete(targetMember, 2L);
 
-        assertEquals(3, cartRepository.findByUser(targetUser)
+        assertEquals(3, cartRepository.findByMember(targetMember)
                                         .get().getCount());// 상품 갯수 확인
 
-        assertThrows(InvalidCartItemException.class, ()-> cartService.delete(targetUser, 1L) );// 중복삭제 예외
-        assertThrows(RuntimeException.class, ()-> cartService.delete(targetUser, 2L) );// 중복삭제 예외
+        assertThrows(InvalidCartItemException.class, ()-> cartService.delete(targetMember, 1L) );// 중복삭제 예외
+        assertThrows(RuntimeException.class, ()-> cartService.delete(targetMember, 2L) );// 중복삭제 예외
 
     }
 
     @Test
     void getCount() {
         // given
-        User targetUser = userRepository.findById(1L).get();
+        Member targetMember = memberRepository.findById(1L).get();
         for(long i=1; i<=5; i++){// id=1인 회원에게 상품 5개 입력
-//            Cart cart = cartRepository.findByUser(targetUser).get();
+//            Cart cart = cartRepository.findByMember(targetMember).get();
 //            cart.setCount(cart.getCount() + 1);
 //            CartItem cartItem = new CartItem();
 //
@@ -228,14 +227,14 @@ class CartServiceImplTest {
 //            cartItem.setProduct(productRepository.findById(i).get());
 //
 //            cartItemRepository.save(cartItem);
-            cartService.add(targetUser, i);
+            cartService.add(targetMember, i);
         }
 
         // when
 
         //then
-        assertEquals(5, cartService.getCount(targetUser));
-        cartService.delete(targetUser, 4L);
-        assertEquals(4, cartService.getCount(targetUser));
+        assertEquals(5, cartService.getCount(targetMember));
+        cartService.delete(targetMember, 4L);
+        assertEquals(4, cartService.getCount(targetMember));
     }
 }
