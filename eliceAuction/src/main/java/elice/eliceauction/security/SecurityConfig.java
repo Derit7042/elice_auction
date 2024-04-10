@@ -5,6 +5,7 @@ import elice.eliceauction.domain.member.handler.LoginFailureHandler;
 import elice.eliceauction.domain.member.handler.LoginSuccessJWTProvideHandler;
 import elice.eliceauction.domain.member.repository.MemberRepository;
 import elice.eliceauction.domain.member.service.LoginService;
+import elice.eliceauction.security.jwt.authentication.JwtAuthenticationProcessingFilter;
 import elice.eliceauction.security.jwt.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -29,11 +30,6 @@ public class SecurityConfig {
     private final ObjectMapper objectMapper;
     private final MemberRepository memberRepository;
     private final JwtService jwtService;
-    @Bean
-    public PasswordEncoder passwordEncoder(){
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-    }
-
 
 
     @Bean
