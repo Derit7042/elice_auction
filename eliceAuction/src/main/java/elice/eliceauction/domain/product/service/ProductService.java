@@ -3,7 +3,7 @@ package elice.eliceauction.domain.product.service;
 import elice.eliceauction.domain.product.dto.ProductDto;
 import elice.eliceauction.domain.product.entity.Product;
 import elice.eliceauction.domain.product.repository.ProductRepository;
-import elice.eliceauction.domain.member.repository.UserRepository;
+import elice.eliceauction.domain.member.repository.MemberRepository;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository; // 상품 리포지토리 객체 주입
     @Autowired
-    UserRepository userRepository;
+    MemberRepository memberRepository;
 
 
     public List<Product> index() {
@@ -37,17 +37,17 @@ public class ProductService {
         return product;
     }
 
-    public Product create(ProductDto dto /*, String username */) {
-//        Optional<User> optionalUser = Optional.ofNullable(userRepository.findByUsername(username));
-//        if (optionalUser.isEmpty()) {
-//            log.error("User with username {} not found", username);
+    public Product create(ProductDto dto /*, String membername */) {
+//        Optional<Member> optionalMember = Optional.ofNullable(memberRepository.findByMembername(membername));
+//        if (optionalMember.isEmpty()) {
+//            log.error("Member with membername {} not found", membername);
 //            return null;
 //        }
-//        User user = optionalUser.get();
+//        Member member = optionalMember.get();
 
         Product product = dto.toEntity();
-//        product.setSellerId(user.getId());
-//        product.setSellerName(user.getUsername());
+//        product.setSellerId(member.getId());
+//        product.setSellerName(member.getMembername());
         if (product.getId() != null) {
             return null;
         }

@@ -76,8 +76,8 @@ public class ProductApiController {
         LocalDateTime currentDateTime = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
         dto.setDate(currentDateTime);
 
-//        String username = principal.getName();
-//        Product created = productService.create(dto, username);
+//        String membername = principal.getName();
+//        Product created = productService.create(dto, membername);
 
         Product created = productService.create(dto);
         return (created != null) ?

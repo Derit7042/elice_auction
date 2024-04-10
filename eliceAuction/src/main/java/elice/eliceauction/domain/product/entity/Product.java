@@ -51,12 +51,12 @@ public class Product{
     }
 
 //    @OneToOne
-//    @JoinColumn(name = "seller_id", nullable = false) // User 테이블의 id값 참조 (판매자)
-//    private User seller;
+//    @JoinColumn(name = "seller_id", nullable = false) // Member 테이블의 id값 참조 (판매자)
+//    private Member seller;
 
 //    @OneToOne
-//    @JoinColumn(name = "buyer_id", nullable = false) // User 테이블의 id값 참조 (구매자)
-//    private User buyer;
+//    @JoinColumn(name = "buyer_id", nullable = false) // Member 테이블의 id값 참조 (구매자)
+//    private Member buyer;
 
     public void patch(Product product) {
         if (product.title != null)
