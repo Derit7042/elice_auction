@@ -1,8 +1,6 @@
 package elice.eliceauction.domain.order.service;
 
-import elice.eliceauction.domain.auction.entity.Order;
-import elice.eliceauction.domain.auction.entity.OrderDto;
-import elice.eliceauction.domain.auction.entity.UserAddress;
+import elice.eliceauction.domain.auction.entity.*;
 import elice.eliceauction.domain.auction.repository.OrderRepository;
 import elice.eliceauction.domain.auction.repository.UserAddressRepository;
 import elice.eliceauction.domain.auction.service.OrderService;
@@ -175,7 +173,7 @@ public class OrderServiceTest {
 
         // When
         // 주문 수정
-        Order updatedOrder = orderService.updateOrder(order.getId(), userAddress2.getId());
+        Order updatedOrder = orderService.updateOrder(new UpdateOrderDto());
 
         // Then
         assertNotNull(updatedOrder);
@@ -197,7 +195,7 @@ public class OrderServiceTest {
         Long userId = user.getId();
 
         // When
-        UserAddress createdUserAddress = orderService.createDeliveryInfo(name, address, userId);
+        UserAddress createdUserAddress = orderService.createDeliveryInfo(new DeliveryDto() );
 
         // Then
         assertNotNull(createdUserAddress);
