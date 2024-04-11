@@ -8,6 +8,9 @@ import {
 } from "../useful-functions.js";
 import { deleteFromDb, getFromDb, putToDb } from "../indexed-db.js";
 
+import * as Api from "../api.js";
+import * as API from "../api.js";
+
 // 요소(element), input 혹은 상수
 const cartProductsContainer = document.querySelector("#cartProductsContainer");
 const allSelectCheckbox = document.querySelector("#allSelectCheckbox");
@@ -39,119 +42,199 @@ function addAllEvents() {
 // indexedDB의 cart와 order에서 필요한 정보를 가져온 후
 // 요소(컴포넌트)를 만들어 html에 삽입함.
 async function insertProductsfromCart() {
-  const products = await getFromDb("cart");
-  const { selectedIds } = await getFromDb("order", "summary");
 
-  products.forEach(async (product) => {
+  // $.ajax({
+  //   type: 'GET',
+  //   url: 'http://localhost:8080/api/cart/1' + productId,
+  //   dataType: 'json', // 응답 데이터 타입을 JSON으로 지정합니다.
+  //   success: function(response) {
+  //     // 받은 JSON 데이터를 콘솔에 출력합니다.
+  //     console.log(response);
+  //
+  //     // JSON 데이터를 HTML로 변환하여 화면에 표시합니다.
+  //     var productDetail = $('#productDetail');
+  //     productDetail.html(`
+  //               <div>
+  //                   <p>ID: ${response.id}</p>
+  //                   <p>Title: ${response.title}</p>
+  //                   <p>Brief: ${response.brief}</p>
+  //                   <p>Price: ${response.price}</p>
+  //                   <p>Watch Count: ${response.watchCount}</p>
+  //                   <p>Date: ${response.date}</p>
+  //                   <p>Picture Link: <img src="${response.pictureLink}" alt="Product Image"></p>
+  //               </div>
+  //           `);
+  //   },
+  //   error: function(xhr, status, error) {
+  //     // 오류가 발생한 경우 콘솔에 오류를 출력합니다.
+  //     console.error('Error:', error);
+  //   }
+  // });
+  const products = await API.get("http://localhost:8080/api/cart/1");
+
+  for (const product of products) {
     // 객체 destructuring
-    const { _id, title, quantity, imageKey, price } = product;
-    const imageUrl = await getImageUrl(imageKey);
-
-    const isSelected = selectedIds.includes(_id);
+    const {productId, title, price, pictureLink } = product;
+    console.log("product ID: " + productId)
+    console.log("title: " + title);
+    console.log("price: " + price);
+    console.log("pictureLink: " + pictureLink);
 
     cartProductsContainer.insertAdjacentHTML(
-      "beforeend",
-      `
-        <div class="cart-product-item" id="productItem-${_id}">
-          <label class="checkbox">
-            <input type="checkbox" id="checkbox-${_id}" ${
-        isSelected ? "checked" : ""
-      } />
-          </label>
-          <button class="delete-button" id="delete-${_id}">
-            <span class="icon">
-              <i class="fas fa-trash-can"></i>
-            </span>
-          </button>
-          <figure class="image is-96x96">
-            <img
-              id="image-${_id}"
-              src="${imageUrl}"
-              alt="product-image"
-            />
-          </figure>
-          <div class="content">
-            <p id="title-${_id}">${compressString(title)}</p>
-            <div class="quantity">
-              <button 
-                class="button is-rounded" 
-                id="minus-${_id}" 
-                ${quantity <= 1 ? "disabled" : ""}
-                ${isSelected ? "" : "disabled"}
-              >
-                <span class="icon is-small">
-                  <i class="fas fa-thin fa-minus"></i>
-                </span>
-              </button>
-              <input
-                class="input"
-                id="quantityInput-${_id}"
-                type="number"
-                min="1"
-                max="99"
-                value="${quantity}"
-                ${isSelected ? "" : "disabled"}
-              />
-              <button 
-                class="button is-rounded" 
-                id="plus-${_id}"
-                ${quantity >= 99 ? "disabled" : ""}
-                ${isSelected ? "" : "disabled"}
-              >
-                <span class="icon">
-                  <i class="fas fa-lg fa-plus"></i>
-                </span>
-              </button>
+        "beforeend",
+
+`
+    <div class="card mb-3">
+      
+      <div class="card-body">
+        
+        <div class="d-flex justify-content-between">
+          
+          <div class="d-flex flex-row align-items-center">
+            
+            <div>
+               <img src=${product.pictureLink} class="img-fluid
+              rounded-3" alt="Shopping item" style="width: 65px;">
             </div>
+            
+            <div class="ms-3">
+              
+              <p id="title-${productId}">${title}</p>
+              
+              <p class="small mb-0">27세, INTJ</p>
+              
+            </div>
+            
           </div>
-          <div class="calculation">
-            <p id="unitPrice-${_id}">${addCommas(price)}원</p>
-            <p>
-              <span class="icon">
-                <i class="fas fa-thin fa-xmark"></i>
-              </span>
-            </p>
-            <p id="quantity-${_id}">${quantity}</p>
-            <p>
-              <span class="icon">
-                <i class="fas fa-thin fa-equals"></i>
-              </span>
-            </p>
-            <p id="total-${_id}">${addCommas(quantity * price)}원</p>
+          
+          <div class="d-flex flex-row align-items-center">
+            
+            <div style="width: 50px">
+              
+              <h5 class="fw-normal mb-0">1</h5>
+              
+            </div>
+            
+            <div style="width: 80px">
+              
+              <h5 class="mb-0" id="unitPrice-${productId}">${price} 원</h5>
+              
+            </div>
+            
+            <a href="#!" style="color: #cecece"><i class="fas fa-trash-alt"></i></a
+            >
           </div>
+          
         </div>
-      `
+        
+      </div>
+      
+    </div>
+    `
+
+
+
+      // `
+      //   <div class="cart-product-item" id="productItem-${productId}">
+      //     <label class="checkbox">
+      //       <input type="checkbox" id="checkbox-${productId}" ${
+      //   isSelected ? "checked" : ""
+      // } />
+      //     </label>
+      //     <button class="delete-button" id="delete-${productId}">
+      //       <span class="icon">
+      //         <i class="fas fa-trash-can"></i>
+      //       </span>
+      //     </button>
+      //     <figure class="image is-96x96">
+      //       <img
+      //         id="image-${productId}"
+      //         src="${imageUrl}"
+      //         alt="product-image"
+      //       />
+      //     </figure>
+      //     <div class="content">
+      //       <p id="title-${productId}">${compressString(title)}</p>
+      //       <div class="quantity">
+      //         <button
+      //           class="button is-rounded"
+      //           id="minus-${productId}"
+      //           ${quantity <= 1 ? "disabled" : ""}
+      //           ${isSelected ? "" : "disabled"}
+      //         >
+      //           <span class="icon is-small">
+      //             <i class="fas fa-thin fa-minus"></i>
+      //           </span>
+      //         </button>
+      //         <input
+      //           class="input"
+      //           id="quantityInput-${productId}"
+      //           type="number"
+      //           min="1"
+      //           max="99"
+      //           value="${quantity}"
+      //           ${isSelected ? "" : "disabled"}
+      //         />
+      //         <button
+      //           class="button is-rounded"
+      //           id="plus-${productId}"
+      //           ${quantity >= 99 ? "disabled" : ""}
+      //           ${isSelected ? "" : "disabled"}
+      //         >
+      //           <span class="icon">
+      //             <i class="fas fa-lg fa-plus"></i>
+      //           </span>
+      //         </button>
+      //       </div>
+      //     </div>
+      //     <div class="calculation">
+      //       <p id="unitPrice-${productId}">${addCommas(price)}원</p>
+      //       <p>
+      //         <span class="icon">
+      //           <i class="fas fa-thin fa-xmark"></i>
+      //         </span>
+      //       </p>
+      //       <p id="quantity-${productId}">${quantity}</p>
+      //       <p>
+      //         <span class="icon">
+      //           <i class="fas fa-thin fa-equals"></i>
+      //         </span>
+      //       </p>
+      //       <p id="total-${productId}">${addCommas(quantity * price)}원</p>
+      //     </div>
+      //   </div>
+      // `
     );
 
     // 각종 이벤트 추가
-    document
-      .querySelector(`#delete-${_id}`)
-      .addEventListener("click", () => deleteItem(_id));
-
-    document
-      .querySelector(`#checkbox-${_id}`)
-      .addEventListener("change", () => toggleItem(_id));
-
-    document
-      .querySelector(`#image-${_id}`)
-      .addEventListener("click", navigate(`/product/detail?id=${_id}`));
-
-    document
-      .querySelector(`#title-${_id}`)
-      .addEventListener("click", navigate(`/product/detail?id=${_id}`));
-
-    document
-      .querySelector(`#plus-${_id}`)
-      .addEventListener("click", () => increaseItemQuantity(_id));
-
-    document
-      .querySelector(`#minus-${_id}`)
-      .addEventListener("click", () => decreaseItemQuantity(_id));
-
-    document
-      .querySelector(`#quantityInput-${_id}`)
-      .addEventListener("change", () => handleQuantityInput(_id));
-  });
+    // document
+    //   .querySelector(`#delete-${productId}`)
+    //   .addEventListener("click", () => deleteItem(productId));
+    //
+    // document
+    //   .querySelector(`#checkbox-${productId}`)
+    //   .addEventListener("change", () => toggleItem(productId));
+    //
+    // document
+    //   .querySelector(`#image-${productId}`)
+    //   .addEventListener("click", navigate(`/product/detail?id=${productId}`));
+    //
+    // document
+    //   .querySelector(`#title-${productId}`)
+    //   .addEventListener("click", navigate(`/product/detail?id=${productId}`));
+    //
+    // document
+    //   .querySelector(`#plus-${productId}`)
+    //   .addEventListener("click", () => increaseItemQuantity(productId));
+    //
+    // document
+    //   .querySelector(`#minus-${productId}`)
+    //   .addEventListener("click", () => decreaseItemQuantity(productId));
+    //
+    // document
+    //   .querySelector(`#quantityInput-${productId}`)
+    //   .addEventListener("change", () => handleQuantityInput(productId));
+  }
 }
 
 async function toggleItem(id) {
@@ -455,12 +538,12 @@ async function updateOrderSummary(id, type) {
     }
 
     if (isRemoveTemp) {
-      data.selectedIds = data.selectedIds.filter((_id) => _id !== id);
+      data.selectedIds = data.selectedIds.filter((productId) => productId !== id);
     }
 
     if (isRemovePermanent) {
-      data.ids = data.ids.filter((_id) => _id !== id);
-      data.selectedIds = data.selectedIds.filter((_id) => _id !== id);
+      data.ids = data.ids.filter((productId) => productId !== id);
+      data.selectedIds = data.selectedIds.filter((productId) => productId !== id);
     }
 
     if (!isDeleteWithoutChecked) {
