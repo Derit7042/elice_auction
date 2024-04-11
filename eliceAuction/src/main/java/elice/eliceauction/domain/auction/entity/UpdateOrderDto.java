@@ -8,6 +8,7 @@ import lombok.Setter;
 public class UpdateOrderDto {
     private Long orderId;
     private Long memberAddressId;
+    private Long status;
 
     public UpdateOrderDto() {
 
