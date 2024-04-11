@@ -8,6 +8,7 @@ import elice.eliceauction.domain.member.service.LoginService;
 import elice.eliceauction.security.jwt.authentication.JwtAuthenticationProcessingFilter;
 import elice.eliceauction.security.jwt.service.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,6 +16,7 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -39,14 +41,17 @@ public class SecurityConfig {
                 .formLogin((auth) -> auth.disable()) // Form 로그인 방식 disable
                 .httpBasic((auth) -> auth.disable()) // HTTP Basic 인증 방식 disable
                 .authorizeRequests((auth) -> auth
-                        .requestMatchers("/api/user/**").permitAll() // 회원가입 및 로그인 페이지는 인증 없이 접근 가능
-                        .anyRequest().authenticated()) // 그 외 모든 요청은 로그인 인증 필요
+                        .requestMatchers("/api/member/**", "/","/css/**", "/js/**", "images/**").permitAll() // 회원가입 및 로그인 페이지는 인증 없이 접근 가능
+                        .anyRequest().permitAll()) // 그 외 모든 요청은 로그인 인증 필요
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)); // 세션 설정: STATELESS
 
         http.addFilterAfter(jsonUsernamePasswordLoginFilter(), LogoutFilter.class);
+
+
         return http.build();
     }
+
 
     @Bean
     public PasswordEncoder passwordEncoder(){

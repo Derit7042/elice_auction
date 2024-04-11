@@ -52,7 +52,7 @@ async function handleSubmit(e) {
   try {
     const data = { username, email, password };
 
-    await Api.post("/users/register", data);
+    await Api.post("/members/register", data);
 
     alert(`정상적으로 회원가입되었습니다.`);
     // 로그인 페이지 이동
