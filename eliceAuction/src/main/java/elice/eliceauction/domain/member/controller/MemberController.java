@@ -21,6 +21,12 @@ public class MemberController {
     private final MemberService memberService;
 
 
+
+    @GetMapping("/login")
+    public String loginP() {
+        // 정적 리소스 폴더 내의 login.html 파일로 리다이렉션
+        return "redirect:/login/login.html";
+    }
     /**
      * 회원가입
      */

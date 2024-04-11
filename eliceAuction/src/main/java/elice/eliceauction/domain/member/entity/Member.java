@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-@Table(name = "MEMBER")
+@Table(name = "Member")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
@@ -20,6 +20,7 @@ public class Member {
     private String username;//아이디
 
     private String password;//비밀번호
+
 
     @Column(nullable = false, length = 30)
     private String name;//이름(실명)
