@@ -5,6 +5,7 @@ import elice.eliceauction.domain.product.entity.Product;
 import elice.eliceauction.domain.product.repository.ProductRepository;
 import elice.eliceauction.domain.member.repository.MemberRepository;
 
+import elice.eliceauction.exception.product.ResourceNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,8 @@ public class ProductService {
     }
 
     public Product show(Long id) {
-        Product product = productRepository.findById(id).orElse(null);
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException());
 
         if (product != null) {
             product.setWatchCount(product.getWatchCount() + 1); // 조회수 증가
@@ -60,7 +62,8 @@ public class ProductService {
         log.info("id: {}, product: {}", id, product.toString());
 
         // 2. 타깃 조회하기
-        Product target = productRepository.findById(id).orElse(null);
+        Product target = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException());
 
         // 3. 잘못된 요청 처리하기
         if (target == null || id != product.getId()) {
@@ -77,7 +80,8 @@ public class ProductService {
 
     public Product delete(Long id) {
         // 1. 대상 찾기
-        Product target = productRepository.findById(id).orElse(null);
+        Product target = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException());
 
         // 2. 잘못된 요청 처리하기
         if (target == null) {
