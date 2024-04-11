@@ -7,6 +7,8 @@ import elice.eliceauction.domain.product.entity.Product;
 import elice.eliceauction.domain.product.service.ProductService;
 import elice.eliceauction.domain.member.entity.Member;
 import elice.eliceauction.domain.member.service.MemberService;
+import elice.eliceauction.exception.auction.InvalidOrderException;
+import elice.eliceauction.exception.auction.OrderNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -46,14 +48,18 @@ public class OrderService {
     }
     // 주문 취소
     public void cancelOrder(Long orderId) {
+        if (!orderRepository.existsById(orderId)) {
+            throw new OrderNotFoundException("주문을 찾을 수 없습니다. ID: " + orderId);
+        }
         orderRepository.deleteById(orderId);
     }
+
 
     //주문 수정
     public Order updateOrder(UpdateOrderDto updateOrderDto) {
         // 주문 조회
         Order order = orderRepository.findById(updateOrderDto.getOrderId())
-                .orElseThrow(() -> new EntityNotFoundException("주문을 찾을 수 없습니다. ID: " + updateOrderDto.getOrderId()));
+                .orElseThrow(() -> new InvalidOrderException("주문을 찾을 수 없습니다. ID: " + updateOrderDto.getOrderId()));
 
         // 사용자가 주문한 배송지 정보 조회
         MemberAddress memberAddress = memberAddressRepository.getReferenceById(updateOrderDto.getMemberAddressId());
@@ -93,7 +99,7 @@ public class OrderService {
     // 주문 상태 수정
     public Order updateOrderStatus(Long orderId, String status) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new EntityNotFoundException("주문을 찾을 수 없습니다. ID: " + orderId));
+                .orElseThrow(() -> new InvalidOrderException("주문을 찾을 수 없습니다. ID: " + orderId));
         order.setStatus(status);
         return orderRepository.save(order);
     }
