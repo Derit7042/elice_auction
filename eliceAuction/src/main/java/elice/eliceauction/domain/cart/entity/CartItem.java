@@ -27,6 +27,7 @@ public class CartItem {
         Product product = item.getProduct();
 
         return CartResponseDto.builder()
+                .productId(product.getId())
                 .title(product.getTitle())
                 .price(product.getPrice())
                 .pictureLink(product.getPictureLink())
