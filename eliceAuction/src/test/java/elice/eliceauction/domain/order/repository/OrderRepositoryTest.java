@@ -2,11 +2,11 @@ package elice.eliceauction.domain.order.repository;
 
 import elice.eliceauction.domain.auction.entity.Order;
 import elice.eliceauction.domain.auction.repository.OrderRepository;
-import elice.eliceauction.domain.auction.entity.UserAddress;
+import elice.eliceauction.domain.auction.entity.MemberAddress;
 import elice.eliceauction.domain.product.entity.Product;
 import elice.eliceauction.domain.product.repository.ProductRepository;
-import elice.eliceauction.domain.member.entity.User;
-import elice.eliceauction.domain.member.repository.UserRepository;
+import elice.eliceauction.domain.member.entity.Member;
+import elice.eliceauction.domain.member.repository.MemberRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,23 +24,23 @@ public class OrderRepositoryTest {
     @Autowired
     private ProductRepository productRepository;
     @Autowired
-    private UserRepository userRepository;
+    private MemberRepository memberRepository;
 
 
     @Test
-    void findByUser() {
+    void findByMember() {
         // Given
         // 테스트용 사용자 생성
-        User user = new User();
-        user.setUsername("송호진");
-        user.setEmail("0918syj@gmail.com");
-        user.setPassword("1234"); // 사용자 비밀번호 설정
+        Member member = new Member();
+        member.setMembername("송호진");
+        member.setEmail("0918syj@gmail.com");
+        member.setPassword("1234"); // 사용자 비밀번호 설정
 
         // 테스트용 사용자 주소 생성
-        UserAddress userAddress = new UserAddress();
-        userAddress.setName("집");
-        userAddress.setAddress("광주광역시, 광산구임당");
-        userAddress.setUser(user);
+        MemberAddress memberAddress = new MemberAddress();
+        memberAddress.setName("집");
+        memberAddress.setAddress("광주광역시, 광산구임당");
+        memberAddress.setMember(member);
 
         // 테스트용 상품 생성 및 저장
         Product product = new Product();
@@ -51,13 +51,13 @@ public class OrderRepositoryTest {
         productRepository.save(product); // Product 엔티티를 저장합니다.
 
         // 사용자 저장
-        userRepository.save(user);
+        memberRepository.save(member);
 
         // 테스트용 주문 생성
         Order order = new Order();
-        order.setUser(user);
+        order.setMember(member);
         order.setProduct(product);
-        order.setUserAddress(userAddress);
+        order.setMemberAddress(memberAddress);
         order.setDate(LocalDateTime.now()); // 현재 날짜와 시간 설정
 
         // 주문 저장
@@ -65,36 +65,36 @@ public class OrderRepositoryTest {
 
         //When
         // 주문 조회
-        List<Order> ordersByUser = orderRepository.findByUser(user);
+        List<Order> ordersByMember = orderRepository.findByMember(member);
 
 
         //Then
         // 조회된 주문이 null이 아니고, 리스트가 비어있지 않은지 확인
-        assertNotNull(ordersByUser);
-        assertEquals(1, ordersByUser.size());
+        assertNotNull(ordersByMember);
+        assertEquals(1, ordersByMember.size());
 
         // 조회된 주문의 첫 번째 주문이 예상대로인지 확인
-        Order retrievedOrder = ordersByUser.get(0);
+        Order retrievedOrder = ordersByMember.get(0);
 
-        assertEquals(user, retrievedOrder.getUser());
+        assertEquals(member, retrievedOrder.getMember());
         assertEquals(product.getId(), retrievedOrder.getProduct().getId()); // 제품 아이디 비교
-        assertEquals(userAddress, retrievedOrder.getUserAddress());
+        assertEquals(memberAddress, retrievedOrder.getMemberAddress());
     }
 
     @Test
     void findByProduct() {
         // Given
         // 테스트용 사용자 생성
-        User user = new User();
-        user.setUsername("호호진");
-        user.setEmail("0918syj@naver.com");
-        user.setPassword("5678"); // 사용자 비밀번호 설정
+        Member member = new Member();
+        member.setMembername("호호진");
+        member.setEmail("0918syj@naver.com");
+        member.setPassword("5678"); // 사용자 비밀번호 설정
 
         // 테스트용 사용자 주소 생성
-        UserAddress userAddress = new UserAddress();
-        userAddress.setName("회사");
-        userAddress.setAddress("광주광역시, 광산구임당");
-        userAddress.setUser(user);
+        MemberAddress memberAddress = new MemberAddress();
+        memberAddress.setName("회사");
+        memberAddress.setAddress("광주광역시, 광산구임당");
+        memberAddress.setMember(member);
 
         // 테스트용 상품 생성 및 저장
         Product product = new Product();
@@ -105,13 +105,13 @@ public class OrderRepositoryTest {
         productRepository.save(product);
 
         // 사용자 저장
-        userRepository.save(user);
+        memberRepository.save(member);
 
         // 테스트용 주문 생성
         Order order = new Order();
-        order.setUser(user);
+        order.setMember(member);
         order.setProduct(product);
-        order.setUserAddress(userAddress);
+        order.setMemberAddress(memberAddress);
         order.setDate(LocalDateTime.now()); // 현재 날짜와 시간 설정
 
         // 주문 저장
@@ -128,18 +128,18 @@ public class OrderRepositoryTest {
 
         // 조회된 주문의 첫 번째 주문이 예상대로인지 확인
         Order retrievedOrder = ordersByProduct.get(0);
-        assertEquals(user, retrievedOrder.getUser());
+        assertEquals(member, retrievedOrder.getMember());
         assertEquals(product.getId(), retrievedOrder.getProduct().getId()); // 제품 아이디 비교
-        assertEquals(userAddress, retrievedOrder.getUserAddress());
+        assertEquals(memberAddress, retrievedOrder.getMemberAddress());
     }
 
 
     @Test
     void deleteByIdTest() {
         // Given
-        User user = createUser(); // 사용자 생성
+        Member member = createMember(); // 사용자 생성
         Product product = createProduct(); // 상품 생성
-        Order order = createOrder(user, product); // 주문 생성
+        Order order = createOrder(member, product); // 주문 생성
         Long orderId = order.getId(); // 주문의 ID를 가져옵니다.
 
         // When
@@ -150,12 +150,12 @@ public class OrderRepositoryTest {
     }
 
     // 사용자 생성
-    private User createUser() {
-        User user = new User();
-        user.setUsername("진진진");
-        user.setEmail("0918syj@gmail.com");
-        user.setPassword("1234");
-        return userRepository.save(user);
+    private Member createMember() {
+        Member member = new Member();
+        member.setMembername("진진진");
+        member.setEmail("0918syj@gmail.com");
+        member.setPassword("1234");
+        return memberRepository.save(member);
     }
 
     // 상품 생성
@@ -169,9 +169,9 @@ public class OrderRepositoryTest {
     }
 
     // 주문 생성
-    private Order createOrder(User user, Product product) {
+    private Order createOrder(Member member, Product product) {
         Order order = new Order();
-        order.setUser(user);
+        order.setMember(member);
         order.setProduct(product);
         order.setDate(LocalDateTime.now());
         return orderRepository.save(order);
