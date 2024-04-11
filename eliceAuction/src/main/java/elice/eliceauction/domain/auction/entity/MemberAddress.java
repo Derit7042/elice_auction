@@ -1,5 +1,6 @@
 package elice.eliceauction.domain.auction.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import elice.eliceauction.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -23,6 +24,7 @@ public class MemberAddress {
     @Column(name = "name")
     private String name;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "memberAddress")
     private List<Order> orders = new ArrayList<>();
 

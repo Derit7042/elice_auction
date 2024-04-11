@@ -1,5 +1,7 @@
 package elice.eliceauction.domain.auction.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,7 +10,7 @@ import lombok.Setter;
 public class UpdateOrderDto {
     private Long orderId;
     private Long memberAddressId;
-    private Long status;
+    private String status;
 
     public UpdateOrderDto() {
 
