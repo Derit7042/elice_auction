@@ -3,7 +3,6 @@ package elice.eliceauction.domain.auction.controller;
 import elice.eliceauction.domain.auction.entity.*;
 import elice.eliceauction.domain.auction.service.OrderService;
 import elice.eliceauction.domain.cart.entity.CartItem;
-import elice.eliceauction.domain.cart.entity.CartResponseDto;
 import elice.eliceauction.domain.cart.service.CartService;
 import elice.eliceauction.domain.member.entity.Member;
 import elice.eliceauction.domain.member.service.MemberService;
@@ -139,18 +138,9 @@ public class OrderController {
     /*********스웨거 어노테이션**********/
     @PutMapping("/update")
     public ResponseEntity<?> updateOrder(@RequestBody UpdateOrderDto updateOrderDto) {
-
-        try {
-            // 주문 수정
-            Order updatedOrder = orderService.updateOrder(updateOrderDto);
-            return ResponseEntity.ok(updatedOrder);
-        } catch (EntityNotFoundException e) {
-            // 주문을 찾을 수 없는 경우
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("주문을 찾을 수 없습니다.");
-        } catch (Exception e) {
-            // 기타 예외 발생 시
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("주문 주소를 수정하는 중 오류가 발생했습니다.");
-        }
+        // 주문 수정
+        Order updatedOrder = orderService.updateOrder(updateOrderDto);
+        return ResponseEntity.ok(updatedOrder);
     }
 
 
@@ -166,16 +156,8 @@ public class OrderController {
     /*********스웨거 어노테이션**********/
     @DeleteMapping("/cancel/{orderId}")
     public ResponseEntity<String> cancelOrder(@PathVariable Long orderId) {
-        try {
-            orderService.cancelOrder(orderId);
-            return ResponseEntity.status(HttpStatus.OK).body("주문 번호가 " + orderId + "인 주문이 취소되었습니다.");
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("주문을 찾을 수 없습니다.");
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("이미 취소된 주문입니다.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류가 발생했습니다.");
-        }
+        orderService.cancelOrder(orderId);
+        return ResponseEntity.status(HttpStatus.OK).body("주문 번호가 " + orderId + "인 주문이 취소되었습니다.");
     }
 
     // 특정 상품에 대한 주문 목록 가져오기
@@ -190,16 +172,8 @@ public class OrderController {
     /*********스웨거 어노테이션**********/
     @GetMapping("/product/{productId}")
     public ResponseEntity<?> getOrdersByProduct(@PathVariable("productId") Long productId) {
-        try {
             List<Order> orders = orderService.getOrdersByProduct(productId);
             return ResponseEntity.ok(orders);
-        } catch (EntityNotFoundException e) {
-            // 상품을 찾을 수 없는 경우
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("상품을 찾을 수 없습니다.");
-        } catch (Exception e) {
-            // 기타 예외 발생 시
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("주문 조회 중 오류가 발생했습니다.");
-        }
     }
 }
 
