@@ -1,5 +1,6 @@
 package elice.eliceauction.domain.auction.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import elice.eliceauction.domain.product.entity.Product;
 import elice.eliceauction.domain.member.entity.Member;
 import jakarta.persistence.*;
@@ -30,10 +31,10 @@ public class Order {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "member_address_id") // 사용자 주소와의 관계를 표시하는 외래 키
     private MemberAddress memberAddress;
-
 
     @Column(name = "date")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
