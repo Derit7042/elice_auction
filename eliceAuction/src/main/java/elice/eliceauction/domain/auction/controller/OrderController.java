@@ -21,6 +21,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -42,7 +43,7 @@ public class OrderController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     description = "주문 목록 조회 성공",
-                    content = @Content(schema = @Schema(implementation = CartResponseDto.class))),
+                    content = @Content(schema = @Schema(implementation = OrderDto.class))),
     })
     @Parameter(name = "memberId", description = "사용자의 고유 id 번호")
     /*********스웨거 어노테이션**********/
@@ -61,6 +62,7 @@ public class OrderController {
     }
 
     // 현재 로그인한 사용자의 장바구니에 담긴 상품들을 주문
+
     @PostMapping("/order")
     public ResponseEntity<String> orderCartItems(@AuthenticationPrincipal Member member) {
         List<CartItem> cartItems = cartService.getCarts(member);
@@ -73,6 +75,15 @@ public class OrderController {
     }
 
     // 주문 생성
+    /*********스웨거 어노테이션**********/
+    @Operation(summary = "회원 주문 생성", description = "회원이 상품을 주문합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "주문 목록 조회 성공",
+                    content = @Content(schema = @Schema(implementation = OrderDto.class))),
+    })
+    @Parameter(name = "orderDto", description = "상품 주문시 입력되는 요소들")
+    /*********스웨거 어노테이션**********/
     @PostMapping("/create")
     public ResponseEntity<?> createOrder(@RequestBody OrderDto orderDto) {
         try {
@@ -89,6 +100,15 @@ public class OrderController {
     }
 
     // 주소 생성
+    /*********스웨거 어노테이션**********/
+    @Operation(summary = "배송지 추가 입력", description = "회원이 배송지를 추가 입력합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "배송지 입력 성공",
+                    content = @Content(schema = @Schema(implementation = DeliveryDto.class))),
+    })
+    @Parameter(name = "deliveryDto", description = "배송지 생성시 입력되는 요소들")
+    /*********스웨거 어노테이션**********/
     @PostMapping("/delivery/create")
     public ResponseEntity<?> createDeliveryInfo(
             @RequestBody DeliveryDto deliveryDto) {
@@ -108,6 +128,15 @@ public class OrderController {
 
 
     //주문 주소 수정
+    /*********스웨거 어노테이션**********/
+    @Operation(summary = "배송지 수정", description = "회원이 배송지를 수정합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "배송지 수정 성공",
+                    content = @Content(schema = @Schema(implementation = UpdateOrderDto.class))),
+    })
+    @Parameter(name = "updateOrderDto", description = "배송지 수정시 입력되는 요소들")
+    /*********스웨거 어노테이션**********/
     @PutMapping("/update")
     public ResponseEntity<?> updateOrder(@RequestBody UpdateOrderDto updateOrderDto) {
 
@@ -126,22 +155,39 @@ public class OrderController {
 
 
     //주문 취소
-    @DeleteMapping("/cancel")
-    public ResponseEntity<?> cancelOrder(@RequestBody UpdateOrderDto updateOrderDto) {
+    /*********스웨거 어노테이션**********/
+    @Operation(summary = "주문 취소", description = "회원이 상품을 주문 취소합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "주문 취소 성공",
+                    content = @Content(schema = @Schema(implementation = UpdateOrderDto.class))),
+    })
+    @Parameter(name = "orderId", description = "주문 Id를 가지고 주문 취소 합니다.")
+    /*********스웨거 어노테이션**********/
+    @DeleteMapping("/cancel/{orderId}")
+    public ResponseEntity<String> cancelOrder(@PathVariable Long orderId) {
         try {
-            orderService.cancelOrder(updateOrderDto.getOrderId());
-            return ResponseEntity.ok("ID가 " + updateOrderDto.getOrderId() + "인 주문이 성공적으로 취소되었습니다.");
-        } catch (EntityNotFoundException e) {
-            // 주문을 찾을 수 없는 경우
+            orderService.cancelOrder(orderId);
+            return ResponseEntity.status(HttpStatus.OK).body("주문 번호가 " + orderId + "인 주문이 취소되었습니다.");
+        } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("주문을 찾을 수 없습니다.");
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("이미 취소된 주문입니다.");
         } catch (Exception e) {
-            // 기타 예외 발생 시
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("주문 취소 중 오류가 발생했습니다.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류가 발생했습니다.");
         }
     }
 
-
     // 특정 상품에 대한 주문 목록 가져오기
+    /*********스웨거 어노테이션**********/
+    @Operation(summary = "상품 ID로 주문 목록 조회", description = "상품 id(product_id)를 이용하여 해당 주문 목록을 불러옵니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "주문 조회 성공",
+                    content = @Content(schema = @Schema(implementation = OrderDto.class))),
+    })
+    @Parameter(name = "productId", description = "상품의 고유 id 번호")
+    /*********스웨거 어노테이션**********/
     @GetMapping("/product/{productId}")
     public ResponseEntity<?> getOrdersByProduct(@PathVariable("productId") Long productId) {
         try {
