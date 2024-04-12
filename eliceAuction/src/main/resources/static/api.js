@@ -40,18 +40,24 @@ async function post(endpoint, data) {
     body: bodyData,
   });
 
+  // 응답 본문을 미리 파싱
+  let parsedResponse;
+  try {
+    parsedResponse = await res.json(); // 응답 본문을 미리 파싱
+  } catch (e) {
+    throw new Error("JSON 파싱 중 오류가 발생했습니다.");
+  }
+
   // 응답 코드가 4XX 계열일 때 (400, 403 등)
   if (!res.ok) {
-    const errorContent = await res.json();
-    const { reason } = errorContent;
-
+    const reason = parsedResponse.reason || "Unknown error";
     throw new Error(reason);
   }
 
-  const result = await res.json();
-
-  return result;
+  // 정상 응답 반환
+  return parsedResponse;
 }
+
 
 
 // api 로 PATCH 요청 (/endpoint/params 로, JSON 데이터 형태로 요청함)

@@ -7,7 +7,7 @@ import {
 } from "../useful-functions.js";
 
 // 요소(element), input 혹은 상수
-const emailInput = document.querySelector("#emailInput");
+const usernameInput = document.querySelector("#usernameInput");
 const passwordInput = document.querySelector("#passwordInput");
 const submitButton = document.querySelector("#submitButton");
 
@@ -29,22 +29,22 @@ function addAllEvents() {
 async function handleSubmit(e) {
   e.preventDefault();
 
-  const email = emailInput.value;
+  const username = usernameInput.value;
   const password = passwordInput.value;
 
   // 잘 입력했는지 확인
-  const isEmailValid = validateEmail(email);
+  const isUsernameValid = username.length >= 2;
   const isPasswordValid = password.length >= 4;
 
-  if (!isEmailValid || !isPasswordValid) {
+  if (!isUsernameValid || !isPasswordValid) {
     return alert(
-      "비밀번호가 4글자 이상인지, 이메일 형태가 맞는지 확인해 주세요."
+      "비밀번호가 4글자 이상인지, 아이디 형태가 맞는지 확인해 주세요."
     );
   }
 
   // 로그인 api 요청
   try {
-    const data = { email, password };
+    const data = { username, password };
 
     const result = await Api.post("/login", data);
     const { token, isAdmin } = result;
@@ -78,7 +78,7 @@ async function handleSubmit(e) {
   }
 
   // try {
-  //   const data = { email, password };
+  //   const data = { username, password };
   //
   //   const result = await Api.post("/login", data);
   //   console.log(result)
@@ -94,7 +94,7 @@ async function handleSubmit(e) {
   // } from "../useful-functions.js";
   //
   // // 요소(element), input 혹은 상수
-  // const emailInput = document.querySelector("#emailInput");
+  // const usernameInput = document.querySelector("#usernameInput");
   // const passwordInput = document.querySelector("#passwordInput");
   // const submitButton = document.querySelector("#submitButton");
   //
@@ -116,11 +116,11 @@ async function handleSubmit(e) {
   // async function handleSubmit(e) {
   //   e.preventDefault();
   //
-  //   const email = emailInput.value;
+  //   const username = usernameInput.value;
   //   const password = passwordInput.value;
   //
   //   // 잘 입력했는지 확인
-  //   const isEmailValid = validateEmail(email);
+  //   const isEmailValid = validateEmail(username);
   //   const isPasswordValid = password.length >= 4;
   //
   //   if (!isEmailValid || !isPasswordValid) {
@@ -131,7 +131,7 @@ async function handleSubmit(e) {
   //
   //   // 로그인 api 요청
   //   try {
-  //     const data = { email, password };
+  //     const data = { username, password };
   //
   //     const result = await Api.post("/login", data);
   //     const { token, isAdmin } = result;
@@ -165,7 +165,7 @@ async function handleSubmit(e) {
   //   }
   //
   //   // try {
-  //   //   const data = { email, password };
+  //   //   const data = { username, password };
   //   //
   //   //   const result = await Api.post("/login", data);
   //   //   console.log(result)
