@@ -25,10 +25,12 @@ public class MemberServiceImpl implements MemberService{
     @Override
     public void signUp(MemberSignUpDto memberSignUpDto) throws Exception {
         Member member = memberSignUpDto.toEntity();
-        member.addUserAuthority();
-        member.encodePassword(passwordEncoder);
+        member.addUserAuthority();  //USER 권한 부여
 
-        if(memberRepository.findByUsername(memberSignUpDto.username()).isPresent()){
+
+        member.encodePassword(passwordEncoder);  // 비밀번호 암호화
+
+        if(memberRepository.findByUsername(member.getUsername()).isPresent()){
             throw new MemberException(MemberExceptionType.ALREADY_EXIST_USERNAME);
         }
 

@@ -25,7 +25,7 @@ function addAllEvents() {
 async function handleSubmit(e) {
   e.preventDefault();
 
-  const name = usernameInput.value;
+  const name = nameInput.value;
   const username = usernameInput.value;
   const password = passwordInput.value;
   const passwordConfirm = passwordConfirmInput.value;
@@ -52,11 +52,11 @@ async function handleSubmit(e) {
 
   // 회원가입 api 요청
   try {
-    const data = {name, username, password };
+    const data = {username, password, name};
 
     await Api.post("/api/members/register", data);
 
-    alert(`정상적으로 회원가입되었습니다.`);
+    alert("정상적으로 회원가입되었습니다.");
     // 로그인 페이지 이동
     window.location.href = "/login/login.html";
   } catch (err) {

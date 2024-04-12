@@ -39,7 +39,7 @@ public class StubData implements CommandLineRunner {
 
         MemberSignUpDto dto;
         for(long i=1; i<=10; i++){
-            dto = new MemberSignUpDto("username"+i, "password"+i, "name"+i, "nickname"+i, (int)i);
+            dto = new MemberSignUpDto("username"+i, "password"+i, "name"+i);
             memberService.signUp(dto);
         }
     }
