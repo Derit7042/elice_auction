@@ -26,8 +26,8 @@ public class Member {
     private String name;//이름(실명)
 
 
-    @Enumerated
-    @Column(nullable = false, length = 30)
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = true, length = 30)
     private Role role;//권한 -> USER, ADMIN
 
 
