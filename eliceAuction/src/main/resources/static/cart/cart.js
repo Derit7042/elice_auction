@@ -27,6 +27,15 @@ let userId = 1;
 addAllElements();
 addAllEvents();
 
+async function isLogin() {
+  try {
+    const result = await API.get(`http://localhost:8080/api/cart/1`);// 로그인 되면 200번대 상태코드 반환
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
 // html에 요소를 추가하는 함수들을 묶어주어서 코드를 깔끔하게 하는 역할임.
 function addAllElements() {
   createNavbar();
@@ -36,18 +45,27 @@ function addAllElements() {
 
 // addEventListener들을 묶어주어서 코드를 깔끔하게 하는 역할임.
 function addAllEvents() {
-  console.log("3");
   purchaseButton.addEventListener("click", navigate("/order"));
 }
 
 // indexedDB의 cart와 order에서 필요한 정보를 가져온 후
 // 요소(컴포넌트)를 만들어 html에 삽입함.
 async function insertProductsfromCart() {
+  let products;
+
+  // 로그인 상태 확인
+  if(await isLogin() === true){
+    console.log("로그인 성공. DB에서 장바구니를 가져옵니다.");
+    products = await API.get(`http://localhost:8080/api/cart/${userId}`);
+  } else {
+    console.log("로그인 실패. 쿠키에서 장바구니를 가져옵니다.");
+  }
+
   totalCount = 0;
   totalPrice = 0;
-  // userId = window.location.pathname;
-  console.log(userId)
-  const products = await API.get(`http://localhost:8080/api/cart/${userId}`);
+  // userId = window.location.pathname.replace("/", '');
+  // console.log(userId)
+
 
   for (const product of products) {
     totalCount+=1;
@@ -72,7 +90,7 @@ async function insertProductsfromCart() {
           <div class="d-flex flex-row align-items-center">
             
             <div>
-               <img src=${product.pictureLink} id="image-${productId}" class="img-fluid
+               <img src=${pictureLink} id="image-${productId}" class="img-fluid
               rounded-3" alt="Shopping item" style="width: 65px;">
             </div>
             
@@ -127,9 +145,6 @@ async function insertProductsfromCart() {
   }
 
   insertOrderSummary();
-
-  console.log("1. totalPrice: " + totalPrice);
-  console.log("1. totalCount: "+ totalCount);
 
 }
 
