@@ -34,29 +34,40 @@ async function post(endpoint, data) {
     ...(token && { Authorization: `Bearer ${token}` }),
   };
 
-  const res = await fetch(apiUrl, {
-    method: "POST",
-    headers,
-    body: bodyData,
-  });
-
-  // 응답 본문을 미리 파싱
-  let parsedResponse;
   try {
-    parsedResponse = await res.json(); // 응답 본문을 미리 파싱
-  } catch (e) {
-    throw new Error("JSON 파싱 중 오류가 발생했습니다.");
-  }
+    const res = await fetch(apiUrl, {
+      method: "POST",
+      headers,
+      body: bodyData,
+    });
 
-  // 응답 코드가 4XX 계열일 때 (400, 403 등)
-  if (!res.ok) {
-    const reason = parsedResponse.reason || "Unknown error";
-    throw new Error(reason);
-  }
+    // 응답 상태 코드 검사
+    if (!res.ok) {
+      try {
+        const errorResponse = await res.json(); // 응답 본문 파싱 시도
+        const reason = errorResponse.message || "Unknown error";
+        throw new Error(reason);
+      } catch (parseError) {
+        // 응답 본문 파싱 실패
+        throw new Error("응답 파싱 중 오류 발생");
+      }
+    }
 
-  // 정상 응답 반환
-  return parsedResponse;
+    // 응답 본문이 비어 있지 않은 경우 JSON 파싱 시도
+    if (res.headers.get("Content-Length") !== "0") {
+      const responseData = await res.json();
+      return responseData;
+    }
+
+    // 본문이 비어 있는 경우 간단한 성공 메시지 반환
+    return { message: "성공적으로 처리되었습니다." };
+  } catch (error) {
+    console.error("API 요청 실패:", error);
+    throw error; // 에러를 다시 throw하여 호출 측에서 처리할 수 있게 함
+  }
 }
+
+
 
 
 
