@@ -36,29 +36,23 @@ async function handleSubmit(e) {
   const isPasswordValid = password.length >= 4;
   const isPasswordSame = password === passwordConfirm;
 
+  let errorMessages = [];
+  if (!isNameValid) errorMessages.push("이름은 2글자 이상이어야 합니다.");
+  if (!isUsernameValid) errorMessages.push("아이디는 2글자 이상이어야 합니다.");
+  if (!isPasswordValid) errorMessages.push("비밀번호는 4글자 이상이어야 합니다.");
+  if (!isPasswordSame) errorMessages.push("비밀번호가 일치하지 않습니다.");
 
-  if (!isNameValid || !isPasswordValid) {
-    return alert("이름은 2글자 이상, 비밀번호는 4글자 이상이어야 합니다.");
-  }
-
-  if (!isUsernameValid || !isPasswordValid) {
-    return alert("아이디는 2글자 이상, 비밀번호는 4글자 이상이어야 합니다.");
-  }
-
-
-  if (!isPasswordSame) {
-    return alert("비밀번호가 일치하지 않습니다.");
+  if (errorMessages.length > 0) {
+    alert(errorMessages.join("\n"));
+    return;
   }
 
   // 회원가입 api 요청
   try {
-    const data = {username, password, name};
-
+    const data = { username, password, name };
     await Api.post("/api/members/register", data);
-
     alert("정상적으로 회원가입되었습니다.");
-    // 로그인 페이지 이동
-    window.location.href = "/login/login.html";
+    window.location.href = "/login/login.html"; // 로그인 페이지 이동
   } catch (err) {
     console.error(err.stack);
     alert(`문제가 발생하였습니다. 확인 후 다시 시도해 주세요: ${err.message}`);

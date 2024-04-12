@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -57,29 +58,73 @@ public class ProductApiController {
         return productService.show(id);
     }
 
+//    // POST
+//    /*********스웨거 어노테이션**********/
+//    @Operation(summary = "상품 등록", description = "유저가 상품을 등록합니다.")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200",
+//                    description = "상품 등록 성공",
+//                    content = @Content(schema = @Schema(implementation = ProductDto.class))),
+//    })
+//    @Parameter(name = "dto", description = "상품 등록 시 입력되는 요소들")
+//    /*********스웨거 어노테이션**********/
+//    @PostMapping
+//    public ResponseEntity<Product> create(@RequestBody ProductDto dto /*, Principal principal */) {
+//        if (dto.getWatchCount() == null) {
+//            dto.setWatchCount(0L);
+//        }
+//
+//        LocalDateTime currentDateTime = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+//        dto.setDate(currentDateTime);
+//
+////        String membername = principal.getName();
+////        Product created = productService.create(dto, membername);
+//
+//        Product created = productService.create(dto);
+//        return (created != null) ?
+//                ResponseEntity.status(HttpStatus.OK).body(created) :
+//                ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+//    }
+
     // POST
-    /*********스웨거 어노테이션**********/
     @Operation(summary = "상품 등록", description = "유저가 상품을 등록합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     description = "상품 등록 성공",
                     content = @Content(schema = @Schema(implementation = ProductDto.class))),
     })
-    @Parameter(name = "dto", description = "상품 등록 시 입력되는 요소들")
-    /*********스웨거 어노테이션**********/
+    @Parameter(name = "file", description = "상품 이미지 파일")
+    @Parameter(name = "title", description = "상품 이름")
+    @Parameter(name = "brief", description = "상품 설명")
+    @Parameter(name = "price", description = "상품 가격")
     @PostMapping
-    public ResponseEntity<Product> create(@RequestBody ProductDto dto /*, Principal principal */) {
-        if (dto.getWatchCount() == null) {
-            dto.setWatchCount(0L);
+    public ResponseEntity<Product> create(@RequestParam("file") MultipartFile file,
+                                          @RequestParam("title") String title,
+                                          @RequestParam("brief") String brief,
+                                          @RequestParam("price") Long price) {
+        // 파일 처리 로직
+        if (file.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
-        LocalDateTime currentDateTime = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
-        dto.setDate(currentDateTime);
+        // 임시 코드
+        String fileName = file.getOriginalFilename();
+        // 실제로는 밑에서 지정한 url 에 대한 사진을 업로드
 
-//        String membername = principal.getName();
-//        Product created = productService.create(dto, membername);
+        // 나머지 필요한 데이터 처리 로직
+        LocalDateTime currentDateTime = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+        String pictureLink = "https://i.ibb.co/tp4LQLr/1.jpg";
+
+        ProductDto dto = new ProductDto();
+        dto.setTitle(title);
+        dto.setBrief(brief);
+        dto.setPrice(price);
+        dto.setWatchCount(0L);
+        dto.setDate(currentDateTime);
+        dto.setPictureLink(pictureLink);
 
         Product created = productService.create(dto);
+
         return (created != null) ?
                 ResponseEntity.status(HttpStatus.OK).body(created) :
                 ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
