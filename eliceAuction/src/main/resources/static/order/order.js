@@ -12,7 +12,7 @@ import { deleteFromDb, getFromDb, putToDb } from "../indexed-db.js";
 // 요소(element), input 혹은 상수
 const subtitleCart = document.querySelector("#subtitleCart");
 const receiverNameInput = document.querySelector("#receiverName");
-const receiverPhoneNumberInput = document.querySelector("#receiverPhoneNumber");
+//const receiverPhoneNumberInput = document.querySelector("#receiverPhoneNumber");
 const postalCodeInput = document.querySelector("#postalCode");
 const searchAddressButton = document.querySelector("#searchAddressButton");
 const address1Input = document.querySelector("#address1");
@@ -146,16 +146,19 @@ async function insertOrderSummary() {
 
 async function insertUserData() {
   const userData = await Api.get("/user");
-  const { fullName, phoneNumber, address } = userData;
+  const { fullName, address } = userData;
+
+  // const userData = await Api.get("/user");
+  // const { fullName, phoneNumber, address } = userData;
 
   // 만약 db에 데이터 값이 있었다면, 배송지정보에 삽입
   if (fullName) {
     receiverNameInput.value = fullName;
   }
 
-  if (phoneNumber) {
-    receiverPhoneNumberInput.value = phoneNumber;
-  }
+  // if (phoneNumber) {
+  //   receiverPhoneNumberInput.value = phoneNumber;
+  // }
 
   if (address) {
     postalCode.value = address.postalCode;
@@ -186,7 +189,7 @@ function handleRequestChange(e) {
 // 결제 진행
 async function doCheckout() {
   const receiverName = receiverNameInput.value;
-  const receiverPhoneNumber = receiverPhoneNumberInput.value;
+  //const receiverPhoneNumber = receiverPhoneNumberInput.value;
   const postalCode = postalCodeInput.value;
   const address1 = address1Input.value;
   const address2 = address2Input.value;
@@ -196,9 +199,12 @@ async function doCheckout() {
   const totalPrice = convertToNumber(orderTotalElem.innerText);
   const { selectedIds } = await getFromDb("order", "summary");
 
-  if (!receiverName || !receiverPhoneNumber || !postalCode || !address2) {
+  if (!receiverName || !postalCode || !address2) {
     return alert("배송지 정보를 모두 입력해 주세요.");
   }
+  // if (!receiverName || !receiverPhoneNumber || !postalCode || !address2) {
+  //   return alert("배송지 정보를 모두 입력해 주세요.");
+  // }
 
   // 요청사항의 종류에 따라 request 문구가 달라짐
   let request;
@@ -218,7 +224,7 @@ async function doCheckout() {
     address1,
     address2,
     receiverName,
-    receiverPhoneNumber,
+    //receiverPhoneNumber,
   };
 
   try {
@@ -256,7 +262,7 @@ async function doCheckout() {
 
     // 입력된 배송지정보를 유저db에 등록함
     const data = {
-      phoneNumber: receiverPhoneNumber,
+      //phoneNumber: receiverPhoneNumber,
       address: {
         postalCode,
         address1,
