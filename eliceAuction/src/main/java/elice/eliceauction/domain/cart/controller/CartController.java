@@ -93,20 +93,16 @@ public class CartController {
     @Parameter(name = "productId", description = "상품 id")
     /*********스웨거 어노테이션**********/
     @DeleteMapping("/{memberId}")
-    public ResponseEntity<List<CartResponseDto>> deleteCartItem(@PathVariable("memberId") Long memberId,
-                                                                @RequestParam("productId") List<Long> productId) throws Exception{
+    public ResponseEntity<CartResponseDto> deleteCartItem(@PathVariable("memberId") Long memberId,
+                                                                @RequestParam("productId") Long productId) throws Exception{
         Member member = memberService.findMemberById(memberId);
-        List<CartItem> deleted = new ArrayList<>();
-        for (Long id : productId) {
-            deleted.add(cartService.delete(member, id));
-        }
+        CartItem deleted = cartService.delete(member, productId);
+
 
         // CartItem -> DTO로 변환
-        List<CartResponseDto> cartResponseDtos = new ArrayList<>();
-        for (CartItem cartItem : deleted) {
-            cartResponseDtos.add(CartItem.toDto(cartItem));
-        }
+        CartResponseDto cartResponseDto =CartItem.toDto(deleted);
 
-        return ResponseEntity.ok(cartResponseDtos);
+
+        return ResponseEntity.ok(cartResponseDto);
     }
 }
