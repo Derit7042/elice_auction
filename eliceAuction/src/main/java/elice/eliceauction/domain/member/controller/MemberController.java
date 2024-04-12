@@ -1,19 +1,17 @@
 package elice.eliceauction.domain.member.controller;
 
 import elice.eliceauction.domain.member.dto.*;
+import elice.eliceauction.domain.member.entity.Member;
 import elice.eliceauction.domain.member.service.MemberService;
+import elice.eliceauction.security.jwt.service.JwtService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
-
-@Controller
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/members")
 public class MemberController {
@@ -21,73 +19,57 @@ public class MemberController {
     private final MemberService memberService;
 
 
-
-    @GetMapping("/login")
-    public String loginP() {
-        // 정적 리소스 폴더 내의 login.html 파일로 리다이렉션
-        return "redirect:/login/login.html";
-    }
     /**
-     * 회원가입
+     * 회원가입 페이지 리다이렉션 제거: API에서는 직접 페이지 리다이렉션이 일반적이지 않음
      */
-    @GetMapping("/register")
-    public String registerP() {
-        // 정적 리소스 폴더 내의 register.html 파일로 리다이렉션
-        return "redirect:/register/register.html";
-    }
-
     @PostMapping("/register")
-    @ResponseStatus(HttpStatus.OK)
-    public void signUp(@Valid @RequestBody MemberSignUpDto memberSignUpDto) throws Exception {
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<?> signUp(@Valid @RequestBody MemberSignUpDto memberSignUpDto) throws Exception {
         memberService.signUp(memberSignUpDto);
+        return ResponseEntity.ok().body("{\"message\":\"회원가입 성공\"}");
     }
-
     /**
      * 회원정보수정
      */
-    @PutMapping("/member")
+    @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void updateBasicInfo(@Valid @RequestBody MemberUpdateDto memberUpdateDto) throws Exception {
+    public void updateBasicInfo(@PathVariable("id") Long id, @Valid @RequestBody MemberUpdateDto memberUpdateDto) throws Exception {
         memberService.update(memberUpdateDto);
     }
 
     /**
      * 비밀번호 수정
      */
-    @PutMapping("/member/password")
+    @PutMapping("/{id}/password")
     @ResponseStatus(HttpStatus.OK)
-    public void updatePassword(@Valid @RequestBody UpdatePasswordDto updatePasswordDto) throws Exception {
-        memberService.updatePassword(updatePasswordDto.checkPassword(),updatePasswordDto.toBePassword());
+    public void updatePassword(@PathVariable("id") Long id, @Valid @RequestBody UpdatePasswordDto updatePasswordDto) throws Exception {
+        memberService.updatePassword(updatePasswordDto.checkPassword(), updatePasswordDto.toBePassword());
     }
-
 
     /**
      * 회원탈퇴
      */
-    @DeleteMapping("/member")
-    @ResponseStatus(HttpStatus.OK)
-    public void withdraw(@Valid @RequestBody MemberWithdrawDto memberWithdrawDto) throws Exception {
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void withdraw(@PathVariable("id") Long id, @Valid @RequestBody MemberWithdrawDto memberWithdrawDto) throws Exception {
         memberService.withdraw(memberWithdrawDto.checkPassword());
     }
-
 
     /**
      * 회원정보조회
      */
-    @GetMapping("/member/{id}")
-    public ResponseEntity<MemberInfoDto> getInfo(@Valid @PathVariable("id") Long id) throws Exception {
+    @GetMapping("/{id}")
+    public ResponseEntity<MemberInfoDto> getInfo(@PathVariable("id") Long id) throws Exception {
         MemberInfoDto info = memberService.getInfo(id);
-        return new ResponseEntity<MemberInfoDto>(info, HttpStatus.OK);
+        return ResponseEntity.ok(info);
     }
 
     /**
      * 내정보조회
      */
-    @GetMapping("/member")
-    public ResponseEntity<MemberInfoDto> getMyInfo(HttpServletResponse response) throws Exception {
-
+    @GetMapping("/me")
+    public ResponseEntity<MemberInfoDto> getMyInfo() throws Exception {
         MemberInfoDto info = memberService.getMyInfo();
-        return new ResponseEntity<MemberInfoDto>(info, HttpStatus.OK);
+        return ResponseEntity.ok(info);
     }
-
 }
