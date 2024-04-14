@@ -1,5 +1,14 @@
 
+
+// test mode
+const baseUrl = "http://localhost:8080/api";
+
+// deploy mode
+// const baseUrl = "http://34.64.166.147:8080/api";
+
 async function get(endpoint, params = "") {
+  endpoint = baseUrl + endpoint;
+
   const apiUrl = params ? `${endpoint}/${params}` : endpoint;
   console.log(`%cGET 요청: ${apiUrl} `, "color: #a25cd1;");
 
@@ -22,7 +31,8 @@ async function get(endpoint, params = "") {
 }
 
 async function post(endpoint, data) {
-  const apiUrl = endpoint;
+  const apiUrl = baseUrl+endpoint;
+
   const bodyData = JSON.stringify(data);
   console.log(`%cPOST 요청: ${apiUrl}`, "color: #296aba;");
   console.log(`%cPOST 요청 데이터: ${bodyData}`, "color: #296aba;");
@@ -73,6 +83,8 @@ async function post(endpoint, data) {
 
 // api 로 PATCH 요청 (/endpoint/params 로, JSON 데이터 형태로 요청함)
 async function patch(endpoint, params = "", data) {
+  endpoint = baseUrl + endpoint;
+
   const apiUrl = params ? `${endpoint}/${params}` : endpoint;
 
   const bodyData = JSON.stringify(data);
@@ -104,6 +116,8 @@ async function patch(endpoint, params = "", data) {
 // 아래 함수명에 관해, delete 단어는 자바스크립트의 reserved 단어이기에,
 // 여기서는 우선 delete 대신 del로 쓰고 아래 export 시에 delete로 alias 함.
 async function del(endpoint, params = "", data = {}) {
+  endpoint = baseUrl + endpoint;
+
   const apiUrl = `${endpoint}/${params}`;
   const bodyData = JSON.stringify(data);
 

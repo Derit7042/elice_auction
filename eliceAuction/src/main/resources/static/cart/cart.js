@@ -29,7 +29,7 @@ addAllEvents();
 
 async function isLogin() {
   try {
-    const result = await API.get(`http://localhost:8080/api/cart/1`);// 로그인 되면 200번대 상태코드 반환
+    const result = await API.get(`/cart/1`);// 로그인 되면 200번대 상태코드 반환
     return true;
   } catch (error) {
     return false;
@@ -56,9 +56,11 @@ async function insertProductsfromCart() {
   // 로그인 상태 확인
   if(await isLogin() === true){
     console.log("로그인 성공. DB에서 장바구니를 가져옵니다.");
-    products = await API.get(`http://localhost:8080/api/cart/${userId}`);
+    products = await API.get(`/cart/${userId}`);
   } else {
     console.log("로그인 실패. 쿠키에서 장바구니를 가져옵니다.");
+    alert("비회원 장바구니 기능은 아직 구현이 안되있습니다. 첫 충전 3,300원을 하시면 구현해드리겠습니다^^");
+    alert("100% 안심계좌: 국민 626402-01-725xxx 임xx");
   }
 
   totalCount = 0;
