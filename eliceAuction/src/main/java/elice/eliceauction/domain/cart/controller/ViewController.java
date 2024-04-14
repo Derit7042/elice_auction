@@ -6,6 +6,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -19,6 +20,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/cart")
+@CrossOrigin(origins = "http://localhost:8080")
 public class ViewController {
     @GetMapping
     public String cartViewPage(Model model) {

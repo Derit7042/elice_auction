@@ -1,7 +1,10 @@
 
 
-const baseUrl = "http://localhost:8080/api/";
+// test mode
+const baseUrl = "http://localhost:8080/api";
 
+// deploy mode
+// const baseUrl = "http://34.64.166.147:8080/api";
 
 async function get(endpoint, params = "") {
   endpoint = baseUrl + endpoint;
