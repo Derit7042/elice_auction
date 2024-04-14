@@ -6,6 +6,9 @@ import elice.eliceauction.domain.cart.entity.CartItem;
 import elice.eliceauction.domain.cart.service.CartService;
 import elice.eliceauction.domain.member.entity.Member;
 import elice.eliceauction.domain.member.service.MemberService;
+import elice.eliceauction.domain.product.entity.Product;
+import elice.eliceauction.domain.product.service.ProductService;
+import elice.eliceauction.exception.auction.InvalidOrderException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -29,12 +32,15 @@ public class OrderController {
     private final OrderService orderService;
     private final MemberService memberService;
     private final CartService cartService;
+    private final ProductService productService;
+
 
     @Autowired
-    public OrderController(OrderService orderService,MemberService memberService, CartService cartService) {
+    public OrderController(OrderService orderService, MemberService memberService, CartService cartService, ProductService productService) {
         this.orderService = orderService;
         this.memberService = memberService;
         this.cartService = cartService;
+        this.productService = productService;
     }
     // 사용자 Id로 주문 목록 가져오기
     /*********스웨거 어노테이션**********/
@@ -63,14 +69,28 @@ public class OrderController {
     // 현재 로그인한 사용자의 장바구니에 담긴 상품들을 주문
 
     @PostMapping("/order")
-    public ResponseEntity<String> orderCartItems(@AuthenticationPrincipal Member member) {
-        List<CartItem> cartItems = cartService.getCarts(member);
-        // 장바구니가 비어있는 경우
-        if (cartItems.isEmpty()) {
+    public ResponseEntity<?> orderCartItems(@AuthenticationPrincipal Member member) {
+        List<Order> orders = orderService.createOrdersFromCart(member);
+        return ResponseEntity.ok().body("주문이 성공적으로 완료되었습니다.");
+    }
+    // 주문 생성 API
+    @PostMapping("/member/create")
+    public ResponseEntity<?> createOrderForLoggedInUser(@AuthenticationPrincipal Member member,
+                                                        @RequestBody OrderDto orderDto) {
+        try {
+            Product product = productService.show(orderDto.getProductId());
+            if (product == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Product not found");
+            }
 
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("장바구니가 비어 있습니다. 상품을 추가해주세요.");
+            // OrderService의 createOrder 메소드를 호출하며, orderDto의 필드를 직접 사용합니다.
+            Order order = orderService.createLoginOrder(member, product, orderDto.getMemberAddressId());
+            return ResponseEntity.ok(order);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Entity not found");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while creating the order");
         }
-        return ResponseEntity.status(HttpStatus.OK).body("장바구니에 담긴 상품을 주문했습니다.");
     }
 
     // 주문 생성
@@ -172,8 +192,8 @@ public class OrderController {
     /*********스웨거 어노테이션**********/
     @GetMapping("/product/{productId}")
     public ResponseEntity<?> getOrdersByProduct(@PathVariable("productId") Long productId) {
-            List<Order> orders = orderService.getOrdersByProduct(productId);
-            return ResponseEntity.ok(orders);
+        List<Order> orders = orderService.getOrdersByProduct(productId);
+        return ResponseEntity.ok(orders);
     }
 }
 

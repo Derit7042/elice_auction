@@ -9,9 +9,5 @@ public class DeliveryDto {
     private String name;
     private String address;
     private Long memberId;
-
-    public DeliveryDto() {
-
-    }
 }
 

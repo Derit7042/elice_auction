@@ -3,6 +3,9 @@ package elice.eliceauction.domain.auction.service;
 import elice.eliceauction.domain.auction.entity.*;
 import elice.eliceauction.domain.auction.repository.OrderRepository;
 import elice.eliceauction.domain.auction.repository.MemberAddressRepository;
+import elice.eliceauction.domain.cart.entity.Cart;
+import elice.eliceauction.domain.cart.entity.CartItem;
+import elice.eliceauction.domain.cart.service.CartService;
 import elice.eliceauction.domain.product.entity.Product;
 import elice.eliceauction.domain.product.service.ProductService;
 import elice.eliceauction.domain.member.entity.Member;
@@ -14,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -24,6 +28,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final ProductService productService;
     private final MemberService memberService;
+    private final CartService cartService;
     private final MemberAddressRepository memberAddressRepository;
 
     // 모든 주문 조회
@@ -45,6 +50,33 @@ public class OrderService {
 
         // 주문 저장
         return orderRepository.save(order);
+    }
+    public Order createLoginOrder(Member member, Product product, Long memberAddressId) {
+        MemberAddress memberAddress = memberAddressRepository.findById(memberAddressId)
+                .orElseThrow(() -> new EntityNotFoundException("주소를 찾을 수 없습니다."));
+
+        Order newOrder = new Order(product, member, memberAddress);
+        return orderRepository.save(newOrder);
+    }
+    public List<Order> createOrdersFromCart(Member member) {
+        List<CartItem> cartItems = cartService.getCarts(member);
+
+        if (cartItems.isEmpty()) {
+            throw new InvalidOrderException("장바구니가 비어 있습니다.");
+        }
+
+        List<Order> orders = new ArrayList<>();
+        for (CartItem cartItem : cartItems) {
+            MemberAddress memberAddress = memberAddressRepository.findById(member.getId())
+                    .orElseThrow(() -> new EntityNotFoundException("배송지 정보를 찾을 수 없습니다."));
+
+            Product product = cartItem.getProduct();
+            Order order = new Order(product, member, memberAddress);
+            orders.add(orderRepository.save(order));
+        }
+
+        cartService.clear(member);
+        return orders;
     }
     // 주문 취소
     public void cancelOrder(Long orderId) {
