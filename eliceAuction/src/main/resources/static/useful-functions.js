@@ -87,7 +87,7 @@ export const blockIfLogin = () => {
 
   if (token) {
     alert("로그인 상태에서는 접근할 수 없는 페이지입니다.");
-    window.location.replace("/");
+    window.location.replace("/home/home.html");
   }
 };
 

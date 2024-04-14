@@ -71,7 +71,7 @@ async function handleSubmit(e) {
     }
 
     // 기존 다른 페이지가 없었던 경우, 그냥 기본 페이지로 이동
-    window.location.href = "/";
+    window.location.href = "/home/home.html";
   } catch (err) {
     console.error(err.stack);
     alert(`문제가 발생하였습니다. 확인 후 다시 시도해 주세요: ${err.message}`);
