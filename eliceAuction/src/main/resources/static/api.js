@@ -21,9 +21,11 @@ async function get(endpoint, params = "") {
   // 응답 코드가 4XX 계열일 때 (400, 403 등)
   if (!res.ok) {
     const errorContent = await res.json();
-    const { reason } = errorContent;
-
-    throw new Error(reason);
+    // 에러 객체에 상태 코드와 reason을 포함시킴
+    const error = new Error(`HTTP 상태 코드: ${res.status}, 에러 메시지: ${errorContent.reason}`);
+    error.status = res.status;
+    error.reason = errorContent.reason;
+    throw error;
   }
 
   const result = await res.json();
@@ -53,14 +55,13 @@ async function post(endpoint, data) {
 
     // 응답 상태 코드 검사
     if (!res.ok) {
-      try {
-        const errorResponse = await res.json(); // 응답 본문 파싱 시도
-        const reason = errorResponse.message || "Unknown error";
-        throw new Error(reason);
-      } catch (parseError) {
-        // 응답 본문 파싱 실패
-        throw new Error("응답 파싱 중 오류 발생");
-      }
+      // 응답 본문 파싱 시도
+      const errorResponse = await res.json();
+      // 오류 메시지와 오류 이유를 포함한 에러 객체 생성
+      const error = new Error(`HTTP 상태 코드: ${res.status}, 오류 메시지: ${errorResponse.message}`);
+      error.status = res.status;
+      error.reason = errorResponse.reason || '이유 불명';
+      throw error;
     }
 
     // 응답 본문이 비어 있지 않은 경우 JSON 파싱 시도
@@ -102,10 +103,12 @@ async function patch(endpoint, params = "", data) {
 
   // 응답 코드가 4XX 계열일 때 (400, 403 등)
   if (!res.ok) {
+    // 에러 객체에 상태 코드와 에러 메시지를 추가
     const errorContent = await res.json();
-    const { reason } = errorContent;
-
-    throw new Error(reason);
+    const error = new Error(`HTTP 상태 코드: ${res.status}, 오류 메시지: ${errorContent.reason}`);
+    error.status = res.status;
+    error.reason = errorContent.reason || '이유 불명';
+    throw error;
   }
 
   const result = await res.json();
@@ -135,10 +138,12 @@ async function del(endpoint, params = "", data = {}) {
 
   // 응답 코드가 4XX 계열일 때 (400, 403 등)
   if (!res.ok) {
+    // 에러 객체에 상태 코드와 에러 메시지를 추가
     const errorContent = await res.json();
-    const { reason } = errorContent;
-
-    throw new Error(reason);
+    const error = new Error(`HTTP 상태 코드: ${res.status}, 오류 메시지: ${errorContent.reason}`);
+    error.status = res.status;
+    error.reason = errorContent.reason || '이유 불명';
+    throw error;
   }
 
   const result = await res.json();
