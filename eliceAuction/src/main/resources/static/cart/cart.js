@@ -27,15 +27,6 @@ let userId = 1;
 addAllElements();
 addAllEvents();
 
-async function isLogin() {
-  try {
-    const result = await API.get(`/cart/1`);// 로그인 되면 200번대 상태코드 반환
-    return true;
-  } catch (error) {
-    return false;
-  }
-}
-
 // html에 요소를 추가하는 함수들을 묶어주어서 코드를 깔끔하게 하는 역할임.
 function addAllElements() {
   createNavbar();
