@@ -6,9 +6,8 @@ import {
   compressString,
   createNavbar,
 } from "../useful-functions.js";
-import { deleteFromDb, getFromDb, putToDb } from "../indexed-db.js";
+import {addToDb, deleteFromDb, getFromDb, putToDb} from "../indexed-db.js";
 
-import * as Api from "../api.js";
 import * as API from "../api.js";
 
 // 요소(element), input 혹은 상수
@@ -23,7 +22,10 @@ const purchaseButton = document.querySelector("#purchaseButton");
 let totalCount = 0;// 장바구니에 담긴 상품 수
 let totalPrice = 0;// 장바구니에 담긴 상품 금액
 
-let userId = 1;
+let cart_baseUrl = "/cart/"
+let userId = 111;
+cart_baseUrl = cart_baseUrl + userId;
+
 addAllElements();
 addAllEvents();
 
@@ -45,15 +47,17 @@ async function insertProductsfromCart() {
   let products;
 
   // 로그인 상태 확인
-  await API.get("/cart/1")
-      .then(result => {
+  await API.get(cart_baseUrl)
+      .then(async result => {
         products = result;
       })
-      .catch(error => {
+      .catch(async error => {
 
-        if(error.status === 404){
+        if (error.status === 404) {// 잘못된 접근
           alert("잘못된 접근입니다.");
-        } else if(error.status === 403){
+        } else if (error.status === 403) {// 비회원
+          // indexDB에서 장바구니 상품 가져오기
+          products = await getFromDb("cart");
           console.log("로그인 실패. 쿠키에서 장바구니를 가져옵니다.");
           alert("무엄하도다!!");
           alert(`으~딜 비회원따리가 감히 고귀하고 위대하신 우리 "CART" 에 접근하려 하나!!`);
@@ -62,16 +66,11 @@ async function insertProductsfromCart() {
         }
 
         console.error(`HTTP 상태 코드: ${error.status}, 에러 메시지: ${error.reason}`);
-        
+
       })
-
-
 
   totalCount = 0;
   totalPrice = 0;
-  // userId = window.location.pathname.replace("/", '');
-  // console.log(userId)
-
 
   for (const product of products) {
     totalCount+=1;
@@ -104,7 +103,7 @@ async function insertProductsfromCart() {
               
               <p id="title-${productId}">${title}</p>
               
-              <p class="small mb-0">27세, INTJ</p>
+<!--              <p class="small mb-0">27세, INTJ</p>-->
               
             </div>
             
@@ -155,12 +154,20 @@ async function insertProductsfromCart() {
 }
 
 async function deleteItem(id) {
-  // indexedDB의 cart 목록에서 id를 key로 가지는 데이터를 삭제함.
-  console.log(id);
-  let url = "http://localhost:8080/api/cart"
-  let param = "1?productId="+id;
-  console.log(url);
-  await API.delete(url, param);
+  console.log(`delete product id: ${id}`);// 삭제할 상품 id
+
+  let param = "?productId="+id;
+  console.log(`API request: ${cart_baseUrl}`);
+  await API.delete(cart_baseUrl+param)
+      .then(result => {
+        console.log("회원 장바구니 삭제");
+        console.log(`삭제 id: ${id}`);
+      })
+      .catch(async error => {
+        console.log("비회원 장바구니 삭제");
+        console.log(`삭제 id: ${id}`);
+        await deleteFromDb("cart", id);
+      })
   // 페이지를 새로고침함
   window.location.reload();
 }
@@ -179,3 +186,33 @@ async function insertOrderSummary() {
     orderTotalElem.innerText = `0원`;
   }
 }
+
+
+// 상품 추가 예제:
+// for(let i = 1; i<=10; i++){
+//   let product = {
+//     productId : i,// 상품 번호
+//     title : "title"+i,// 상품명
+//     price : 100+i,// 가격
+//     pictureLink : null// 사진 경로
+//   };
+//
+//   await addCart(product);
+// }
+async function addCart(product){
+  const {productId, title, price, pictureLink } = product;
+  let param = "?productId="+productId;
+
+  API.post(cart_baseUrl+param)
+      .then(result => {
+        console.log("회원 장바구니 추가");
+        console.log(`상품 id: ${productId}`);
+      })
+      .catch(async error => {
+        console.log("비회원 장바구니 추가");
+        console.log(`상품 id: ${productId}`);
+        await addToDb("cart", product, product.productId);
+      })
+}
+
+export { addCart };
