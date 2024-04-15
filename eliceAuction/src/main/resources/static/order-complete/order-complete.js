@@ -1,10 +1,10 @@
-import { checkLogin, navigate, createNavbar } from "../../useful-functions.js";
+import { navigate, createNavbar } from "../../useful-functions.js";
 
 // 요소(element), input 혹은 상수
 const orderDetailButton = document.querySelector("#orderDetailButton");
 const shoppingButton = document.querySelector("#shoppingButton");
 
-checkLogin();
+//checkLogin();
 addAllElements();
 addAllEvents();
 
