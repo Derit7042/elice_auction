@@ -12,6 +12,4 @@ public class OrderDto {
     private Long memberId;
     private Long memberAddressId;
 
-    public OrderDto () {
-    }
 }
