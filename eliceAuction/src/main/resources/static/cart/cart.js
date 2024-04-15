@@ -1,4 +1,4 @@
-import { getImageUrl } from "../aws-s3.js";
+// import { getImageUrl } from "../aws-s3.js";
 import {
   addCommas,
   convertToNumber,
@@ -23,7 +23,7 @@ let totalCount = 0;// 장바구니에 담긴 상품 수
 let totalPrice = 0;// 장바구니에 담긴 상품 금액
 
 let cart_baseUrl = "/cart/"
-let userId = 111;
+let userId = 1;
 cart_baseUrl = cart_baseUrl + userId;
 
 addAllElements();
@@ -31,7 +31,6 @@ addAllEvents();
 
 // html에 요소를 추가하는 함수들을 묶어주어서 코드를 깔끔하게 하는 역할임.
 function addAllElements() {
-  createNavbar();
   insertProductsfromCart();
 
 }

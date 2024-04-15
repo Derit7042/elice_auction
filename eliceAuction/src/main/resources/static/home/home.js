@@ -1,8 +1,6 @@
-import * as Api from "../api.js";
-import { getImageUrl } from "../aws-s3.js";
+import * as API from "../api.js";
 import { navigate, createNavbar } from "../useful-functions.js";
-// import {attach} from "bulma-carousel/src/js";
-
+import {addToDb} from "../indexed-db.js";
 
 // 요소(element), input 혹은 상수
 const sliderDiv = document.querySelector("#slider");
@@ -14,46 +12,59 @@ addAllEvents();
 
 // html에 요소를 추가하는 함수들을 묶어주어서 코드를 깔끔하게 하는 역할임.
 async function addAllElements() {
-  createNavbar();
-  await addImageCardsToSlider();
-  attachSlider();
+  await getProducts();
 }
 
 // 여러 개의 addEventListener들을 묶어주어서 코드를 깔끔하게 하는 역할임.
 function addAllEvents() {}
 
 // api에서 카테고리 정보 및 사진 가져와서 슬라이드 카드로 사용
-async function addImageCardsToSlider() {
-  const categories = await Api.get("/categories");
-  console.log(categories)
+async function getProducts() {
+  // 상품 정보 가져옴
+  const products = await API.get("/products");
 
-  for (const category of categories) {
-    // 객체 destructuring
-    const { id, title, description, themeClass, imageKey } = category;
+  // 가져온 상품 정보를 출력함
+  for (const product of products) {
+    const {id, title, price, pictureLink, watchCount} = product;
 
-    sliderDiv.insertAdjacentHTML(
-      "beforeend",
-      `
-      <div class="card" id="category-${id}">
-        <div class="notification ${themeClass}">
-          <p class="title is-3 is-spaced">${title}</p>
-          <p class="subtitle is-6">${description}</p>
-        </div>
-        <div class="card-image">
-          <figure class="image is-3by2">
-            <img
-              src="${imageKey}"
-              alt="카테고리 이미지"
+    mainProductsContainer.insertAdjacentHTML(
+        "beforeend",
+        `
+        <div class="col mb-5">
+          <div class="card h-100">
+            <!-- Product image-->
+            <img class="card-img-top" 
+            width="450px" height="300px" 
+            src=${pictureLink} id="product-image-${id}" alt="..." 
             />
-          </figure>
+            <!-- Product details-->
+            <div class="card-body p-4">
+              <div class="text-center">
+                <!-- Product name-->
+                <h5 class="fw-bolder" id="product-title-${id}">${title}</h5>
+                <!-- Product reviews-->
+                <div class="d-flex justify-content-center small text-warning mb-2">
+                </div>
+                <!-- Product price-->
+                <p id="product-price-${id}">${price} 원</p>
+              </div>
+            </div>
+            <!-- Product actions-->
+            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent" id="add-cart-${id}">
+              <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">Add to cart</a></div>
+            </div>
+          </div>
         </div>
-      </div>
-    `
+        `
     );
 
-    const card = document.querySelector(`#category-${id}`);
+    document
+        .querySelector(`#add-cart-${id}`)
+        .addEventListener("click", () => addCart(product));
 
-    card.addEventListener("click", navigate(`/product/list?category=${title}`));
+  //   TODO: 상품 클릭시 상세페이지로 이동기능 구현!
+
+
   }
 }
 
@@ -79,3 +90,18 @@ function attachSlider() {
   });
 }
 
+async function addCart(product){
+  const {id, title, price, pictureLink } = product;
+  let param = "?productId="+id;
+
+  API.post("/cart/1"+param)
+      .then(result => {
+        console.log("회원 장바구니 추가");
+        console.log(`상품 id: ${id}`);
+      })
+      .catch(async error => {
+        console.log("비회원 장바구니 추가");
+        console.log(`상품 id: ${id}`);
+        await addToDb("cart", product, product.id);
+      })
+}
