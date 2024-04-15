@@ -175,4 +175,34 @@ const deleteFromDb = async (storeName, key = "") => {
   return result;
 };
 
-export { getFromDb, addToDb, putToDb, deleteFromDb };
+
+async function deleteEntryByValue(storeName, valueToDelete) {
+  if (!database) {
+    database = await openDatabase();
+  }
+
+  const transaction = database.transaction([storeName], "readwrite");
+  const store = transaction.objectStore(storeName);
+
+  // 커서를 사용하여 object store의 모든 항목을 순회
+  const cursorRequest = store.openCursor();
+
+  cursorRequest.onsuccess = async (event) => {
+    const cursor = event.target.result;
+    if (cursor) {
+      // 여기서 value를 확인하고 원하는 value를 찾으면 key를 사용하여 삭제
+      if (cursor.value === valueToDelete) {
+        // 해당 key로 데이터 삭제
+        await deleteFromDb(storeName, cursor.key);
+      }
+      cursor.continue();
+    }
+  };
+
+  cursorRequest.onerror = (event) => {
+    console.error('커서를 열 수 없습니다:', event.target.errorCode);
+  };
+}
+
+
+export { getFromDb, addToDb, putToDb, deleteFromDb, deleteEntryByValue };
