@@ -46,7 +46,7 @@ public class StubData implements CommandLineRunner {
 
     public void ProductStubData(){// 상품 정보 생성
         ProductDto dto = new ProductDto();
-        for(long i=1; i<=10; i++){
+        for(long i=1; i<=11; i++){
             dto.setTitle("title"+i);
             dto.setBrief("brief"+i);
             dto.setPrice(i*100);
