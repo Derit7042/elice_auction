@@ -20,7 +20,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/cart")
-@CrossOrigin(origins = "http://localhost:8080")
+//@CrossOrigin(origins = "http://localhost:8080")
 public class ViewController {
     @GetMapping
     public String cartViewPage(Model model) {
