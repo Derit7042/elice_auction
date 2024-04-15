@@ -1,101 +1,139 @@
-document.addEventListener('DOMContentLoaded', function () {
-  const searchAddressButton = document.getElementById('searchAddressButton');
-  const checkoutButton = document.getElementById('checkoutButton');
-  const urlParams = new URLSearchParams(window.location.search);
-  const productName = urlParams.get('productName');
-  const productPrice = urlParams.get('productPrice');
+import * as Api from "../api.js";
+import {
+  addCommas,
+  convertToNumber,
+  navigate,
+  createNavbar,
+} from "../useful-functions.js";
 
-  // 상품 정보를 화면에 표시
-  document.getElementById('productName').innerText = productName;
-  document.getElementById('productPrice').innerText = productPrice;
-  document.getElementById('orderTotal').innerText = productPrice;
+// 요소(element), input 혹은 상수
+const subtitleCart = document.querySelector("#subtitleCart");
+const receiverNameInput = document.querySelector("#receiverName");
+const postalCodeInput = document.querySelector("#postalCode");
+const searchAddressButton = document.querySelector("#searchAddressButton");
+const address1Input = document.querySelector("#address1");
+const address2Input = document.querySelector("#address2");
+const requestSelectBox = document.querySelector("#requestSelectBox");
+const customRequestInput = document.querySelector("#customRequest");
+const productsTitleElem = document.querySelector("#productName");
+const productsTotalElem = document.querySelector("#productPrice");
+const deliveryFeeElem = document.querySelector("#deliveryFee");
+const orderTotalElem = document.querySelector("#orderTotal");
+const checkoutButton = document.querySelector("#checkoutButton");
 
-  // 주소 찾기 버튼에 이벤트 리스너 등록
-  searchAddressButton.addEventListener('click', function () {
-    new daum.Postcode({
-      oncomplete: function (data) {
-        document.getElementById('postalCode').value = data.zonecode;
-        document.getElementById('address1').value = data.address;
-        document.getElementById('address2').focus();
+
+createNavbar();
+addAllEvents();
+
+function addAllEvents() {
+  subtitleCart.addEventListener("click", () => navigate("/cart"));
+  searchAddressButton.addEventListener("click", searchAddress);
+  checkoutButton.addEventListener("click", doCheckout);
+  //checkoutButton.addEventListener("click", navigate("/order-complete/order-complete.html"));
+
+}
+
+function searchAddress() {
+  new daum.Postcode({
+    oncomplete: function (data) {
+      const addr = data.userSelectedType === "R" ? data.roadAddress : data.jibunAddress;
+      let extraAddr = "";
+
+      if (data.userSelectedType === "R") {
+        if (data.bname && /[동|로|가]$/g.test(data.bname)) {
+          extraAddr += data.bname;
+        }
+        if (data.buildingName && data.apartment === "Y") {
+          extraAddr += extraAddr ? `, ${data.buildingName}` : data.buildingName;
+        }
       }
-    }).open();
-  });
-
-  // 결제하기 버튼에 이벤트 리스너 등록
-  checkoutButton.addEventListener('click', async function () {
-    const postalCode = document.getElementById('postalCode').value;
-    const address1 = document.getElementById('address1').value;
-    const address2 = document.getElementById('address2').value;
-
-    if (!postalCode || !address1 || !address2) {
-      alert('모든 필드를 입력해주세요.');
-      return;
+      postalCodeInput.value = data.zonecode;
+      address1Input.value = `${addr} ${extraAddr ? `(${extraAddr})` : ''}`;
+      address2Input.placeholder = "상세 주소를 입력해 주세요.";
+      address2Input.focus();
     }
-
-    const accessToken = sessionStorage.getItem('accessToken');
-    if (!accessToken) {
-      alert('로그인이 필요합니다.');
-      window.location.href = '/login/login.html'; // 로그인 페이지로 리다이렉션
-      return;
-    }
-
-    try {
-      const memberAddressId = await createMemberAddress({
-        name: '송호진', // 예시 이름
-        address: `${postalCode} ${address1} ${address2}`
-      }, accessToken);
-
-      const orderData = {
-        productId: urlParams.get('productId'),
-        memberAddressId: memberAddressId
-      };
-
-      await createOrder(orderData, accessToken);
-      window.location.href = '/order-complete/order-complete.html';
-    } catch (error) {
-      console.error('주문 처리 중 문제가 발생했습니다:', error);
-      alert('주문 처리 중 문제가 발생했습니다. 다시 시도해 주세요.');
-    }
-  });
-});
-
-// 배송지 정보 생성 및 ID 반환 함수
-async function createMemberAddress(addressData, token) {
-  const response = await fetch('/api/orders/delivery/create', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
-    body: JSON.stringify(addressData)
-  });
-
-  if (!response.ok) {
-    const errorData = await response.text();
-    console.error('배송지 생성 실패:', errorData);
-    throw new Error('배송지 생성 실패.');
-  }
-
-  const data = await response.json();
-  return data.id; // 서버에서 ID 필드를 반환한다고 가정
+  }).open();
 }
 
-// 주문 생성 함수
-async function createOrder(orderData, accessToken) {
-  const response = await fetch('/api/orders/member/create', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${accessToken}`
-    },
-    body: JSON.stringify(orderData)
-  });
+async function doCheckout() {
+  const receiverName = receiverNameInput.value.trim();
+  const address = address1Input.value.trim() + ' ' + address2Input.value.trim();
+  const postalCode = postalCodeInput.value.trim();
 
-  if (!response.ok) {
-    const errorData = await response.text();
-    console.error('주문 생성 실패:', errorData);
-    throw new Error('주문 생성에 실패하였습니다.');
+  if (!receiverName || !postalCode || !address) {
+    alert("모든 배송 정보를 입력해 주세요.");
+    return;
   }
 
-  return response.json();
+  const currentUserId = 1; // 로그인된 사용자의 ID를 여기에 할당
+
+  try {
+    const memberAddressResponse = await Api.post("/orders/delivery/create", {
+      name: receiverName,
+      address: address,
+      memberId: currentUserId
+    });
+
+    // if (!memberAddressResponse.ok) {
+    //   throw new Error("배송지 정보 생성에 실패했습니다.");
+    // }
+
+    // 서버로부터 반환된 memberAddress의 ID를 추출합니다.
+    const memberAddressId = memberAddressResponse.id;
+
+    const orderResponse = await Api.post("/orders/create", {
+      productId: 11, // 주문하려는 상품의 ID
+      memberId: currentUserId,
+      memberAddressId: memberAddressId
+    });
+
+    // if (!orderResponse.ok) {
+    //   throw new Error("주문 생성에 실패했습니다.");
+    // }
+
+    alert("주문이 성공적으로 처리되었습니다.");
+    window.location.href = "/order-complete/order-complete.html" // 페이지 리다이렉션
+
+  } catch (err) {
+    console.error("주문 처리 중 오류 발생", err);
+    alert(`오류: ${err.message}`);
+  }
 }
+
+async function fetchProductDetails(id) {
+  try {
+    const response = await Api.get(`/products/${id}`);
+    console.log(response); // 서버 응답 로그로 기록
+
+    // 서버에서 정상적으로 상품 정보를 받았는지 확인
+    // 수정: response 자체가 상품 데이터를 담고 있습니다.
+    if (response) {
+      return response;
+    } else {
+      // 상품 데이터가 없거나 예상한 형식이 아닐 경우
+      console.error('서버로부터 상품 정보를 받지 못했습니다.', response);
+      return null;
+    }
+  } catch (err) {
+    console.error("상품 정보 로딩 중 오류 발생", err);
+    alert("상품 정보를 불러오는 중 오류가 발생했습니다.");
+    return null;
+  }
+}
+
+async function insertOrderSummary() {
+  const product = await fetchProductDetails(11); // ID가 1인 상품의 상세 정보를 가져옴
+
+  // product 객체 내부의 정보가 정상적으로 있는지 확인
+  if (product && product.price !== undefined) {
+    const totalPrice = product.price; // 총 가격 계산
+    productsTitleElem.textContent = product.title;
+    productsTotalElem.textContent = `${addCommas(totalPrice)}원`;
+    orderTotalElem.textContent = `${addCommas(totalPrice)}원`;
+  } else {
+    console.error('상품 정보를 불러올 수 없습니다.', product);
+    alert('상품 정보를 불러올 수 없습니다.');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', insertOrderSummary);
