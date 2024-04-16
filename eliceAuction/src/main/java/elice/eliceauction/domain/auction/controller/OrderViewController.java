@@ -12,4 +12,12 @@ public class OrderViewController {
     public String orderViewPage(Model model) {
         return "order/order.html";
     }
+    @GetMapping("/complete")
+    public String orderCompletePage(Model model) {
+        return "order-complete/order-complete.html";
+    }
+    @GetMapping("/details")
+    public String orderdetailPage(Model model) {
+        return "account-orders/account-orders.html";
+    }
 }
