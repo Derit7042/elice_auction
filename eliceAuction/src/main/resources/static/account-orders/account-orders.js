@@ -1,4 +1,4 @@
-import { checkLogin, createNavbar } from "../../useful-functions.js";
+import { createNavbar } from "../../useful-functions.js";
 import * as Api from "../../api.js";
 
 
@@ -10,7 +10,7 @@ const modalCloseButton = document.querySelector("#modalCloseButton");
 const deleteCompleteButton = document.querySelector("#deleteCompleteButton");
 const deleteCancelButton = document.querySelector("#deleteCancelButton");
 
-checkLogin();
+//checkLogin();
 addAllElements();
 addAllEvents();
 
