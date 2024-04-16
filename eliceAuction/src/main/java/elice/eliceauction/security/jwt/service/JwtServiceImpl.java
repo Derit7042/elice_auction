@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Base64;
 import java.util.Date;
 import java.util.Optional;
 
@@ -115,9 +116,16 @@ public class JwtServiceImpl implements JwtService {
         String header = request.getHeader(accessHeader);
         if (header != null && header.startsWith(BEARER)) {
             String token = header.substring(BEARER.length()).trim();
-            if (token.split("\\.").length == 3) {
-                log.debug("액세스 토큰 추출: token={}", token);
-                return Optional.of(token);
+            if (token.split("\\.").length == 3) {  // JWT는 세 부분으로 구성되어야 함
+                try {
+                    // 토큰의 형식이 base64 URL-safe 인지 확인
+                    String payload = token.split("\\.")[1];
+                    Base64.getUrlDecoder().decode(payload);  // Decoding to check if it's URL-safe
+                    log.debug("액세스 토큰 추출: token={}", token);
+                    return Optional.of(token);
+                } catch (IllegalArgumentException e) {
+                    log.error("잘못된 Base64 인코딩: ", e);
+                }
             } else {
                 log.error("잘못된 형식의 토큰을 받았습니다: {}", token);
             }
@@ -126,6 +134,7 @@ public class JwtServiceImpl implements JwtService {
         }
         return Optional.empty();
     }
+
 
     @Override
     public Optional<String> extractRefreshToken(HttpServletRequest request) {

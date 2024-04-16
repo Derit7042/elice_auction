@@ -42,7 +42,8 @@ async function handleSubmit(e) {
             const result = await response.json();
             const token = response.headers.get("Authorization");
             if (token) {
-                sessionStorage.setItem("token", token.split(" ")[1]); // Bearer 토큰에서 실제 토큰 부분만 저장
+                const cleanedToken = cleanToken(token.split(" ")[1]); // Bearer 토큰에서 실제 토큰 부분만 저장 후 필요없는 문자 제거
+                sessionStorage.setItem("token", cleanedToken);
                 alert("로그인 성공!");
                 const { previouspage } = getUrlParams();
                 window.location.href = previouspage || "/home/home.html";
@@ -65,3 +66,11 @@ async function handleSubmit(e) {
         }
     }
 }
+
+// 클라이언트 측에서 토큰을 정리하는 함수
+function cleanToken(token) {
+    // 정규 표현식을 사용하여 JWT 형식 확인 및 필요없는 문자 제거
+    const cleaned = token.replace(/[^A-Za-z0-9\-_\.]/g, '');
+    return cleaned;
+}
+
