@@ -56,7 +56,7 @@ function renderProductList(products) {
         // 각 제품의 HTML 요소 생성
         const productDetailHTML = `
             <div class="product-item">
-                <h2><a href="http://localhost:8080/product/product-detail?id=${product.id}">${product.title}</a></h2>
+                <h2><a href="http://localhost:8080/product/${product.id}">${product.title}</a></h2>
                 <p>${product.brief}</p>
                 <p>가격: ${product.price}원</p>
                 <p>조회수: ${product.watchCount}회</p>
