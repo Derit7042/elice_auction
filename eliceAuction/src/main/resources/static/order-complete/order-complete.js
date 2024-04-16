@@ -15,6 +15,6 @@ function addAllElements() {
 
 // addEventListener들을 묶어주어서 코드를 깔끔하게 하는 역할임.
 function addAllEvents() {
-  orderDetailButton.addEventListener("click", navigate("/account/orders"));
+  orderDetailButton.addEventListener("click", navigate("/order/details"));
   shoppingButton.addEventListener("click", navigate("/"));
 }
