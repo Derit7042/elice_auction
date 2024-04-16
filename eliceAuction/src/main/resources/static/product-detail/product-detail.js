@@ -1,6 +1,7 @@
 function getProductIdFromUrl() {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get('id');
+    let urlParams = window.location.pathname.split('/').pop();
+    console.log(urlParams);
+    return urlParams;
 }
 
 const productId = getProductIdFromUrl();
