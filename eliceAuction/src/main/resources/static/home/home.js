@@ -75,7 +75,7 @@ async function getProducts() {
 
     document
         .querySelector(`#move-to-login`)
-        .addEventListener("click", navigate(`/login`));
+        .addEventListener("click", navigate(`/members/login`));
   //   TODO: 상품 클릭시 상세페이지로 이동기능 구현!
 
 

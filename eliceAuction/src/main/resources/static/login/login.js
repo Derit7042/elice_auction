@@ -1,12 +1,6 @@
 import * as Api from "../api.js";
-import {
-  blockIfLogin,
-  getUrlParams,
-  validateEmail,
-  createNavbar,
-} from "../useful-functions.js";
+import { blockIfLogin, getUrlParams, createNavbar } from "../useful-functions.js";
 
-// 요소(element), input 혹은 상수
 const usernameInput = document.querySelector("#usernameInput");
 const passwordInput = document.querySelector("#passwordInput");
 const submitButton = document.querySelector("#submitButton");
@@ -15,205 +9,68 @@ blockIfLogin();
 addAllElements();
 addAllEvents();
 
-// html에 요소를 추가하는 함수들을 묶어주어서 코드를 깔끔하게 하는 역할임.
-async function addAllElements() {
-  createNavbar();
+function addAllElements() {
+    createNavbar();
 }
 
-// 여러 개의 addEventListener들을 묶어주어서 코드를 깔끔하게 하는 역할임.
 function addAllEvents() {
-  submitButton.addEventListener("click", handleSubmit);
+    submitButton.addEventListener("click", handleSubmit);
 }
 
-// 로그인 진행
 async function handleSubmit(e) {
-  e.preventDefault();
+    e.preventDefault();
 
-  const username = usernameInput.value;
-  const password = passwordInput.value;
+    const username = usernameInput.value;
+    const password = passwordInput.value;
 
-  // 잘 입력했는지 확인
-  const isUsernameValid = username.length >= 2;
-  const isPasswordValid = password.length >= 4;
-
-  if (!isUsernameValid || !isPasswordValid) {
-    return alert(
-      "비밀번호가 4글자 이상인지, 아이디 형태가 맞는지 확인해 주세요."
-    );
-  }
-
-  // 로그인 api 요청
-  try {
-    const data = { username, password };
-
-    const result = await Api.post("/members/login", data);
-    const { token, isAdmin } = result;
-
-    // 로그인 성공, 토큰을 세션 스토리지에 저장
-    sessionStorage.setItem("token", token);
-
-    alert(`정상적으로 로그인되었습니다.`);
-
-    // 로그인 성공
-
-    // admin(관리자) 일 경우, sessionStorage에 기록함
-    if (isAdmin) {
-      sessionStorage.setItem("admin", "admin");
+    if (username.length < 2 || password.length < 4) {
+        alert("아이디와 비밀번호를 정확히 입력해주세요.");
+        return;
     }
 
-    // 기존 다른 페이지에서 이 로그인 페이지로 온 경우, 다시 돌아가도록 해 줌.
-    const { previouspage } = getUrlParams();
+    try {
+        const data = { username, password };
+        const response = await fetch("http://localhost:8080/api/members/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
 
-    if (previouspage) {
-      window.location.href = previouspage;
-
-      return;
+        if (response.ok) {
+            const result = await response.json();
+            const token = response.headers.get("Authorization");
+            if (token) {
+                const cleanedToken = cleanToken(token.split(" ")[1]); // Bearer 토큰에서 실제 토큰 부분만 저장 후 필요없는 문자 제거
+                sessionStorage.setItem("token", cleanedToken);
+                alert("로그인 성공!");
+                const { previouspage } = getUrlParams();
+                window.location.href = previouspage || "/home/home.html";
+            } else {
+                console.error("서버 응답:", result);
+                alert("로그인 실패: 유효한 토큰을 받지 못했습니다. 서버 응답을 확인해주세요.");
+            }
+        } else {
+            const errorResult = await response.json();
+            console.error("로그인 실패:", errorResult);
+            alert(`로그인 실패: ${errorResult.message}`);
+        }
+    } catch (error) {
+        if (error instanceof TypeError) {
+            console.error("네트워크 오류 발생:", error);
+            alert("서버에 접속할 수 없습니다. 네트워크 연결을 확인해 주세요.");
+        } else {
+            console.error("알 수 없는 오류 발생:", error);
+            alert("알 수 없는 오류가 발생했습니다. 관리자에게 문의하세요.");
+        }
     }
-
-    // 기존 다른 페이지가 없었던 경우, 그냥 기본 페이지로 이동
-    window.location.href = "/";
-  } catch (err) {
-    console.error(err.stack);
-    alert(`문제가 발생하였습니다. 확인 후 다시 시도해 주세요: ${err.message}`);
-  }
-
-  // try {
-  //   const data = { username, password };
-  //
-  //   const result = await Api.post("/login", data);
-  //   console.log(result)
-  //   console.log("!!!!!!!")
-  //   const { isAdmin } = result;
-  //
-  //   alert(`정상적으로 로그인되었습니다.`);import * as Api from "../api.js";
-  // import {
-  //   blockIfLogin,
-  //   getUrlParams,
-  //   validateEmail,
-  //   createNavbar,
-  // } from "../useful-functions.js";
-  //
-  // // 요소(element), input 혹은 상수
-  // const usernameInput = document.querySelector("#usernameInput");
-  // const passwordInput = document.querySelector("#passwordInput");
-  // const submitButton = document.querySelector("#submitButton");
-  //
-  // blockIfLogin();
-  // addAllElements();
-  // addAllEvents();
-  //
-  // // html에 요소를 추가하는 함수들을 묶어주어서 코드를 깔끔하게 하는 역할임.
-  // async function addAllElements() {
-  //   createNavbar();
-  // }
-  //
-  // // 여러 개의 addEventListener들을 묶어주어서 코드를 깔끔하게 하는 역할임.
-  // function addAllEvents() {
-  //   submitButton.addEventListener("click", handleSubmit);
-  // }
-  //
-  // // 로그인 진행
-  // async function handleSubmit(e) {
-  //   e.preventDefault();
-  //
-  //   const username = usernameInput.value;
-  //   const password = passwordInput.value;
-  //
-  //   // 잘 입력했는지 확인
-  //   const isEmailValid = validateEmail(username);
-  //   const isPasswordValid = password.length >= 4;
-  //
-  //   if (!isEmailValid || !isPasswordValid) {
-  //     return alert(
-  //       "비밀번호가 4글자 이상인지, 이메일 형태가 맞는지 확인해 주세요."
-  //     );
-  //   }
-  //
-  //   // 로그인 api 요청
-  //   try {
-  //     const data = { username, password };
-  //
-  //     const result = await Api.post("/login", data);
-  //     const { token, isAdmin } = result;
-  //
-  //     // 로그인 성공, 토큰을 세션 스토리지에 저장
-  //     sessionStorage.setItem("token", token);
-  //
-  //     alert(`정상적으로 로그인되었습니다.`);
-  //
-  //     // 로그인 성공
-  //
-  //     // admin(관리자) 일 경우, sessionStorage에 기록함
-  //     if (isAdmin) {
-  //       sessionStorage.setItem("admin", "admin");
-  //     }
-  //
-  //     // 기존 다른 페이지에서 이 로그인 페이지로 온 경우, 다시 돌아가도록 해 줌.
-  //     const { previouspage } = getUrlParams();
-  //
-  //     if (previouspage) {
-  //       window.location.href = previouspage;
-  //
-  //       return;
-  //     }
-  //
-  //     // 기존 다른 페이지가 없었던 경우, 그냥 기본 페이지로 이동
-  //     window.location.href = "/";
-  //   } catch (err) {
-  //     console.error(err.stack);
-  //     alert(`문제가 발생하였습니다. 확인 후 다시 시도해 주세요: ${err.message}`);
-  //   }
-  //
-  //   // try {
-  //   //   const data = { username, password };
-  //   //
-  //   //   const result = await Api.post("/login", data);
-  //   //   console.log(result)
-  //   //   console.log("!!!!!!!")
-  //   //   const { isAdmin } = result;
-  //   //
-  //   //   alert(`정상적으로 로그인되었습니다.`);
-  //   //
-  //   //   // admin(관리자) 일 경우, sessionStorage에 기록함
-  //   //   if (isAdmin) {
-  //   //     sessionStorage.setItem("admin", "admin");
-  //   //   }
-  //   //
-  //   //   // 기존 다른 페이지에서 이 로그인 페이지로 온 경우, 다시 돌아가도록 해 줌.
-  //   //   const { previouspage } = getUrlParams();
-  //   //
-  //   //   if (previouspage) {
-  //   //     window.location.href = previouspage;
-  //   //     return;
-  //   //   }
-  //   //
-  //   //   // 기존 다른 페이지가 없었던 경우, 그냥 기본 페이지로 이동
-  //   //   window.location.href = "/";
-  //   // } catch (err) {
-  //   //   console.error(err.stack);
-  //   //   alert(`문제가 발생하였습니다. 확인 후 다시 시도해 주세요: ${err.message}`);
-  //   // }
-  //
-  // }
-  //
-  //   // admin(관리자) 일 경우, sessionStorage에 기록함
-  //   if (isAdmin) {
-  //     sessionStorage.setItem("admin", "admin");
-  //   }
-  //
-  //   // 기존 다른 페이지에서 이 로그인 페이지로 온 경우, 다시 돌아가도록 해 줌.
-  //   const { previouspage } = getUrlParams();
-  //
-  //   if (previouspage) {
-  //     window.location.href = previouspage;
-  //     return;
-  //   }
-  //
-  //   // 기존 다른 페이지가 없었던 경우, 그냥 기본 페이지로 이동
-  //   window.location.href = "/";
-  // } catch (err) {
-  //   console.error(err.stack);
-  //   alert(`문제가 발생하였습니다. 확인 후 다시 시도해 주세요: ${err.message}`);
-  // }
-
 }
+
+// 클라이언트 측에서 토큰을 정리하는 함수
+function cleanToken(token) {
+    // 정규 표현식을 사용하여 JWT 형식 확인 및 필요없는 문자 제거
+    const cleaned = token.replace(/[^A-Za-z0-9\-_\.]/g, '');
+    return cleaned;
+}
+

@@ -24,33 +24,44 @@ public class MemberController {
 
 
     /**
-     * 로그인
+     * 로그인 요청을 처리합니다.
+     * 유효한 자격 증명으로 로그인 시, JWT 액세스 토큰과 리프레시 토큰을 발행합니다.
+     *
+     * @param memberLoginDto 로그인 요청에 필요한 사용자 정보 (아이디(유저네임), 비밀번호)
+     * @param response HTTP 응답 객체, 헤더 설정을 통해 토큰 전달
+     * @return 로그인 결과와 메시지를 포함하는 ResponseEntity 객체
      */
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody MemberLoginDto memberLoginDto, HttpServletResponse response) {
         try {
-            // 사용자 인증
+            // 사용자 인증 시도
             Optional<Member> memberOptional = memberService.authenticate(memberLoginDto.username(), memberLoginDto.password());
+
+            // 인증 실패 시, UNAUTHORIZED 응답 반환
             if (memberOptional.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"message\":\"로그인 실패\"}");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"message\":\"로그인 실패: 사용자 인증 실패\"}");
             }
 
-            // JWT 토큰 생성
+            // 인증 성공, 토큰 생성
             Member member = memberOptional.get();
             String accessToken = jwtService.createAccessToken(member.getUsername());
             String refreshToken = jwtService.createRefreshToken();
 
-            // 리프레시 토큰 업데이트
-            jwtService.updateRefreshToken(member.getUsername(), refreshToken);
+            // 토큰 생성 실패 시, INTERNAL_SERVER_ERROR 응답 반환
+            if (accessToken == null || refreshToken == null) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"message\":\"토큰 생성 실패\"}");
+            }
 
-            // 토큰 발행
+            // 토큰을 HTTP 헤더에 설정하고 클라이언트에 전달
             jwtService.sendAccessAndRefreshToken(response, accessToken, refreshToken);
 
+            // 로그인 성공 응답 반환
             return ResponseEntity.ok()
                     .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                     .header("Refresh-Token", "Bearer " + refreshToken)
                     .body("{\"message\":\"로그인 성공\"}");
         } catch (Exception e) {
+            // 예외 발생 시, INTERNAL_SERVER_ERROR 응답 반환
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"message\":\"서버 에러 발생: " + e.getMessage() + "\"}");
         }
     }
