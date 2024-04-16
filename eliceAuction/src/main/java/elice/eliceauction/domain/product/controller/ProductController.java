@@ -48,7 +48,7 @@ public class ProductController {
 //        return "redirect:/products/" + saved.getId();
 //    }
 
-    @GetMapping("/product-add")
+    @GetMapping("/add")
     public String productAddPage() {
 //        log.info(dto.toString());
 //
@@ -77,7 +77,7 @@ public class ProductController {
 //    }
 
 
-    @GetMapping("/product-detail")
+    @GetMapping("/{id}")
     public String productDetailPage() {
 //        log.info("id = " + id);
 //        // 1. id를 조회해 데이터 가져오기
