@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ public class CartController {
     
     // 장바구니 목록 불러오기
     /*********스웨거 어노테이션**********/
-    @Operation(summary = "장바구니 조회", description = "유저 id(memberId)를 이용하여 해당 유저의 장바구니에 담긴 상품 목록을 불러옵니다.")
+    @Operation(summary = "장바구니 조회", description = "유저 id(memberId)를 이용하여 해당 유저의 장바구니에 담긴 상품 목록을 불러옵니다. 만약 id가 null이면 로그인 한 계정을 기준으로 불러옵니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                         description = "장바구니 조회 성공",
@@ -44,8 +45,16 @@ public class CartController {
     @Parameter(name = "memberId", description = "사용자의 고유 id 번호")
     /*********스웨거 어노테이션**********/
     @GetMapping("/{memberId}")
-    public ResponseEntity<List<CartResponseDto>> getCarts(@PathVariable("memberId") Long memberId) throws Exception {
-        Member member = memberService.findMemberById(memberId);
+    public ResponseEntity<List<CartResponseDto>> getCarts(@AuthenticationPrincipal Member member,
+                                                          @PathVariable(name = "memberId", required = false) Long memberId
+                                                        ) throws Exception {
+        if(member == null) {// 로그인 상태가 아닌 경우
+            member = memberService.findMemberById(memberId);
+        }
+
+        System.out.println("----------------member = " + member.getId());
+        System.out.println("----------------member = " + memberId);
+
         List<CartItem> cartItems = cartService.getCarts(member);
 
         // CartItem -> DTO로 변환
@@ -59,7 +68,7 @@ public class CartController {
     
     // 장바구니에 상품 추가
     /*********스웨거 어노테이션**********/
-    @Operation(summary = "장바구니에 상품 추가", description = "유저 id(memberId)를 이용하여 해당 유저의 장바구니에 상품id(productId)에 해당하는 상품을 추가합니다.")
+    @Operation(summary = "장바구니에 상품 추가", description = "유저 id(memberId)를 이용하여 해당 유저의 장바구니에 상품id(productId)에 해당하는 상품을 추가합니다. 만약 id가 null이면 로그인 한 계정을 기준으로 불러옵니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     description = "상품 추가 성공",
@@ -69,9 +78,14 @@ public class CartController {
     @Parameter(name = "productId", description = "상품 id")
     /*********스웨거 어노테이션**********/
     @PostMapping("/{memberId}")
-    public ResponseEntity<CartResponseDto> addCartItem(@PathVariable("memberId") Long memberId,
-                                                       @RequestParam("productId") Long productId) throws Exception{
-        Member member = memberService.findMemberById(memberId);
+    public ResponseEntity<CartResponseDto> addCartItem(@AuthenticationPrincipal Member member,
+                                                       @PathVariable(name = "memberId", required = false) Long memberId,
+                                                       @RequestParam("productId") Long productId
+                                                        ) throws Exception{
+        if(member == null) {// 로그인 상태가 아닌 경우
+            member = memberService.findMemberById(memberId);
+        }
+
         cartService.add(member, productId);
         CartItem cartItem = cartService.getCart(member, productId);
 
@@ -83,7 +97,7 @@ public class CartController {
     
     // 장바구니에서 특정 상품 삭제
     /*********스웨거 어노테이션**********/
-    @Operation(summary = "장바구니에서 상품 삭제", description = "유저 id(memberId)를 이용하여 해당 유저의 장바구니에 상품id(productId)에 해당하는 상품을 삭제합니다.")
+    @Operation(summary = "장바구니에서 상품 삭제", description = "유저 id(memberId)를 이용하여 해당 유저의 장바구니에 상품id(productId)에 해당하는 상품을 삭제합니다.  만약 id가 null이면 로그인 한 계정을 기준으로 불러옵니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     description = "상품 삭제 성공",
@@ -93,9 +107,14 @@ public class CartController {
     @Parameter(name = "productId", description = "상품 id")
     /*********스웨거 어노테이션**********/
     @DeleteMapping("/{memberId}")
-    public ResponseEntity<CartResponseDto> deleteCartItem(@PathVariable("memberId") Long memberId,
-                                                                @RequestParam("productId") Long productId) throws Exception{
-        Member member = memberService.findMemberById(memberId);
+    public ResponseEntity<CartResponseDto> deleteCartItem(@AuthenticationPrincipal Member member,
+                                                          @PathVariable(name = "memberId", required = false) Long memberId,
+                                                          @RequestParam("productId") Long productId
+                                                            ) throws Exception{
+        if(member == null) {// 로그인 상태가 아닌 경우
+            member = memberService.findMemberById(memberId);
+        }
+
         CartItem deleted = cartService.delete(member, productId);
 
 
