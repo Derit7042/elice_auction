@@ -28,8 +28,8 @@ addAllEvents();
 function addAllEvents() {
   subtitleCart.addEventListener("click", () => navigate("/cart"));
   searchAddressButton.addEventListener("click", searchAddress);
-  checkoutButton.addEventListener("click", doCheckout);
-  //checkoutButton.addEventListener("click", navigate("/order-complete/order-complete.html"));
+  checkoutButton.addEventListener("click", () => doCheckout());
+  //checkoutButton.addEventListener("click", navigate("/order/complete"));
 
 }
 
@@ -92,7 +92,9 @@ async function doCheckout() {
     // }
 
     alert("주문이 성공적으로 처리되었습니다.");
-    window.location.href = "/order-complete/order-complete.html" // 페이지 리다이렉션
+    navigate("/order/complete")();
+
+    //window.location.href = "/order-complete/order-complete.html" // 페이지 리다이렉션
 
   } catch (err) {
     console.error("주문 처리 중 오류 발생", err);
