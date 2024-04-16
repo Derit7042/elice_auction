@@ -7,9 +7,12 @@ import elice.eliceauction.security.jwt.service.JwtService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,6 +20,40 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final MemberService memberService;
+    private final JwtService jwtService;
+
+
+    /**
+     * 로그인
+     */
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@Valid @RequestBody MemberLoginDto memberLoginDto, HttpServletResponse response) {
+        try {
+            // 사용자 인증
+            Optional<Member> memberOptional = memberService.authenticate(memberLoginDto.username(), memberLoginDto.password());
+            if (memberOptional.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"message\":\"로그인 실패\"}");
+            }
+
+            // JWT 토큰 생성
+            Member member = memberOptional.get();
+            String accessToken = jwtService.createAccessToken(member.getUsername());
+            String refreshToken = jwtService.createRefreshToken();
+
+            // 리프레시 토큰 업데이트
+            jwtService.updateRefreshToken(member.getUsername(), refreshToken);
+
+            // 토큰 발행
+            jwtService.sendAccessAndRefreshToken(response, accessToken, refreshToken);
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                    .header("Refresh-Token", "Bearer " + refreshToken)
+                    .body("{\"message\":\"로그인 성공\"}");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"message\":\"서버 에러 발생: " + e.getMessage() + "\"}");
+        }
+    }
 
 
     /**

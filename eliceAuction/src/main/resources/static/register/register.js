@@ -50,7 +50,7 @@ async function handleSubmit(e) {
   // 회원가입 api 요청
   try {
     const data = { username, password, name };
-    await Api.post("/api/members/register", data);
+    await Api.post("/members/register", data);
     alert("정상적으로 회원가입되었습니다.");
     window.location.href = "/login/login.html"; // 로그인 페이지 이동
   } catch (err) {
