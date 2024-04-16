@@ -5,6 +5,8 @@ import elice.eliceauction.domain.member.dto.MemberSignUpDto;
 import elice.eliceauction.domain.member.dto.MemberUpdateDto;
 import elice.eliceauction.domain.member.entity.Member;
 
+import java.util.Optional;
+
 public interface MemberService {
 
     /**
@@ -28,4 +30,5 @@ public interface MemberService {
     MemberInfoDto getMyInfo() throws Exception;
 
 
+    Optional<Member> authenticate(String username, String password);
 }

@@ -12,6 +12,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -87,5 +89,11 @@ public class MemberServiceImpl implements MemberService{
     public MemberInfoDto getMyInfo() throws Exception {
         Member findMember = memberRepository.findByUsername(SecurityUtil.getLoginUsername()).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         return new MemberInfoDto(findMember);
+    }
+
+    @Override
+    public Optional<Member> authenticate(String username, String password) {
+        return memberRepository.findByUsername(username)
+                .filter(member -> passwordEncoder.matches(password, member.getPassword()));
     }
 }
