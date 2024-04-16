@@ -3,6 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>Shopping Mall</title>
   <!-- 아이콘 -->
   <link
@@ -68,13 +71,13 @@
 
 <!-- 제품 목록 -->
 <section class="section">
-  <a href="/product-add/product-add.html" class="button is-primary">
+  <a href="http://localhost:8080/product/product-add" class="button is-primary">
     상품 등록하기
   </a>
   <div class="container product-item-container" id="producItemContainer">
     <!-- api 요청 후 만들어진 제품들 카드 요소가 삽입되는 곳 -->
   </div>
-  <script src="product-list.js"></script>
+  <script src="/product-list/product-list.js"></script>
 </section>
 </body>
 </html>
