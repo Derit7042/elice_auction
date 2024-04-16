@@ -67,7 +67,7 @@ async function getProducts() {
 
     document
         .querySelector(`#product-${id}`)
-        .addEventListener("click",  navigate(`/products/${id}`));
+        .addEventListener("click",  navigate(`/product/${id}`));
 
     document
         .querySelector(`#move-to-cart`)
