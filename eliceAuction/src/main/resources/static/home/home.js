@@ -33,6 +33,7 @@ async function getProducts() {
         <div class="col mb-5">
           <div class="card h-100">
             <!-- Product image-->
+            <div id="product-${id}">
             <img class="card-img-top" 
             width="450px" height="300px" 
             src=${pictureLink} id="product-image-${id}" alt="..." 
@@ -49,6 +50,8 @@ async function getProducts() {
                 <p id="product-price-${id}">${price} 원</p>
               </div>
             </div>
+            </div>
+            
             <!-- Product actions-->
             <div class="card-footer p-4 pt-0 border-top-0 bg-transparent" id="add-cart-${id}">
               <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">Add to cart</a></div>
@@ -62,6 +65,13 @@ async function getProducts() {
         .querySelector(`#add-cart-${id}`)
         .addEventListener("click", () => addCart(product));
 
+    document
+        .querySelector(`#product-${id}`)
+        .addEventListener("click",  navigate(`/products/${id}`));
+
+    document
+        .querySelector(`#move-to-cart`)
+        .addEventListener("click", navigate(`/cart`));
   //   TODO: 상품 클릭시 상세페이지로 이동기능 구현!
 
 
@@ -104,4 +114,6 @@ async function addCart(product){
         console.log(`상품 id: ${id}`);
         await addToDb("cart", product, product.id);
       })
+
+  alert("상품이 장바구니에 추가됬습니다.");
 }
