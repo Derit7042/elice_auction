@@ -18,6 +18,19 @@ async function addAllElements() {
 // 여러 개의 addEventListener들을 묶어주어서 코드를 깔끔하게 하는 역할임.
 function addAllEvents() {}
 
+function setupLogout() {
+  const logoutButton = document.querySelector("#move-to-logout");
+  logoutButton.addEventListener("click", () => {
+    // 토큰 삭제
+    sessionStorage.removeItem("token");
+
+    // 로그아웃 알림
+    alert("로그아웃 되었습니다.");
+  });
+}
+
+document.addEventListener("DOMContentLoaded", setupLogout);
+
 // api에서 카테고리 정보 및 사진 가져와서 슬라이드 카드로 사용
 async function getProducts() {
   // 상품 정보 가져옴
@@ -76,6 +89,10 @@ async function getProducts() {
     document
         .querySelector(`#move-to-login`)
         .addEventListener("click", navigate(`/members/login`));
+
+    document
+        .querySelector('#move-to-logout')
+        .addEventListener("click", navigate('/members/login'));
   //   TODO: 상품 클릭시 상세페이지로 이동기능 구현!
 
 
