@@ -1,6 +1,5 @@
 package elice.eliceauction.domain.product.controller;
 
-import elice.eliceauction.domain.cart.entity.CartResponseDto;
 import elice.eliceauction.domain.product.dto.ProductDto;
 import elice.eliceauction.domain.product.entity.Product;
 import elice.eliceauction.domain.product.service.ProductService;
@@ -20,7 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.security.Principal;
 
 @Slf4j
 @RestController
@@ -58,34 +56,6 @@ public class ProductApiController {
         return productService.show(id);
     }
 
-//    // POST
-//    /*********스웨거 어노테이션**********/
-//    @Operation(summary = "상품 등록", description = "유저가 상품을 등록합니다.")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200",
-//                    description = "상품 등록 성공",
-//                    content = @Content(schema = @Schema(implementation = ProductDto.class))),
-//    })
-//    @Parameter(name = "dto", description = "상품 등록 시 입력되는 요소들")
-//    /*********스웨거 어노테이션**********/
-//    @PostMapping
-//    public ResponseEntity<Product> create(@RequestBody ProductDto dto /*, Principal principal */) {
-//        if (dto.getWatchCount() == null) {
-//            dto.setWatchCount(0L);
-//        }
-//
-//        LocalDateTime currentDateTime = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
-//        dto.setDate(currentDateTime);
-//
-////        String membername = principal.getName();
-////        Product created = productService.create(dto, membername);
-//
-//        Product created = productService.create(dto);
-//        return (created != null) ?
-//                ResponseEntity.status(HttpStatus.OK).body(created) :
-//                ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-//    }
-
     // POST
     @Operation(summary = "상품 등록", description = "유저가 상품을 등록합니다.")
     @ApiResponses(value = {
@@ -107,9 +77,7 @@ public class ProductApiController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
-        // 임시 코드
         String fileName = file.getOriginalFilename();
-        // 실제로는 밑에서 지정한 url 에 대한 사진을 업로드
 
         // 나머지 필요한 데이터 처리 로직
         LocalDateTime currentDateTime = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);

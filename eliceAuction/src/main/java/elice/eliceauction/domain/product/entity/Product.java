@@ -35,12 +35,6 @@ public class Product{
     @Column(name = "picture_link") // 그림 링크
     private String pictureLink;
 
-//    @Column(name = "seller_id")
-//    private Long sellerId;
-
-//    @Column(name = "seller_name")
-//    private String sellerName;
-
     public Product(String title, String brief, Long price, Long watchCount, LocalDateTime date, String pictureLink) {
         this.title = title;
         this.brief = brief;
@@ -49,14 +43,6 @@ public class Product{
         this.date = date;
         this.pictureLink = pictureLink;
     }
-
-//    @OneToOne
-//    @JoinColumn(name = "seller_id", nullable = false) // Member 테이블의 id값 참조 (판매자)
-//    private Member seller;
-
-//    @OneToOne
-//    @JoinColumn(name = "buyer_id", nullable = false) // Member 테이블의 id값 참조 (구매자)
-//    private Member buyer;
 
     public void patch(Product product) {
         if (product.title != null)

@@ -1,5 +1,4 @@
 const form = document.getElementById('registerProductForm');
-
 form.addEventListener('submit', function (event) {
     event.preventDefault(); // 폼 기본 제출 행동 방지
 
@@ -29,7 +28,7 @@ form.addEventListener('submit', function (event) {
                 console.log('Product added successfully:', productData);
 
                 // 제품 목록 페이지로 이동
-                window.location.href = "http://localhost:8080/product";
+                window.location.href = "/";
             })
             .catch(error => {
                 console.error('Error adding product:', error.message);
