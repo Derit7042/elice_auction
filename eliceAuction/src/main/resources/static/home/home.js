@@ -18,6 +18,14 @@ async function addAllElements() {
 // 여러 개의 addEventListener들을 묶어주어서 코드를 깔끔하게 하는 역할임.
 function addAllEvents() {}
 
+document.addEventListener("DOMContentLoaded", () => {
+  setupLogout();
+  toggleLoginButton();
+  enableDropdowns();
+});
+
+
+////////////로그아웃
 function setupLogout() {
   const logoutButton = document.querySelector("#move-to-logout");
   logoutButton.addEventListener("click", () => {
@@ -28,6 +36,43 @@ function setupLogout() {
     alert("로그아웃 되었습니다.");
   });
 }
+
+////////////로그인 상태에서 로그인 버튼 숨김
+function toggleLoginButton() {
+  const loginButton = document.querySelector("#move-to-login");
+  // sessionStorage에서 'token'을 체크하여 로그인 상태 확인
+  const isLoggedIn = sessionStorage.getItem("token");
+
+  // 로그인 상태에 따라 로그인 버튼을 숨기거나 보여줌
+  if (isLoggedIn) {
+    loginButton.style.display = 'none'; // 로그인 상태면 로그인 버튼 숨김
+  } else {
+    loginButton.style.display = 'block'; // 로그아웃 상태면 로그인 버튼 보여줌
+  }
+}
+
+
+////////////account 버튼 클릭시 드롭다운 메뉴
+function enableDropdowns() {
+  const accountDropdown = document.querySelector('#move-to-account');
+  const dropdownMenu = accountDropdown.nextElementSibling;
+
+  accountDropdown.addEventListener('click', function(event) {
+    event.stopPropagation();
+    dropdownMenu.classList.toggle('show');
+  });
+
+  // 다른 영역을 클릭할 때 드롭다운 메뉴 숨기기
+  document.body.addEventListener('click', function(event) {
+    if (!accountDropdown.contains(event.target)) {
+      dropdownMenu.classList.remove('show');
+    }
+  });
+
+}
+
+
+
 
 document.addEventListener("DOMContentLoaded", setupLogout);
 
@@ -47,9 +92,9 @@ async function getProducts() {
           <div class="card h-100">
             <!-- Product image-->
             <div id="product-${id}">
-            <img class="card-img-top" 
-            width="450px" height="300px" 
-            src=${pictureLink} id="product-image-${id}" alt="..." 
+            <img class="card-img-top"
+            width="450px" height="300px"
+            src=${pictureLink} id="product-image-${id}" alt="..."
             />
             <!-- Product details-->
             <div class="card-body p-4">
@@ -64,7 +109,7 @@ async function getProducts() {
               </div>
             </div>
             </div>
-            
+
             <!-- Product actions-->
             <div class="card-footer p-4 pt-0 border-top-0 bg-transparent" id="add-cart-${id}">
               <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">Add to cart</a></div>
@@ -93,6 +138,20 @@ async function getProducts() {
     document
         .querySelector('#move-to-logout')
         .addEventListener("click", navigate('/members/login'));
+
+    document
+            .querySelector('#manage-account')
+            .addEventListener("click", navigate('/members/account'));
+
+    document
+                .querySelector('#view-orders')
+                .addEventListener("click", navigate('/members/account/orders'));
+
+    document
+                   .querySelector('#manage-profile')
+                   .addEventListener("click", navigate('/members/account/security'));
+
+
   //   TODO: 상품 클릭시 상세페이지로 이동기능 구현!
 
 
