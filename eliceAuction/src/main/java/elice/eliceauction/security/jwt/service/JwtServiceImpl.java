@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Base64;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.Optional;
 
 @Transactional
@@ -113,6 +114,11 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public Optional<String> extractAccessToken(HttpServletRequest request) {
+        Enumeration<String> headerNames = request.getHeaderNames();
+        while (headerNames.hasMoreElements()) {
+            String headerName = headerNames.nextElement();
+            log.debug("Header: {} = {}", headerName, request.getHeader(headerName));
+        }
         String header = request.getHeader(accessHeader);
         if (header != null && header.startsWith(BEARER)) {
             String token = header.substring(BEARER.length()).trim();
