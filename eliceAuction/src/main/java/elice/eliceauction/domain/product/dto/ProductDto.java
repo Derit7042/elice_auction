@@ -18,8 +18,6 @@ public class ProductDto {
     private Long watchCount;
     private LocalDateTime date;
     private String pictureLink;
-//    private Long sellerId;
-//    private String sellerName;
 
     public Product toEntity() {
         return new Product(id, title, brief, price, watchCount, date, pictureLink);

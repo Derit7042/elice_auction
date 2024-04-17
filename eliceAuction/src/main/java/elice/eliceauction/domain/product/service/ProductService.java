@@ -39,17 +39,9 @@ public class ProductService {
         return product;
     }
 
-    public Product create(ProductDto dto /*, String membername */) {
-//        Optional<Member> optionalMember = Optional.ofNullable(memberRepository.findByMembername(membername));
-//        if (optionalMember.isEmpty()) {
-//            log.error("Member with membername {} not found", membername);
-//            return null;
-//        }
-//        Member member = optionalMember.get();
+    public Product create(ProductDto dto) {
 
         Product product = dto.toEntity();
-//        product.setSellerId(member.getId());
-//        product.setSellerName(member.getMembername());
         if (product.getId() != null) {
             return null;
         }
