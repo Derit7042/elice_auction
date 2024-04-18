@@ -22,22 +22,14 @@ const purchaseButton = document.querySelector("#purchaseButton");
 let totalCount = 0;// 장바구니에 담긴 상품 수
 let totalPrice = 0;// 장바구니에 담긴 상품 금액
 
-let cart_baseUrl = "/cart/"
-let userId = 1;
-cart_baseUrl = cart_baseUrl + userId;
+let cart_baseUrl = "/cart";
 
 addAllElements();
-addAllEvents();
 
 // html에 요소를 추가하는 함수들을 묶어주어서 코드를 깔끔하게 하는 역할임.
 function addAllElements() {
   insertProductsfromCart();
 
-}
-
-// addEventListener들을 묶어주어서 코드를 깔끔하게 하는 역할임.
-function addAllEvents() {
-  purchaseButton.addEventListener("click", navigate("/order"));
 }
 
 // indexedDB의 cart와 order에서 필요한 정보를 가져온 후
@@ -70,6 +62,7 @@ async function insertProductsfromCart() {
 
   totalCount = 0;
   totalPrice = 0;
+  let purchaseId;
 
   for (const product of products) {
     totalCount+=1;
@@ -84,7 +77,7 @@ async function insertProductsfromCart() {
     cartProductsContainer.insertAdjacentHTML(
         "beforeend",
 
-`
+        `
     <div class="card mb-3">
       
       <div class="card-body">
@@ -136,28 +129,42 @@ async function insertProductsfromCart() {
 
     // 각종 이벤트 추가
     document
-      .querySelector(`#delete-${productId}`)
-      .addEventListener("click", () => deleteItem(productId));
+        .querySelector(`#delete-${productId}`)
+        .addEventListener("click", () => deleteItem(productId));
     document
-      .querySelector(`#image-${productId}`)
-      .addEventListener("click", navigate(`/products/${productId}`));
+        .querySelector(`#image-${productId}`)
+        .addEventListener("click", navigate(`/product/${productId}`));
 
     document
-      .querySelector(`#title-${productId}`)
-      .addEventListener("click", navigate(`/products/${productId}`));
+        .querySelector(`#title-${productId}`)
+        .addEventListener("click", navigate(`/product/${productId}`));
 
+    purchaseId = productId;
   }
+
+  document
+      .querySelector("#purchaseButton")
+      .addEventListener("click", () => perchase(purchaseId));
 
   insertOrderSummary();
 
+}
+async function perchase(id) {
+  console.log(`purchase product id: ${id}`);//주문할 상품 id
+  if(totalCount!==1){
+    alert("상품 주문은 한번에 한개씩만 주문할 수 있습니다.");
+  } else{
+    console.log("xx");
+    window.location.href = `/order?id=${id}`
+  }
 }
 
 async function deleteItem(id) {
   console.log(`delete product id: ${id}`);// 삭제할 상품 id
 
-  let param = "?productId="+id;
-  console.log(`API request: ${cart_baseUrl}`);
-  await API.delete(cart_baseUrl+param)
+  let url = cart_baseUrl+`/${id}`;
+  console.log(`API request: ${url}`);
+  await API.delete(url)
       .then(result => {
         console.log("회원 장바구니 삭제");
         console.log(`삭제 id: ${id}`);
@@ -187,22 +194,11 @@ async function insertOrderSummary() {
 }
 
 
-// 상품 추가 예제:
-// for(let i = 1; i<=10; i++){
-//   let product = {
-//     productId : i,// 상품 번호
-//     title : "title"+i,// 상품명
-//     price : 100+i,// 가격
-//     pictureLink : null// 사진 경로
-//   };
-//
-//   await addCart(product);
-// }
 async function addCart(product){
   const {productId, title, price, pictureLink } = product;
-  let param = "?productId="+productId;
+  let url = cart_baseUrl+`/${id}`;
 
-  API.post(cart_baseUrl+param)
+  API.post(url)
       .then(result => {
         console.log("회원 장바구니 추가");
         console.log(`상품 id: ${productId}`);

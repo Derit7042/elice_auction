@@ -13,11 +13,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Base64;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.Optional;
 
 @Transactional
@@ -47,31 +51,43 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public String createAccessToken(String username) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + accessTokenValidityInSeconds * 1000);
+
         String token = JWT.create()
                 .withSubject(ACCESS_TOKEN_SUBJECT)
-                .withExpiresAt(new Date(System.currentTimeMillis() + accessTokenValidityInSeconds * 1000))
+                .withIssuedAt(now)
+                .withExpiresAt(expiryDate)
                 .withClaim(USERNAME_CLAIM, username)
                 .sign(Algorithm.HMAC512(secret));
-        log.debug("액세스 토큰 생성: username={}, token={}", username, token);
+
+        log.info("액세스 토큰 생성: username={}, token={}", username, token);
         return token;
     }
 
+
     @Override
     public String createRefreshToken() {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + refreshTokenValidityInSeconds * 1000);
+
         String token = JWT.create()
                 .withSubject(REFRESH_TOKEN_SUBJECT)
-                .withExpiresAt(new Date(System.currentTimeMillis() + refreshTokenValidityInSeconds * 1000))
+                .withIssuedAt(now)
+                .withExpiresAt(expiryDate)
                 .sign(Algorithm.HMAC512(secret));
-        log.debug("리프레시 토큰 생성: token={}", token);
+
+        log.info("리프레시 토큰 생성: expiryTime={}, token={}", expiryDate, token);
         return token;
     }
+
 
     @Override
     public void updateRefreshToken(String username, String refreshToken) {
         memberRepository.findByUsername(username).ifPresentOrElse(
                 member -> {
                     member.updateRefreshToken(refreshToken);
-                    log.debug("리프레시 토큰 갱신: username={}, refreshToken={}", username, refreshToken);
+                    log.info("리프레시 토큰 갱신: username={}, refreshToken={}", username, refreshToken);
                 },
                 () -> {
                     RuntimeException exception = new RuntimeException("해당 사용자를 찾을 수 없습니다.");
@@ -86,7 +102,7 @@ public class JwtServiceImpl implements JwtService {
         memberRepository.findByUsername(username).ifPresentOrElse(
                 member -> {
                     member.destroyRefreshToken();
-                    log.debug("리프레시 토큰 파괴: username={}", username);
+                    log.info("리프레시 토큰 파괴: username={}", username);
                 },
                 () -> {
                     RuntimeException exception = new RuntimeException("해당 사용자를 찾을 수 없습니다.");
@@ -101,57 +117,65 @@ public class JwtServiceImpl implements JwtService {
         response.setStatus(HttpServletResponse.SC_OK);
         setAccessTokenHeader(response, accessToken);
         setRefreshTokenHeader(response, refreshToken);
-        log.debug("액세스 및 리프레시 토큰 응답 전송 완료.");
+        log.info("액세스 및 리프레시 토큰 응답 전송 완료.");
     }
 
     @Override
     public void sendAccessToken(HttpServletResponse response, String accessToken) {
         response.setStatus(HttpServletResponse.SC_OK);
         setAccessTokenHeader(response, accessToken);
-        log.debug("액세스 토큰 응답 전송 완료.");
+        log.info("액세스 토큰 응답 전송 완료.");
     }
 
     @Override
     public Optional<String> extractAccessToken(HttpServletRequest request) {
         String header = request.getHeader(accessHeader);
-        if (header != null && header.startsWith(BEARER)) {
+        if (header == null) {
+            log.error("액세스 토큰을 포함한 {} 헤더가 요청에 없습니다.", accessHeader);
+            return Optional.empty();
+        }
+        if (header.startsWith(BEARER)) {
             String token = header.substring(BEARER.length()).trim();
-            if (token.split("\\.").length == 3) {  // JWT는 세 부분으로 구성되어야 함
+            if (token.split("\\.").length == 3) {
                 try {
-                    // 토큰의 형식이 base64 URL-safe 인지 확인
-                    String payload = token.split("\\.")[1];
-                    Base64.getUrlDecoder().decode(payload);  // Decoding to check if it's URL-safe
-                    log.debug("액세스 토큰 추출: token={}", token);
+                    Base64.getUrlDecoder().decode(token.split("\\.")[1]);  // Decoding to check if it's URL-safe
+                    log.info("액세스 토큰 추출 성공: token={}", token);
                     return Optional.of(token);
                 } catch (IllegalArgumentException e) {
                     log.error("잘못된 Base64 인코딩: ", e);
                 }
             } else {
-                log.error("잘못된 형식의 토큰을 받았습니다: {}", token);
+                log.error("잘못된 형식의 토큰: {}", token);
             }
         } else {
-            log.error("토큰을 포함한 Authorization 헤더가 요청에 없습니다.");
+            log.error("{} 헤더는 'Bearer '로 시작해야 합니다.", accessHeader);
         }
         return Optional.empty();
     }
-
 
     @Override
     public Optional<String> extractRefreshToken(HttpServletRequest request) {
         String header = request.getHeader(refreshHeader);
-        if (header != null && header.startsWith(BEARER)) {
+        if (header == null) {
+            log.error("리프레시 토큰을 포함한 {} 헤더가 요청에 없습니다.", refreshHeader);
+            return Optional.empty();
+        }
+        if (header.startsWith(BEARER)) {
             String refreshToken = header.substring(BEARER.length()).trim();
-            log.debug("리프레시 토큰 추출: refreshToken={}", refreshToken);
+            log.info("리프레시 토큰 추출 성공: refreshToken={}", refreshToken);
             return Optional.of(refreshToken);
+        } else {
+            log.error("{} 헤더는 'Bearer '로 시작해야 합니다.", refreshHeader);
         }
         return Optional.empty();
     }
+
 
     @Override
     public Optional<String> extractUsername(String accessToken) {
         try {
             String username = JWT.require(Algorithm.HMAC512(secret)).build().verify(accessToken).getClaim(USERNAME_CLAIM).asString();
-            log.debug("토큰에서 사용자 이름 추출: username={}", username);
+            log.info("토큰에서 사용자 이름 추출: username={}", username);
             return Optional.ofNullable(username);
         } catch (TokenExpiredException e) {
             log.error("토큰이 만료되었습니다: ", e);
@@ -165,7 +189,7 @@ public class JwtServiceImpl implements JwtService {
     public boolean isTokenValid(String token) {
         try {
             JWT.require(Algorithm.HMAC512(secret)).build().verify(token);
-            log.debug("토큰 검증 성공: token={}", token);
+            log.info("토큰 검증 성공: token={}", token);
             return true;
         } catch (Exception e) {
             log.error("유효하지 않은 토큰입니다: {}", e.getMessage(), e);
@@ -176,12 +200,12 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public void setAccessTokenHeader(HttpServletResponse response, String accessToken) {
         response.setHeader(accessHeader, "Bearer " + accessToken);
-        log.debug("액세스 토큰 헤더 설정: {}", accessToken);
+        log.info("액세스 토큰 헤더 설정: {}", accessToken);
     }
 
     @Override
     public void setRefreshTokenHeader(HttpServletResponse response, String refreshToken) {
         response.setHeader(refreshHeader, "Bearer " + refreshToken);
-        log.debug("리프레시 토큰 헤더 설정: {}", refreshToken);
+        log.info("리프레시 토큰 헤더 설정: {}", refreshToken);
     }
 }

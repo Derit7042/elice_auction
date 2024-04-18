@@ -12,8 +12,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -92,8 +90,23 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
-    public Optional<Member> authenticate(String username, String password) {
+    public Member findMemberByUsername(String username) throws Exception {
+        // 주어진 Username으로 회원 정보를 조회. 만약 해당 회원이 존재하지 않는 경우, 예외를 발생시킨다.
         return memberRepository.findByUsername(username)
-                .filter(member -> passwordEncoder.matches(password, member.getPassword()));
+                .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
     }
+
+    @Override
+    public void signUpAdmin(MemberSignUpDto memberSignUpDto) throws Exception {
+        Member member = memberSignUpDto.toEntity();
+        member.addAdminAuthority();  // ADMIN 권한을 직접 설정
+        member.encodePassword(passwordEncoder);
+
+        if (memberRepository.findByUsername(member.getUsername()).isPresent()) {
+            throw new MemberException(MemberExceptionType.ALREADY_EXIST_USERNAME);
+        }
+
+        memberRepository.save(member);
+    }
+
 }

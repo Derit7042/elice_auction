@@ -4,6 +4,7 @@ import elice.eliceauction.domain.member.dto.MemberInfoDto;
 import elice.eliceauction.domain.member.dto.MemberSignUpDto;
 import elice.eliceauction.domain.member.dto.MemberUpdateDto;
 import elice.eliceauction.domain.member.entity.Member;
+import elice.eliceauction.domain.member.exception.MemberException;
 
 import java.util.Optional;
 
@@ -30,5 +31,7 @@ public interface MemberService {
     MemberInfoDto getMyInfo() throws Exception;
 
 
-    Optional<Member> authenticate(String username, String password);
+    Member findMemberByUsername(String username) throws Exception;
+
+    void signUpAdmin(MemberSignUpDto memberSignUpDto) throws Exception;
 }

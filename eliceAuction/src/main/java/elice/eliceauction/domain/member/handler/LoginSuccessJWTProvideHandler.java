@@ -10,10 +10,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 
 @Slf4j
+@Transactional
 @RequiredArgsConstructor
 public class LoginSuccessJWTProvideHandler extends SimpleUrlAuthenticationSuccessHandler {
 
@@ -23,6 +25,7 @@ public class LoginSuccessJWTProvideHandler extends SimpleUrlAuthenticationSucces
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+        log.info("인증 성공 핸들러 호출됨");
 
         String username = extractUsername(authentication);
         String accessToken = jwtService.createAccessToken(username);
@@ -30,8 +33,12 @@ public class LoginSuccessJWTProvideHandler extends SimpleUrlAuthenticationSucces
 
         jwtService.sendAccessAndRefreshToken(response, accessToken, refreshToken);
 
-        memberRepository.findByUsername(username).ifPresent(
-                member -> member.updateRefreshToken(refreshToken)
+        memberRepository.findByUsername(username).ifPresentOrElse(
+                member -> {
+                    member.updateRefreshToken(refreshToken);
+                    log.info("로그인에 성공하고 리프레시 토큰을 저장했습니다. username: {}, RefreshToken: {}", username, refreshToken);
+                },
+                () -> log.error("로그인에 성공했으나 리프레시 토큰을 저장하지 못했습니다. 사용자를 찾을 수 없습니다: {}", username)
         );
 
         log.info( "로그인에 성공합니다. username: {}" ,username);
