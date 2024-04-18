@@ -61,7 +61,7 @@ async function getProduct() {
 
     document
         .querySelector(`#buy-now-button`)
-        .addEventListener("click", navigate(`/order`));
+        .addEventListener("click", navigate(`/order?id=${id}`));// post 요청
 
 
     document
