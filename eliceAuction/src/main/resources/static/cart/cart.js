@@ -27,17 +27,11 @@ let userId = 1;
 cart_baseUrl = cart_baseUrl + userId;
 
 addAllElements();
-addAllEvents();
 
 // html에 요소를 추가하는 함수들을 묶어주어서 코드를 깔끔하게 하는 역할임.
 function addAllElements() {
   insertProductsfromCart();
 
-}
-
-// addEventListener들을 묶어주어서 코드를 깔끔하게 하는 역할임.
-function addAllEvents() {
-  purchaseButton.addEventListener("click", navigate("/order"));
 }
 
 // indexedDB의 cart와 order에서 필요한 정보를 가져온 후
@@ -70,6 +64,7 @@ async function insertProductsfromCart() {
 
   totalCount = 0;
   totalPrice = 0;
+  let purchaseId;
 
   for (const product of products) {
     totalCount+=1;
@@ -140,16 +135,30 @@ async function insertProductsfromCart() {
       .addEventListener("click", () => deleteItem(productId));
     document
       .querySelector(`#image-${productId}`)
-      .addEventListener("click", navigate(`/products/${productId}`));
+      .addEventListener("click", navigate(`/product/${productId}`));
 
     document
       .querySelector(`#title-${productId}`)
-      .addEventListener("click", navigate(`/products/${productId}`));
+      .addEventListener("click", navigate(`/product/${productId}`));
 
+    purchaseId = productId;
   }
+
+  document
+      .querySelector("#purchaseButton")
+      .addEventListener("click", () => perchase(purchaseId));
 
   insertOrderSummary();
 
+}
+async function perchase(id) {
+  console.log(`purchase product id: ${id}`);//주문할 상품 id
+  if(totalCount!==1){
+    alert("상품 주문은 한번에 한개씩만 주문할 수 있습니다.");
+  } else{
+    console.log("xx");
+    window.location.href = `/order?id=${id}`
+  }
 }
 
 async function deleteItem(id) {

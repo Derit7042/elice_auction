@@ -49,11 +49,11 @@ public class CartController {
                                                           @PathVariable(name = "memberId", required = false) Long memberId
                                                         ) throws Exception {
         if(member == null) {// 로그인 상태가 아닌 경우
+            System.out.println("--------------------------MEMBER IS NULL------------------");
             member = memberService.findMemberById(memberId);
         }
 
-        System.out.println("----------------member = " + member.getId());
-        System.out.println("----------------member = " + memberId);
+        System.out.println("============================-member = " + member.getId());
 
         List<CartItem> cartItems = cartService.getCarts(member);
 
