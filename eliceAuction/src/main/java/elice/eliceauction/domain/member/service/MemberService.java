@@ -32,4 +32,6 @@ public interface MemberService {
 
 
     Member findMemberByUsername(String username) throws Exception;
+
+    void signUpAdmin(MemberSignUpDto memberSignUpDto) throws Exception;
 }

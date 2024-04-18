@@ -39,4 +39,7 @@ public class MemberViewController {
         return  "account-signout/account-signout.html";
     }
 
+    @GetMapping("/admin")
+    public String adminP() { return "admin/admin.html";}
+
 }

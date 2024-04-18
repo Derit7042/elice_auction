@@ -20,7 +20,7 @@ function addAllEvents() {}
 
 document.addEventListener("DOMContentLoaded", () => {
   setupLogout();
-  toggleLoginButton();
+ toggleLoginLogoutButtons();
   enableDropdowns();
 });
 
@@ -29,25 +29,30 @@ document.addEventListener("DOMContentLoaded", () => {
 function setupLogout() {
   const logoutButton = document.querySelector("#move-to-logout");
   logoutButton.addEventListener("click", () => {
-    // 토큰 삭제
-    sessionStorage.removeItem("token");
-
-    // 로그아웃 알림
-    alert("로그아웃 되었습니다.");
+    if (confirm("로그아웃 하시겠습니까?")) { // 사용자에게 로그아웃 의사를 확인
+      sessionStorage.removeItem("token");
+    }
   });
 }
 
 ////////////로그인 상태에서 로그인 버튼 숨김
-function toggleLoginButton() {
+function toggleLoginLogoutButtons() {
   const loginButton = document.querySelector("#move-to-login");
+  const logoutButton = document.querySelector("#move-to-logout");
+  const signUpButton = document.querySelector("#move-to-signup");
+
   // sessionStorage에서 'token'을 체크하여 로그인 상태 확인
   const isLoggedIn = sessionStorage.getItem("token");
 
-  // 로그인 상태에 따라 로그인 버튼을 숨기거나 보여줌
+  // 로그인 상태에 따라 로그인 버튼과 로그아웃 버튼을 숨기거나 보여줌
   if (isLoggedIn) {
     loginButton.style.display = 'none'; // 로그인 상태면 로그인 버튼 숨김
+    signUpButton.style.display = 'none'; // 로그인 상태면 회원가입 버튼도 숨김
+    logoutButton.style.display = 'block'; // 로그인 상태면 로그아웃 버튼 보여줌
   } else {
     loginButton.style.display = 'block'; // 로그아웃 상태면 로그인 버튼 보여줌
+    signUpButton.style.display = 'block'; // 로그아웃 상태면 회원가입 버튼 보여줌
+    logoutButton.style.display = 'none'; // 로그아웃 상태면 로그아웃 버튼 숨김
   }
 }
 
@@ -137,7 +142,7 @@ async function getProducts() {
 
     document
         .querySelector('#move-to-logout')
-        .addEventListener("click", navigate('/members/login'));
+        .addEventListener("click", navigate('/'));
 
     document
             .querySelector('#manage-account')
