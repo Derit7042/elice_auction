@@ -21,6 +21,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 @Configuration
@@ -40,13 +41,14 @@ public class SecurityConfig {
                 .csrf((auth) -> auth.disable()) // CSRF disable
                 .formLogin((auth) -> auth.disable()) // Form 로그인 방식 disable
                 .httpBasic((auth) -> auth.disable()) // HTTP Basic 인증 방식 disable
-                .authorizeRequests((auth) -> auth
+                .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/api/member/**", "/","/css/**", "/js/**", "images/**").permitAll() // 회원가입 및 로그인 페이지는 인증 없이 접근 가능
                         .anyRequest().permitAll()) // 그 외 모든 요청은 로그인 인증 필요
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)); // 세션 설정: STATELESS
 
-        http.addFilterAfter(jsonUsernamePasswordLoginFilter(), LogoutFilter.class);
+        http.addFilterBefore(jsonUsernamePasswordLoginFilter(), UsernamePasswordAuthenticationFilter.class); // 기본 폼 로그인 필터 전에 커스텀 필터 추가
+        http.addFilterBefore(jwtAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class); // JWT 처리 필터 추가
 
 
         return http.build();
@@ -66,7 +68,7 @@ public class SecurityConfig {
         return new ProviderManager(provider);
     }
 
-    @Bean
+    @Bean+
     public LoginSuccessJWTProvideHandler loginSuccessJWTProvideHandler(){
         return new LoginSuccessJWTProvideHandler(jwtService, memberRepository);//변경
     }

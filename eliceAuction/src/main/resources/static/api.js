@@ -3,9 +3,14 @@ const baseUrl = "http://localhost:8080/api";  // 테스트 모드
 
 // 헤더를 구성하는 함수
 function configureHeaders() {
+    const headers = { "Content-Type": "application/json" };
     const token = sessionStorage.getItem("token");
-    return token && token.trim() !== "" ? { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" } : { "Content-Type": "application/json" };
+    if (token && token.trim() !== "") {
+        headers["Authorization"] = `Bearer ${token}`;
+    }
+    return headers;
 }
+
 
 // GET 요청
 async function get(endpoint, params = "") {
