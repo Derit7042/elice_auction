@@ -293,3 +293,29 @@ function keyDownCloseModal(e) {
     closeModal();
   }
 }
+
+async function loadMyInfo() {
+    try {
+        const response = await fetch('/api/members/me', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
+            }
+        });
+        const data = await response.json();
+        if (response.ok) {
+            displayMyInfo(data);
+        } else {
+            throw new Error(data.message || 'Failed to fetch user info');
+        }
+    } catch (error) {
+        console.error('Error fetching user info:', error);
+    }
+}
+
+function displayMyInfo(userInfo) {
+    // userInfo 데이터를 HTML 요소에 표시
+    document.querySelector('#fullName').textContent = userInfo.fullName;
+    // 추가적인 사용자 정보 표시
+}

@@ -23,6 +23,7 @@ public class LoginSuccessJWTProvideHandler extends SimpleUrlAuthenticationSucces
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+        log.debug("인증 성공 핸들러 호출됨");
 
         String username = extractUsername(authentication);
         String accessToken = jwtService.createAccessToken(username);
