@@ -140,19 +140,19 @@ async function getProducts() {
         .addEventListener("click", navigate('/members/login'));
 
     document
-            .querySelector('#manage-account')
-            .addEventListener("click", navigate('/members/account'));
+        .querySelector('#manage-account')
+        .addEventListener("click", navigate('/members/account'));
 
     document
-                .querySelector('#view-orders')
-                .addEventListener("click", navigate('/members/account/orders'));
+        .querySelector('#view-orders')
+        .addEventListener("click", navigate('/members/account/orders'));
 
     document
-                   .querySelector('#manage-profile')
-                   .addEventListener("click", navigate('/members/account/security'));
+        .querySelector('#manage-profile')
+        .addEventListener("click", navigate('/members/account/security'));
 
 
-  //   TODO: 상품 클릭시 상세페이지로 이동기능 구현!
+    //   TODO: 상품 클릭시 상세페이지로 이동기능 구현!
 
 
   }
@@ -182,9 +182,9 @@ function attachSlider() {
 
 async function addCart(product){
   const {id, title, price, pictureLink } = product;
-  let param = "?productId="+id;
 
-  API.post("/cart/1"+param)
+
+  API.post(`/cart/${id}`)
       .then(result => {
         console.log("회원 장바구니 추가");
         console.log(`상품 id: ${id}`);

@@ -22,9 +22,7 @@ const purchaseButton = document.querySelector("#purchaseButton");
 let totalCount = 0;// 장바구니에 담긴 상품 수
 let totalPrice = 0;// 장바구니에 담긴 상품 금액
 
-let cart_baseUrl = "/cart/"
-let userId = 1;
-cart_baseUrl = cart_baseUrl + userId;
+let cart_baseUrl = "/cart";
 
 addAllElements();
 
@@ -79,7 +77,7 @@ async function insertProductsfromCart() {
     cartProductsContainer.insertAdjacentHTML(
         "beforeend",
 
-`
+        `
     <div class="card mb-3">
       
       <div class="card-body">
@@ -131,15 +129,15 @@ async function insertProductsfromCart() {
 
     // 각종 이벤트 추가
     document
-      .querySelector(`#delete-${productId}`)
-      .addEventListener("click", () => deleteItem(productId));
+        .querySelector(`#delete-${productId}`)
+        .addEventListener("click", () => deleteItem(productId));
     document
-      .querySelector(`#image-${productId}`)
-      .addEventListener("click", navigate(`/product/${productId}`));
+        .querySelector(`#image-${productId}`)
+        .addEventListener("click", navigate(`/product/${productId}`));
 
     document
-      .querySelector(`#title-${productId}`)
-      .addEventListener("click", navigate(`/product/${productId}`));
+        .querySelector(`#title-${productId}`)
+        .addEventListener("click", navigate(`/product/${productId}`));
 
     purchaseId = productId;
   }
@@ -164,9 +162,9 @@ async function perchase(id) {
 async function deleteItem(id) {
   console.log(`delete product id: ${id}`);// 삭제할 상품 id
 
-  let param = "?productId="+id;
-  console.log(`API request: ${cart_baseUrl}`);
-  await API.delete(cart_baseUrl+param)
+  let url = cart_baseUrl+`/${id}`;
+  console.log(`API request: ${url}`);
+  await API.delete(url)
       .then(result => {
         console.log("회원 장바구니 삭제");
         console.log(`삭제 id: ${id}`);
@@ -196,22 +194,11 @@ async function insertOrderSummary() {
 }
 
 
-// 상품 추가 예제:
-// for(let i = 1; i<=10; i++){
-//   let product = {
-//     productId : i,// 상품 번호
-//     title : "title"+i,// 상품명
-//     price : 100+i,// 가격
-//     pictureLink : null// 사진 경로
-//   };
-//
-//   await addCart(product);
-// }
 async function addCart(product){
   const {productId, title, price, pictureLink } = product;
-  let param = "?productId="+productId;
+  let url = cart_baseUrl+`/${id}`;
 
-  API.post(cart_baseUrl+param)
+  API.post(url)
       .then(result => {
         console.log("회원 장바구니 추가");
         console.log(`상품 id: ${productId}`);

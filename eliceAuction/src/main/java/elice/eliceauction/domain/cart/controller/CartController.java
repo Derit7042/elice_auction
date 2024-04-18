@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -33,29 +34,20 @@ public class CartController {
         this.cartService = cartService;
         this.memberService = memberService;
     }
-    
+
     // 장바구니 목록 불러오기
     /*********스웨거 어노테이션**********/
-    @Operation(summary = "장바구니 조회", description = "유저 id(memberId)를 이용하여 해당 유저의 장바구니에 담긴 상품 목록을 불러옵니다. 만약 id가 null이면 로그인 한 계정을 기준으로 불러옵니다.")
+    @Operation(summary = "장바구니 조회", description = "로그인한 유저의 장바구니에 담긴 상품 목록을 불러옵니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
-                        description = "장바구니 조회 성공",
-                        content = @Content(schema = @Schema(implementation = CartResponseDto.class))),
-            })
-    @Parameter(name = "memberId", description = "사용자의 고유 id 번호")
+                    description = "장바구니 조회 성공",
+                    content = @Content(schema = @Schema(implementation = CartResponseDto.class))),
+    })
     /*********스웨거 어노테이션**********/
-    @GetMapping("/{memberId}")
-    public ResponseEntity<List<CartResponseDto>> getCarts(@AuthenticationPrincipal Member member,
-                                                          @PathVariable(name = "memberId", required = false) Long memberId
-                                                        ) throws Exception {
-        if(member == null) {// 로그인 상태가 아닌 경우
-            System.out.println("--------------------------MEMBER IS NULL------------------");
-            member = memberService.findMemberById(memberId);
-        }
+    @GetMapping
+    public ResponseEntity<List<CartResponseDto>> getCarts(@AuthenticationPrincipal UserDetails userDetails) throws Exception {
 
-        System.out.println("============================-member = " + member.getId());
-
-        List<CartItem> cartItems = cartService.getCarts(member);
+        List<CartItem> cartItems = cartService.getCarts(memberService.findMemberByUsername(userDetails.getUsername()) );
 
         // CartItem -> DTO로 변환
         List<CartResponseDto> cartResponseDtos = new ArrayList<>();
@@ -65,27 +57,22 @@ public class CartController {
 
         return ResponseEntity.ok(cartResponseDtos);
     }
-    
+
     // 장바구니에 상품 추가
     /*********스웨거 어노테이션**********/
-    @Operation(summary = "장바구니에 상품 추가", description = "유저 id(memberId)를 이용하여 해당 유저의 장바구니에 상품id(productId)에 해당하는 상품을 추가합니다. 만약 id가 null이면 로그인 한 계정을 기준으로 불러옵니다.")
+    @Operation(summary = "장바구니에 상품 추가", description = "로그인한 유저의 장바구니에 상품id(productId)에 해당하는 상품을 추가합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     description = "상품 추가 성공",
                     content = @Content(schema = @Schema(implementation = CartResponseDto.class))),
     })
-    @Parameter(name = "memberId", description = "사용자의 고유 id 번호")
     @Parameter(name = "productId", description = "상품 id")
     /*********스웨거 어노테이션**********/
-    @PostMapping("/{memberId}")
-    public ResponseEntity<CartResponseDto> addCartItem(@AuthenticationPrincipal Member member,
-                                                       @PathVariable(name = "memberId", required = false) Long memberId,
-                                                       @RequestParam("productId") Long productId
-                                                        ) throws Exception{
-        if(member == null) {// 로그인 상태가 아닌 경우
-            member = memberService.findMemberById(memberId);
-        }
-
+    @PostMapping("/{productId}")
+    public ResponseEntity<CartResponseDto> addCartItem(@AuthenticationPrincipal UserDetails userDetails,
+                                                       @PathVariable("productId") Long productId
+                                                       ) throws Exception{
+        Member member = memberService.findMemberByUsername(userDetails.getUsername());
         cartService.add(member, productId);
         CartItem cartItem = cartService.getCart(member, productId);
 
@@ -94,33 +81,26 @@ public class CartController {
 
         return ResponseEntity.ok(dto);
     }
-    
+
     // 장바구니에서 특정 상품 삭제
     /*********스웨거 어노테이션**********/
-    @Operation(summary = "장바구니에서 상품 삭제", description = "유저 id(memberId)를 이용하여 해당 유저의 장바구니에 상품id(productId)에 해당하는 상품을 삭제합니다.  만약 id가 null이면 로그인 한 계정을 기준으로 불러옵니다.")
+    @Operation(summary = "장바구니에서 상품 삭제", description = "로그인한 유저의 장바구니에 상품id(productId)에 해당하는 상품을 삭제합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     description = "상품 삭제 성공",
                     content = @Content(schema = @Schema(implementation = CartResponseDto.class))),
     })
-    @Parameter(name = "memberId", description = "사용자의 고유 id 번호")
     @Parameter(name = "productId", description = "상품 id")
     /*********스웨거 어노테이션**********/
-    @DeleteMapping("/{memberId}")
-    public ResponseEntity<CartResponseDto> deleteCartItem(@AuthenticationPrincipal Member member,
-                                                          @PathVariable(name = "memberId", required = false) Long memberId,
-                                                          @RequestParam("productId") Long productId
-                                                            ) throws Exception{
-        if(member == null) {// 로그인 상태가 아닌 경우
-            member = memberService.findMemberById(memberId);
-        }
-
+    @DeleteMapping("/{productId}")
+    public ResponseEntity<CartResponseDto> deleteCartItem(@AuthenticationPrincipal UserDetails userDetails,
+                                                          @PathVariable("productId") Long productId
+    ) throws Exception{
+        Member member = memberService.findMemberByUsername(userDetails.getUsername());
         CartItem deleted = cartService.delete(member, productId);
-
 
         // CartItem -> DTO로 변환
         CartResponseDto cartResponseDto =CartItem.toDto(deleted);
-
 
         return ResponseEntity.ok(cartResponseDto);
     }
