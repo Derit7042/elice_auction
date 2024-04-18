@@ -76,9 +76,8 @@ async function getProduct() {
 
 async function addCart(product){
     const {id, title, price, pictureLink } = product;
-    let param = "?productId="+id;
 
-    API.post("/cart/1"+param)
+    API.post(`/cart/${id}`)
         .then(result => {
             console.log("회원 장바구니 추가");
             console.log(`상품 id: ${id}`);
@@ -91,25 +90,3 @@ async function addCart(product){
 
     alert("상품이 장바구니에 추가됬습니다.");
 }
-
-
-
-// if (productId) {
-//     fetch(`/api/products/${productId}`)
-//         .then(response => response.json())
-//         .then(data => {
-//             const productImageHTML = `
-//                 <img id="productImageTag" src="${data.pictureLink}" alt="Product Image">
-//             `;
-//             if(document.getElementById('image')) document.getElementById('image').innerHTML = productImageHTML;
-//
-//             const productDetailHTML = `
-//                 <p class="subtitle is-3 is-family-monospace" id="titleTag">${data.title}</p>
-//                 <p class="detail-description" id="detailDescriptionTag">${data.brief}</p>
-//                 <h1 id="priceTag">가격: ${data.price}원</h1>
-//                 <p>조회수: ${data.watchCount}회</p>
-//             `;
-//             if(document.getElementById('content')) document.getElementById('content').innerHTML = productDetailHTML;
-//         })
-//         .catch(error => console.error('Error fetching product detail:', error));
-// }
