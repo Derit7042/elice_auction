@@ -31,6 +31,7 @@ public class AdminOrderController {
     }
 
     // 모든 회원들의 주문 내역 조회
+
     /*********스웨거 어노테이션**********/
     @Operation(summary = "모든 회원들의 주문 내역 조회", description = "관리자가 모든 회원들의 주문 내역을 조회한다.")
     @ApiResponses(value = {
@@ -46,6 +47,7 @@ public class AdminOrderController {
     }
 
     // 사용자의 주문 내역에서 배송 상태 수정
+
     /*********스웨거 어노테이션**********/
     @Operation(summary = "회원의 주문 내역에서 배송 상태 수정", description = "관리자가 회원의 주문 내역에서 배송 상태를 수정한다")
     @ApiResponses(value = {
@@ -54,15 +56,20 @@ public class AdminOrderController {
                     content = @Content(schema = @Schema(implementation = UpdateOrderDto.class))),
     })
     @Parameter(name = "orderId", description = "주문 Id를 가지고 주문 내역을 조회합니다.")
-    @Parameter(name = "status", description = "관리자가 회원의 주문 내역을 보고 배송 상태를 변경합니다.")
+    @Parameter(name = "updateOrderDto", description = "배송지 수정시 입력되는 요소들")
     /*********스웨거 어노테이션**********/
-    @PutMapping("/{orderId}")
-    public ResponseEntity<?> updateOrderStatus(@PathVariable Long orderId, @RequestParam String status) {
-        Order updatedOrder = orderService.updateOrderStatus(orderId, status);
-        return ResponseEntity.ok(updatedOrder);
+    @PatchMapping("/{orderId}")
+    public ResponseEntity<?> updateOrderStatus(@PathVariable Long orderId, @RequestBody UpdateOrderDto updateOrderDto) {
+        try {
+            Order updatedOrder = orderService.updateOrderStatus(orderId, updateOrderDto.getStatus());
+            return ResponseEntity.ok(updatedOrder);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("주문을 찾을 수 없습니다.");
+        }
     }
 
     // 회원들의 주문 내역 삭제
+
     /*********스웨거 어노테이션**********/
     @Operation(summary = "관리자가 회원의 주문 내역 삭제", description = "관리자가 회원의 주문 내역을 삭제한다.")
     @ApiResponses(value = {
