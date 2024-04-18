@@ -100,17 +100,18 @@
           </div>
         </nav>
 
-        <div class="container orders-container" id="ordersContainer">
-          <div
-            class="columns notification is-info is-light is-mobile orders-top"
-          >
-            <div class="column is-2">날짜</div>
-            <div class="column is-4">주문정보</div>
-            <div class="column is-2">주문총액</div>
-            <div class="column is-2">상태관리</div>
-            <div class="column is-2">취소</div>
+          <div class="container orders-container">
+              <!-- 주문 헤더는 항상 보여줍니다. -->
+              <div class="columns notification is-info is-light is-mobile orders-top">
+                  <div class="column is-2">날짜</div>
+                  <div class="column is-4">주문정보</div>
+                  <div class="column is-2">주문총액</div>
+                  <div class="column is-2">상태관리</div>
+                  <div class="column is-2">취소</div>
+              </div>
+              <div class="orders-list" id="ordersContainer">
+              </div>
           </div>
-        </div>
       </div>
     </section>
 
