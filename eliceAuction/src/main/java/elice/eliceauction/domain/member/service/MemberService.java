@@ -31,4 +31,5 @@ public interface MemberService {
     MemberInfoDto getMyInfo() throws Exception;
 
 
+    Member findMemberByUsername(String username) throws Exception;
 }

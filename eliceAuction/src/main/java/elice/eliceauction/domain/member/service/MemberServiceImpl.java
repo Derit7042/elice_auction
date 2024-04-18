@@ -12,8 +12,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -89,6 +87,13 @@ public class MemberServiceImpl implements MemberService{
     public MemberInfoDto getMyInfo() throws Exception {
         Member findMember = memberRepository.findByUsername(SecurityUtil.getLoginUsername()).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         return new MemberInfoDto(findMember);
+    }
+
+    @Override
+    public Member findMemberByUsername(String username) throws Exception {
+        // 주어진 Username으로 회원 정보를 조회. 만약 해당 회원이 존재하지 않는 경우, 예외를 발생시킨다.
+        return memberRepository.findByUsername(username)
+                .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
     }
 
 }
