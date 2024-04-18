@@ -32,38 +32,9 @@ public class MemberController {
      * @return 로그인 결과와 메시지를 포함하는 ResponseEntity 객체
      */
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody MemberLoginDto memberLoginDto, HttpServletResponse response) {
-        try {
-            // 사용자 인증 시도
-            Optional<Member> memberOptional = memberService.authenticate(memberLoginDto.username(), memberLoginDto.password());
-
-            // 인증 실패 시, UNAUTHORIZED 응답 반환
-            if (memberOptional.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"message\":\"로그인 실패: 사용자 인증 실패\"}");
-            }
-
-            // 인증 성공, 토큰 생성
-            Member member = memberOptional.get();
-            String accessToken = jwtService.createAccessToken(member.getUsername());
-            String refreshToken = jwtService.createRefreshToken();
-
-            // 토큰 생성 실패 시, INTERNAL_SERVER_ERROR 응답 반환
-            if (accessToken == null || refreshToken == null) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"message\":\"토큰 생성 실패\"}");
-            }
-
-            // 토큰을 HTTP 헤더에 설정하고 클라이언트에 전달
-            jwtService.sendAccessAndRefreshToken(response, accessToken, refreshToken);
-
-            // 로그인 성공 응답 반환
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
-                    .header("Refresh-Token", "Bearer " + refreshToken)
-                    .body("{\"message\":\"로그인 성공\"}");
-        } catch (Exception e) {
-            // 예외 발생 시, INTERNAL_SERVER_ERROR 응답 반환
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"message\":\"서버 에러 발생: " + e.getMessage() + "\"}");
-        }
+    public void login(@Valid @RequestBody MemberLoginDto memberLoginDto, HttpServletResponse response) {
+        // 로그인 시도는 Spring Security가 처리하며, 성공 시 LoginSuccessJWTProvideHandler에서 토큰 발급
+        // 여기서는 아무 작업을 수행하지 않음.
     }
 
 

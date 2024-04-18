@@ -13,6 +13,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,24 +51,36 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public String createAccessToken(String username) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + accessTokenValidityInSeconds * 1000);
+
         String token = JWT.create()
                 .withSubject(ACCESS_TOKEN_SUBJECT)
-                .withExpiresAt(new Date(System.currentTimeMillis() + accessTokenValidityInSeconds * 1000))
+                .withIssuedAt(now)
+                .withExpiresAt(expiryDate)
                 .withClaim(USERNAME_CLAIM, username)
                 .sign(Algorithm.HMAC512(secret));
+
         log.info("액세스 토큰 생성: username={}, token={}", username, token);
         return token;
     }
 
+
     @Override
     public String createRefreshToken() {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + refreshTokenValidityInSeconds * 1000);
+
         String token = JWT.create()
                 .withSubject(REFRESH_TOKEN_SUBJECT)
-                .withExpiresAt(new Date(System.currentTimeMillis() + refreshTokenValidityInSeconds * 1000))
+                .withIssuedAt(now)
+                .withExpiresAt(expiryDate)
                 .sign(Algorithm.HMAC512(secret));
-        log.info("리프레시 토큰 생성: token={}", token);
+
+        log.info("리프레시 토큰 생성: expiryTime={}, token={}", expiryDate, token);
         return token;
     }
+
 
     @Override
     public void updateRefreshToken(String username, String refreshToken) {

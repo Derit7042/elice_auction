@@ -91,9 +91,4 @@ public class MemberServiceImpl implements MemberService{
         return new MemberInfoDto(findMember);
     }
 
-    @Override
-    public Optional<Member> authenticate(String username, String password) {
-        return memberRepository.findByUsername(username)
-                .filter(member -> passwordEncoder.matches(password, member.getPassword()));
-    }
 }
