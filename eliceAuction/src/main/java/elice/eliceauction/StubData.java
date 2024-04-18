@@ -36,12 +36,17 @@ public class StubData implements CommandLineRunner {
 
 
     public void MemberStubData() throws Exception{// 1~10번 회원 생성
-
+        // 1~10번 일반 회원 생성
         MemberSignUpDto dto;
         for(long i=1; i<=10; i++){
             dto = new MemberSignUpDto("username"+i, "!password"+i, "name"+i);
             memberService.signUp(dto);
         }
+
+        // ADMIN 권한 회원 생성
+        // 'admin'이라는 사용자명은 시스템에서만 유일하게 사용될 것을 가정함
+        MemberSignUpDto adminDto = new MemberSignUpDto("admin", "!admin", "Administrator");
+        memberService.signUpAdmin(adminDto);  // 별도의 관리자 등록 메서드를 호출
     }
 
     public void ProductStubData(){// 상품 정보 생성

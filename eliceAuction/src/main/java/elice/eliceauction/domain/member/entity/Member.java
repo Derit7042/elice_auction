@@ -76,4 +76,8 @@ public class Member {
         this.password = passwordEncoder.encode(password);
     }
 
+    public void addAdminAuthority() {
+        this.role = Role.ADMIN;
+    }
+
 }

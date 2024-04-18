@@ -96,4 +96,17 @@ public class MemberServiceImpl implements MemberService{
                 .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
     }
 
+    @Override
+    public void signUpAdmin(MemberSignUpDto memberSignUpDto) throws Exception {
+        Member member = memberSignUpDto.toEntity();
+        member.addAdminAuthority();  // ADMIN 권한을 직접 설정
+        member.encodePassword(passwordEncoder);
+
+        if (memberRepository.findByUsername(member.getUsername()).isPresent()) {
+            throw new MemberException(MemberExceptionType.ALREADY_EXIST_USERNAME);
+        }
+
+        memberRepository.save(member);
+    }
+
 }
