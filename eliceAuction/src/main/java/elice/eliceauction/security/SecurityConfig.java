@@ -68,7 +68,7 @@ public class SecurityConfig {
         return new ProviderManager(provider);
     }
 
-    @Bean+
+    @Bean
     public LoginSuccessJWTProvideHandler loginSuccessJWTProvideHandler(){
         return new LoginSuccessJWTProvideHandler(jwtService, memberRepository);//변경
     }
