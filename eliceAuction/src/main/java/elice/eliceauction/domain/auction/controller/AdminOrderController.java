@@ -31,6 +31,7 @@ public class AdminOrderController {
     }
 
     // 모든 회원들의 주문 내역 조회
+
     /*********스웨거 어노테이션**********/
     @Operation(summary = "모든 회원들의 주문 내역 조회", description = "관리자가 모든 회원들의 주문 내역을 조회한다.")
     @ApiResponses(value = {
@@ -46,6 +47,7 @@ public class AdminOrderController {
     }
 
     // 사용자의 주문 내역에서 배송 상태 수정
+
     /*********스웨거 어노테이션**********/
     @Operation(summary = "회원의 주문 내역에서 배송 상태 수정", description = "관리자가 회원의 주문 내역에서 배송 상태를 수정한다")
     @ApiResponses(value = {
@@ -67,6 +69,7 @@ public class AdminOrderController {
     }
 
     // 회원들의 주문 내역 삭제
+
     /*********스웨거 어노테이션**********/
     @Operation(summary = "관리자가 회원의 주문 내역 삭제", description = "관리자가 회원의 주문 내역을 삭제한다.")
     @ApiResponses(value = {
