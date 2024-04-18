@@ -124,7 +124,9 @@ async function fetchProductDetails(id) {
 }
 
 async function insertOrderSummary() {
-  const product = await fetchProductDetails(11); // ID가 1인 상품의 상세 정보를 가져옴
+  const URLSearch = new URLSearchParams(location.search);
+  const id = URLSearch.get("id");
+  const product = await fetchProductDetails(id); // ID가 1인 상품의 상세 정보를 가져옴
 
   // product 객체 내부의 정보가 정상적으로 있는지 확인
   if (product && product.price !== undefined) {
