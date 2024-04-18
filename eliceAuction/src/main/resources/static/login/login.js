@@ -38,34 +38,33 @@ async function handleSubmit(e) {
             body: JSON.stringify(data)
         });
 
-        if (response.ok) {
-            const result = await response.json();
-            const token = response.headers.get("Authorization");
-            if (token) {
-                const cleanedToken = cleanToken(token.split(" ")[1]); // Bearer 토큰에서 실제 토큰 부분만 저장 후 필요없는 문자 제거
-                sessionStorage.setItem("token", cleanedToken);
-                alert("로그인 성공!");
-                const { previouspage } = getUrlParams();
-                window.location.href = previouspage || "/home/home.html";
-            } else {
-                console.error("서버 응답:", result);
-                alert("로그인 실패: 유효한 토큰을 받지 못했습니다. 서버 응답을 확인해주세요.");
+        if (!response.ok) {
+            const errorText = await response.text(); // 응답을 텍스트로 읽기
+            try {
+                const errorResult = JSON.parse(errorText); // 파싱 시도
+                alert(`로그인 실패: ${errorResult.message}`);
+            } catch {
+                alert("로그인 실패: 서버에서 이해할 수 없는 응답이 왔습니다.");
             }
+            return;
+        }
+
+        const token = response.headers.get("Authorization");
+        if (token) {
+            const cleanedToken = cleanToken(token.split(" ")[1]);
+            sessionStorage.setItem("token", cleanedToken);
+            alert("로그인 성공!");
+            const { previouspage } = getUrlParams();
+            window.location.href = previouspage || "/home/home.html";
         } else {
-            const errorResult = await response.json();
-            console.error("로그인 실패:", errorResult);
-            alert(`로그인 실패: ${errorResult.message}`);
+            alert("로그인 실패: 유효한 토큰을 받지 못했습니다.");
         }
     } catch (error) {
-        if (error instanceof TypeError) {
-            console.error("네트워크 오류 발생:", error);
-            alert("서버에 접속할 수 없습니다. 네트워크 연결을 확인해 주세요.");
-        } else {
-            console.error("알 수 없는 오류 발생:", error);
-            alert("알 수 없는 오류가 발생했습니다. 관리자에게 문의하세요.");
-        }
+        console.error("네트워크 오류 발생:", error);
+        alert("서버에 접속할 수 없습니다. 네트워크 연결을 확인해 주세요.");
     }
 }
+
 
 // 클라이언트 측에서 토큰을 정리하는 함수
 function cleanToken(token) {

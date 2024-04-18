@@ -2,6 +2,7 @@ package elice.eliceauction.security.jwt.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.ResponseEntity;
 
 import java.util.Optional;
 
