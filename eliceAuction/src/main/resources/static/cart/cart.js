@@ -64,8 +64,8 @@ async function insertProductsfromCart() {
   for (const product of products) {
     totalCount+=1;
     // 객체 destructuring
-    const {productId, title, price, pictureLink } = product;
-    console.log("product ID: " + productId)
+    const {id, title, price, pictureLink } = product;
+    console.log("product ID: " + id)
     console.log("title: " + title);
     console.log("price: " + price);
     console.log("pictureLink: " + pictureLink);
@@ -84,13 +84,13 @@ async function insertProductsfromCart() {
           <div class="d-flex flex-row align-items-center">
             
             <div>
-               <img src=${pictureLink} id="image-${productId}" class="img-fluid
+               <img src=${pictureLink} id="image-${id}" class="img-fluid
               rounded-3" alt="Shopping item" style="width: 65px;">
             </div>
             
             <div class="ms-3">
               
-              <p id="title-${productId}">${title}</p>
+              <p id="title-${id}">${title}</p>
               
 <!--              <p class="small mb-0">27세, INTJ</p>-->
               
@@ -108,11 +108,11 @@ async function insertProductsfromCart() {
             
             <div style="width: 80px">
               
-              <h5 class="mb-0" id="unitPrice-${productId}">${price} 원</h5>
+              <h5 class="mb-0" id="unitPrice-${id}">${price} 원</h5>
               
             </div>
             
-            <a href="#!" style="color: #cecece" id="delete-${productId}"><i class="fas fa-trash-alt"></i></a
+            <a href="#!" style="color: #cecece" id="delete-${id}"><i class="fas fa-trash-alt"></i></a
             >
           </div>
           
@@ -126,17 +126,17 @@ async function insertProductsfromCart() {
 
     // 각종 이벤트 추가
     document
-        .querySelector(`#delete-${productId}`)
-        .addEventListener("click", () => deleteItem(productId));
+        .querySelector(`#delete-${id}`)
+        .addEventListener("click", () => deleteItem(id));
     document
-        .querySelector(`#image-${productId}`)
-        .addEventListener("click", navigate(`/product/${productId}`));
+        .querySelector(`#image-${id}`)
+        .addEventListener("click", navigate(`/product/${id}`));
 
     document
-        .querySelector(`#title-${productId}`)
-        .addEventListener("click", navigate(`/product/${productId}`));
+        .querySelector(`#title-${id}`)
+        .addEventListener("click", navigate(`/product/${id}`));
 
-    purchaseId = productId;
+    purchaseId = id;
   }
 
   document
@@ -192,18 +192,18 @@ async function insertOrderSummary() {
 
 
 async function addCart(product){
-  const {productId, title, price, pictureLink } = product;
+  const {id, title, price, pictureLink } = product;
   let url = cart_baseUrl+`/${id}`;
 
   API.post(url)
       .then(result => {
         console.log("회원 장바구니 추가");
-        console.log(`상품 id: ${productId}`);
+        console.log(`상품 id: ${id}`);
       })
       .catch(async error => {
         console.log("비회원 장바구니 추가");
-        console.log(`상품 id: ${productId}`);
-        await addToDb("cart", product, product.productId);
+        console.log(`상품 id: ${id}`);
+        await addToDb("cart", product, id);
       })
 }
 
