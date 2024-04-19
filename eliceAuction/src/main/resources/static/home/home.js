@@ -160,10 +160,6 @@ async function getProducts() {
                 .querySelector('#move-to-signup')
                 .addEventListener("click", navigate('/members/register'));
 
-
-    //   TODO: 상품 클릭시 상세페이지로 이동기능 구현!
-
-
   }
 }
 
@@ -204,5 +200,5 @@ async function addCart(product){
         await addToDb("cart", product, product.id);
       })
 
-  alert("상품이 장바구니에 추가됬습니다.");
+  alert("상품이 장바구니에 추가됐습니다.");
 }

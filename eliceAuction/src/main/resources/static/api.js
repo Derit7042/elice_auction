@@ -1,5 +1,5 @@
-const baseUrl = "http://localhost:8080/api";  // 테스트 모드
-// const baseUrl = "http://34.64.166.147:8080/api";  // 배포 모드
+// const baseUrl = "http://localhost:8080/api";  // 테스트 모드
+const baseUrl = "http://34.64.166.147:8080/api";  // 배포 모드
 
 // 헤더를 구성하는 함수
 function configureHeaders() {

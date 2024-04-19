@@ -30,7 +30,7 @@ async function handleSubmit(e) {
 
     try {
         const data = { username, password };
-        const response = await fetch("http://localhost:8080/api/members/login", {
+        const response = await fetch("http://34.64.166.147:8080/api/members/login", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

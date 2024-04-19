@@ -24,7 +24,7 @@ form.addEventListener('submit', function (event) {
         isPictureValid = true; // 사진 유효성을 true로 설정
 
         // 파일을 서버에 업로드하는 요청
-        fetch('/api/products', {
+        fetch('http://34.64.166.147:8080/api', {
             method: 'POST',
             body: formData
         })
