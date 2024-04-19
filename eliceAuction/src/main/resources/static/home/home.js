@@ -156,6 +156,10 @@ async function getProducts() {
         .querySelector('#manage-profile')
         .addEventListener("click", navigate('/members/account/security'));
 
+        document
+                .querySelector('#move-to-signup')
+                .addEventListener("click", navigate('/members/register'));
+
 
     //   TODO: 상품 클릭시 상세페이지로 이동기능 구현!
 
