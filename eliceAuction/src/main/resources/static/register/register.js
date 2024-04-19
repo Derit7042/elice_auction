@@ -1,5 +1,5 @@
 import * as Api from "../api.js";
-import { validateEmail, createNavbar } from "../useful-functions.js";
+import { blockIfLogin, validateEmail, createNavbar } from "../useful-functions.js";
 
 // 요소(element), input 혹은 상수
 const nameInput = document.querySelector("#nameInput");
@@ -7,7 +7,7 @@ const usernameInput = document.querySelector("#usernameInput");
 const passwordInput = document.querySelector("#passwordInput");
 const passwordConfirmInput = document.querySelector("#passwordConfirmInput");
 const submitButton = document.querySelector("#submitButton");
-
+blockIfLogin();
 addAllElements();
 addAllEvents();
 

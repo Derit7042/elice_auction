@@ -62,7 +62,7 @@ export const checkAdmin = async () => {
   }
 
   // 관리자 토큰 여부 확인
-  const res = await fetch("/admin/admin-check", {
+  const res = await fetch("/users/admin-check", {
     headers: {
       Authorization: `Bearer ${token}`,
     },
