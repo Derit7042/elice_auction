@@ -34,6 +34,15 @@ public class Member {
     @Column(length = 1000)
     private String refreshToken;//RefreshToken
 
+    @Column(nullable = true, length = 100)
+    private String email; // 이메일
+
+    @Embedded
+    private Address address; // 주소
+
+    @Column(nullable = true, length = 20)
+    private String phoneNumber; // 전화번호
+
 
 
 
@@ -58,6 +67,8 @@ public class Member {
         this.refreshToken = null;
     }
 
+
+
     //비밀번호 변경, 회원 탈퇴 시, 비밀번호를 확인하며, 이때 비밀번호의 일치여부를 판단하는 메서드입니다.
     public boolean matchPassword(PasswordEncoder passwordEncoder, String checkPassword){
         return passwordEncoder.matches(checkPassword, getPassword());
@@ -78,6 +89,11 @@ public class Member {
 
     public void addAdminAuthority() {
         this.role = Role.ADMIN;
+    }
+
+    public void updateContactInfo(Address address, String phoneNumber) {
+        this.address = address;
+        this.phoneNumber = phoneNumber;
     }
 
 }
