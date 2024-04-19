@@ -38,7 +38,7 @@ public class StubData implements CommandLineRunner {
     public void MemberStubData() throws Exception{// 1~10번 회원 생성
         // 1~10번 일반 회원 생성
         MemberSignUpDto dto;
-        for(long i=1; i<=10; i++){
+        for(long i=1; i<=5; i++){
             dto = new MemberSignUpDto("username"+i, "!password"+i, "name"+i);
             memberService.signUp(dto);
         }
@@ -51,21 +51,61 @@ public class StubData implements CommandLineRunner {
 
     public void ProductStubData(){// 상품 정보 생성
         ProductDto dto = new ProductDto();
-        for(long i=1; i<=11; i++){
-            dto.setTitle("title"+i);
-            dto.setBrief("brief"+i);
-            dto.setPrice(i*100);
-            dto.setWatchCount(i);
-            dto.setDate(LocalDateTime.now());
-            dto.setPictureLink("https://isaiah0214.synology.me/gallery_colorize/fuck.jpg");
-            productService.create(dto);
-        }
+//        for(long i=1; i<=11; i++){
+//            dto.setTitle("title"+i);
+//            dto.setBrief("brief"+i);
+//            dto.setPrice(i*100);
+//            dto.setWatchCount(i);
+//            dto.setDate(LocalDateTime.now());
+//            dto.setPictureLink("https://isaiah0214.synology.me/gallery_colorize/fuck.jpg");
+//            productService.create(dto);
+//        }
+
+        dto.setTitle("Life is rose");
+        dto.setBrief("삶은 장미와도 같다는 것을 표현한 작품입니다.");
+        dto.setPrice(7800000L);
+        dto.setWatchCount(317L);
+        dto.setDate(LocalDateTime.now());
+        dto.setPictureLink("https://i.ibb.co/LdwFsGW/Kakao-Talk-20240419-222714857-02.png");
+        productService.create(dto);
+
+        dto.setTitle("빈 배");
+        dto.setBrief("강에 떠있는 빈 배를 그린 작품입니다.");
+        dto.setPrice(5500000L);
+        dto.setWatchCount(193L);
+        dto.setDate(LocalDateTime.now());
+        dto.setPictureLink("https://i.ibb.co/dJDcb9p/Kakao-Talk-20240419-222714857-03.png");
+        productService.create(dto);
+
+        dto.setTitle("살아감");
+        dto.setBrief("아무것도 없는 바다 위에 한 사람이 배를 타고 있지만 그래도 살아가고 있다는 것을 표현한 작품입니다.");
+        dto.setPrice(19000000L);
+        dto.setWatchCount(1834L);
+        dto.setDate(LocalDateTime.now());
+        dto.setPictureLink("https://i.ibb.co/g6mTFMW/Kakao-Talk-20240419-222714857-04.png");
+        productService.create(dto);
+
+        dto.setTitle("죽은 장미");
+        dto.setBrief("죽은 장미를 그린 작품입니다.");
+        dto.setPrice(6100000L);
+        dto.setWatchCount(871L);
+        dto.setDate(LocalDateTime.now());
+        dto.setPictureLink("https://i.ibb.co/qBXzvxT/Kakao-Talk-20240419-222714857-01.png");
+        productService.create(dto);
+
+        dto.setTitle("권태를 부르는 성공");
+        dto.setBrief("성공이 권태를 부른다는 것을 표현한 작품입니다.");
+        dto.setPrice(3800000L);
+        dto.setWatchCount(478L);
+        dto.setDate(LocalDateTime.now());
+        dto.setPictureLink("https://i.ibb.co/0Bz6cbh/Kakao-Talk-20240419-222714857.png");
+        productService.create(dto);
     }
 
     public void OrderStubData() throws Exception {
         DeliveryDto deliveryDto = new DeliveryDto();
 
-        for(long i=1; i<=10; i++){// 주소 정보 생성
+        for(long i=1; i<=5; i++){// 주소 정보 생성
             deliveryDto.setName("Name" + i);
             deliveryDto.setAddress("Address" + i);
             deliveryDto.setMemberId(i);
@@ -74,7 +114,7 @@ public class StubData implements CommandLineRunner {
 
         OrderDto dto = new OrderDto();
 
-        for(long i=1; i<=10; i++){// 주문 정보 생성
+        for(long i=1; i<=5; i++){// 주문 정보 생성
             dto.setMemberId(i);
             dto.setProductId(i);
             dto.setMemberAddressId(i);
@@ -83,7 +123,7 @@ public class StubData implements CommandLineRunner {
     }
 
     public void CartStubData() throws Exception {// 장바구니 정보 생성
-        for(long i=1; i<=10; i++){
+        for(long i=1; i<=5; i++){
             Member targetMember = memberService.findMemberById(i);
             cartService.createCart(targetMember);// 장바구니 생성
             cartService.add(targetMember, i);
