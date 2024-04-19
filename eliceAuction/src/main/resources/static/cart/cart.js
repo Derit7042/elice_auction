@@ -46,16 +46,13 @@ async function insertProductsfromCart() {
 
         if (error.status === 404) {// 잘못된 접근
           alert("잘못된 접근입니다.");
-        } else if (error.status === 403) {// 비회원
-          // indexDB에서 장바구니 상품 가져오기
-          products = await getFromDb("cart");
-          console.log("로그인 실패. 쿠키에서 장바구니를 가져옵니다.");
-          alert("무엄하도다!!");
-          alert(`으~딜 비회원따리가 감히 고귀하고 위대하신 우리 "CART" 에 접근하려 하나!!`);
-          alert("비회원 장바구니 기능은 아직 구현이 안되있습니다. 첫 충전 3,300원을 하시면 득.별.히 구현해드리겠습니다^^");
-          alert("100% 안심계좌: 국민 626402-01-725xxx 임xx");
+        } else{
+          const token = sessionStorage.getItem("token");
+          if (!token) {
+            products = await getFromDb("cart");
+            console.log("로그인 실패. 쿠키에서 장바구니를 가져옵니다.");
+          }
         }
-
         console.error(`HTTP 상태 코드: ${error.status}, 에러 메시지: ${error.reason}`);
 
       })
