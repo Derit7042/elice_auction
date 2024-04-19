@@ -29,15 +29,14 @@ let orderIdToDelete;
 async function insertOrders() {
   const memberId = 1;
   try {
-    const response = await Api.get(`/orders/member/${memberId}`);
+    const response = await Api.get(`/orders/member/${memberId}`);// <<
     console.log(response);
 
     if (!Array.isArray(response)) {
       throw new Error('서버 응답 데이터가 아닙니다.');
     }
 
-    // 기존 주문 항목들을 제거
-    ordersContainer.innerHTML = "";
+    ordersContainer.innerHTML = "";  // 기존 주문 항목들을 제거
 
     response.forEach(order => {
       const { id, date, product } = order;
@@ -70,40 +69,24 @@ async function insertOrders() {
   }
 }
 
-
 async function deleteOrderData(e) {
   e.preventDefault();
 
   try {
     const response = await Api.delete(`/orders/cancel/${orderIdToDelete}`);
-
-    if (!response.ok) {
-      throw new Error(`Server responded with status: ${response.status}`);
-    }
-
-    const contentType = response.headers.get('Content-Type');
-    if (contentType && contentType.includes('application/json')) {
-      const result = await response.json();
-      console.log("Deletion response:", result);
-    } else {
-      console.error("Received non-JSON response");
-    }
+    console.log("Deletion response:", response);
   } catch (err) {
-    //console.error(`주문정보 삭제 과정에서 오류가 발생하였습니다: ${err}`);
-    //alert(`주문정보 삭제 과정에서 오류가 발생하였습니다: ${err}`);
+    console.error("주문 취소 과정에서 오류가 발생했습니다:", err);
   }
 
   const deletedItem = document.querySelector(`#order-${orderIdToDelete}`);
   if (deletedItem) {
     deletedItem.remove();
   }
-
-  orderIdToDelete = "";
   closeModal();
 }
 
 function cancelDelete() {
-  orderIdToDelete = "";
   closeModal();
 }
 
@@ -116,7 +99,7 @@ function closeModal() {
 }
 
 function keyDownCloseModal(e) {
-  if (e.keyCode === 27) {
+  if (e.keyCode === 27) { // ESC key
     closeModal();
   }
 }

@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -53,11 +54,16 @@ public class OrderController {
     @Parameter(name = "memberId", description = "사용자의 고유 id 번호")
     /*********스웨거 어노테이션**********/
     @GetMapping("/member/{memberId}")
-    public ResponseEntity<List<Order>> getOrdersByMember(@PathVariable("memberId") Long memberId) {
+    public ResponseEntity<List<Order>> getOrdersByMember(@AuthenticationPrincipal UserDetails userDetails
+                                                        ,@PathVariable("memberId") Long memberId) { // <<
         try {
+            String username = userDetails.getUsername();
+            Member member = memberService.findMemberByUsername(username);
+            memberId = member.getId();
+
             // 사용자 ID로 주문 목록 가져오기
-            Member member = memberService.findMemberById(memberId);
-            List<Order> orders = orderService.getOrdersByMember(member.getId());
+//            Member member = memberService.findMemberById(memberId);
+            List<Order> orders = orderService.getOrdersByMember(memberId);
             return ResponseEntity.ok(orders);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -69,21 +75,19 @@ public class OrderController {
     // 현재 로그인한 사용자의 장바구니에 담긴 상품들을 주문
 
     @PostMapping("/order")
-    public ResponseEntity<?> orderCartItems(@AuthenticationPrincipal Member member) {
-        List<Order> orders = orderService.createOrdersFromCart(member);
+    public ResponseEntity<?> orderCartItems(@AuthenticationPrincipal UserDetails userDetails) {
+        List<Order> orders = orderService.createOrdersFromCart((Member) userDetails);
         return ResponseEntity.ok().body("주문이 성공적으로 완료되었습니다.");
     }
     // 주문 생성 API
     @PostMapping("/member/create")
-    public ResponseEntity<?> createOrderForLoggedInUser(@AuthenticationPrincipal Member member,
-                                                        @RequestBody OrderDto orderDto) {
+    public ResponseEntity<?> createOrderForLoggedInUser(@AuthenticationPrincipal UserDetails userDetails, @RequestBody OrderDto orderDto) {
         try {
+            Member member = memberService.findMemberByUsername(userDetails.getUsername());
             Product product = productService.show(orderDto.getProductId());
             if (product == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Product not found");
             }
-
-            // OrderService의 createOrder 메소드를 호출하며, orderDto의 필드를 직접 사용합니다.
             Order order = orderService.createLoginOrder(member, product, orderDto.getMemberAddressId());
             return ResponseEntity.ok(order);
         } catch (EntityNotFoundException e) {
@@ -130,18 +134,23 @@ public class OrderController {
     /*********스웨거 어노테이션**********/
     @PostMapping("/delivery/create")
     public ResponseEntity<?> createDeliveryInfo(
+            @AuthenticationPrincipal UserDetails userDetails,
             @RequestBody DeliveryDto deliveryDto) {
 
         try {
             // 주소 생성
+            if (userDetails != null && userDetails.getUsername() != null) {
+                String username = userDetails.getUsername();
+                Member member = memberService.findMemberByUsername(username);
+                Long memberId = member.getId();
+
+                deliveryDto.setMemberId(memberId); // 회원 ID 설정
+            }
             MemberAddress createdAddress = orderService.createDeliveryInfo(deliveryDto);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdAddress);
-        } catch (EntityNotFoundException e) {
-            // 사용자를 찾을 수 없는 경우
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자를 찾을 수 없습니다.");
-        } catch (Exception e) {
+        }  catch (Exception e) {
             // 기타 예외 발생 시
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("주소 생성 중 오류가 발생했습니다.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
@@ -175,9 +184,10 @@ public class OrderController {
     @Parameter(name = "orderId", description = "주문 Id를 가지고 주문 취소 합니다.")
     /*********스웨거 어노테이션**********/
     @DeleteMapping("/cancel/{orderId}")
-    public ResponseEntity<String> cancelOrder(@PathVariable Long orderId) {
+    public ResponseEntity<String> cancelOrder(@PathVariable("orderId") Long orderId) {
         orderService.cancelOrder(orderId);
-        return ResponseEntity.status(HttpStatus.OK).body("주문 번호가 " + orderId + "인 주문이 취소되었습니다.");
+        String responseMessage = "주문 번호가 " + orderId + "인 주문이 취소되었습니다.";
+        return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
     }
 
     // 특정 상품에 대한 주문 목록 가져오기
